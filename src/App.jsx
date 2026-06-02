@@ -451,10 +451,14 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
             </div>
           </div>
 
+          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'} ${isDark ? 'bg-yellow-600 text-white border-yellow-400' : 'bg-mustard text-black'}`} style={{ backgroundColor: isDark ? '' : COLORS.mustard }}>
+            {sending ? 'Salvando...' : 'Salvar Ficha'}
+          </button>
+
           <div className={`border-[3px] border-current ${theme.bg}`}>
              <button type="button" onClick={() => setIsPadronizadorOpen(!isPadronizadorOpen)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                <h3 className="font-black uppercase tracking-widest text-[12px] flex items-center gap-2">
-                 <Folder size={18} /> 2. Padronização de Anexos (Opcional)
+                 <Folder size={18} /> Padronização de Anexos (Opcional)
                </h3>
                <span className="text-xl leading-none font-mono">{isPadronizadorOpen ? '−' : '+'}</span>
              </button>
@@ -468,7 +472,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                    </p>
                  </div>
 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                    {DOCS_KEYS.map((key, idx) => {
                      const file = stagedFiles[key];
                      return (
@@ -490,13 +494,18 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                      );
                    })}
                  </div>
+                 
+                 <button 
+                     type="button" 
+                     onClick={executeDownloads} 
+                     disabled={Object.keys(stagedFiles).length === 0}
+                     className={`w-full p-3 font-black uppercase tracking-widest text-[10px] border-[2px] border-current transition-transform flex items-center justify-center gap-2 mt-2 ${Object.keys(stagedFiles).length > 0 ? 'bg-black text-white dark:bg-white dark:text-black hover:-translate-y-1 cursor-pointer' : 'opacity-40 cursor-not-allowed grayscale'}`}
+                 >
+                     <DownloadCloud size={16} /> Baixar Documentos Formatados
+                 </button>
                </div>
              )}
           </div>
-
-          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'} ${isDark ? 'bg-yellow-600 text-white border-yellow-400' : 'bg-mustard text-black'}`} style={{ backgroundColor: isDark ? '' : COLORS.mustard }}>
-            {sending ? 'Salvando...' : 'Salvar Ficha e Baixar Documentos Formatados'}
-          </button>
         </form>
       </div>
       {showDropdown && <div className="fixed inset-0 z-0" onClick={() => setShowDropdown(false)}></div>}
