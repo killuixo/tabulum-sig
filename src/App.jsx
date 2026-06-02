@@ -22,6 +22,7 @@ const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2
 const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
 const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
 const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
+const ChevronRight = (p) => <Icon {...p} path={<path d="m9 18 6-6-6-6"/>} />;
 const UserIcon = (p) => <Icon {...p} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
 
 // --- CORES TEMA MONDRIAN ---
@@ -41,7 +42,7 @@ export default function App() {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedArticulator, setSelectedArticulator] = useState(null);
 
-  // URL DO WEBHOOK JÁ PRÉ-CONFIGURADA E EMBUTIDA NO CÓDIGO
+  // URL DO WEBHOOK JÁ PRÉ-CONFIGURADA
   const [webhookUrl, setWebhookUrl] = useState('https://script.google.com/macros/s/AKfycbye_nWzL6sFN31psbTaBL5n9kbbHY_XFK5jUOMFEEHFTaomw3C0MX7OYoSR0YQRH6Ou/exec');
   const [syncStatus, setSyncStatus] = useState('');
 
@@ -56,7 +57,6 @@ export default function App() {
     setView('articulator_details');
   };
 
-  // Ao iniciar, ele vê que a URL existe e já puxa os dados automaticamente
   useEffect(() => {
     if (webhookUrl) {
       fetchFromWebhook();
@@ -112,7 +112,6 @@ export default function App() {
       alert("Nenhum dado para exportar.");
       return;
     }
-    
     const headers = Object.keys(data[0]);
     const csvRows = [];
     csvRows.push(headers.join(','));
@@ -126,7 +125,6 @@ export default function App() {
       });
       csvRows.push(values.join(','));
     }
-
     const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -143,7 +141,6 @@ export default function App() {
   const importCSV = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
     setLoading(true);
     const reader = new FileReader();
     reader.onload = (evt) => {
@@ -164,10 +161,8 @@ export default function App() {
   const parseCSV = (str) => {
     const lines = str.split(/\r?\n/).filter(line => line.trim() !== '');
     if (lines.length < 2) return [];
-    
     const headers = lines[0].split(',').map(h => h.replace(/(^"|"$)/g, '').trim());
     const result = [];
-    
     for (let i = 1; i < lines.length; i++) {
       const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       const obj = {};
@@ -262,10 +257,31 @@ export default function App() {
 // ==========================================
 
 function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticulatorClick }) {
+  // Estado para controlar as colunas recolhidas
+  const [collapsedCols, setCollapsedCols] = useState({});
+
+  const toggleCol = (id) => {
+    setCollapsedCols(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Cores atualizadas conforme solicitado
   const columns = [
     { id: 'Aguardando Documentos', label: 'Aguardando Docs', color: COLORS.mustard, icon: <AlertCircle size={16}/> },
-    { id: 'Em análise', label: 'Em Análise', color: COLORS.cyan, icon: <Clock size={16}/> },
-    { id: 'Protocolado', label: 'Protocolado', color: COLORS.crimson, icon: <CheckCircle2 size={16} className="text-white"/> }
+    { id: 'Em análise', label: 'Em Análise', color: COLORS.crimson, icon: <Clock size={16}/> },
+    { id: 'Protocolado', label: 'Protocolado', color: COLORS.cyan, icon: <CheckCircle2 size={16} /> }
+  ];
+
+  // Configuração dos 9 blocos visuais de documentos (Dividindo o 6 e 7)
+  const DOC_MAPPING = [
+    { label: 'Ata de Fundação', keyMatch: '1 ' },
+    { label: 'Ata de Eleição/Posse', keyMatch: '2 ' },
+    { label: 'CNPJ', keyMatch: '3 ' },
+    { label: 'Declaração Não OSCIP', keyMatch: '4 ' },
+    { label: 'Declaração de Funcionamento', keyMatch: '5 ' },
+    { label: 'Declaração de Remuneração (1)', keyMatch: '6 - 7' },
+    { label: 'Declaração de Remuneração (2)', keyMatch: '6 - 7' },
+    { label: 'Estatuto', keyMatch: '8 ' },
+    { label: 'Relatório de Atividades', keyMatch: '9 ' }
   ];
 
   const getColData = (status) => data.filter(d => {
@@ -275,77 +291,119 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
 
   return (
     <div className="flex flex-col md:flex-row gap-4 flex-1 items-stretch min-h-[500px]">
-      {columns.map((col) => (
-        <div key={col.id} className={`flex-1 flex flex-col ${thick} ${theme.cardBg}`}>
-          <div 
-            className={`p-3 font-bold flex items-center gap-2 uppercase tracking-wider border-b-[4px] ${theme.border}`}
-            style={{ backgroundColor: col.color, color: col.id === 'Protocolado' ? 'white' : 'black' }}
-          >
-            {col.icon}
-            {col.label}
-            <span className="ml-auto bg-black text-white px-2 py-0.5 rounded-full" style={{ fontSize: '0.8em' }}>
-              {getColData(col.id).length}
-            </span>
-          </div>
-          
-          <div className="p-3 flex flex-col gap-3 overflow-y-auto">
-            {getColData(col.id).map((item, i) => (
-              <div 
-                key={i} 
-                className={`p-3 ${med} hover:-translate-y-1 transition-transform cursor-pointer ${theme.bg}`}
-                onClick={() => onEntityClick(item)}
-              >
-                <h3 
-                  className="font-bold mb-2 uppercase" 
-                  style={{ fontSize: '1.1em', color: COLORS.cyan }}
-                >
-                  {item.ENTIDADE || 'Sem Nome'}
-                </h3>
-                
-                <div className="grid grid-cols-2 gap-2 opacity-80" style={{ fontSize: '0.9em' }}>
-                  <div>
-                    <span className="block text-[0.8em] uppercase font-bold opacity-70">Articulador</span>
-                    <span 
-                      className="cursor-pointer hover:underline decoration-2 underline-offset-2 relative z-10"
-                      style={{ textDecorationColor: COLORS.mustard }}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Impede que o clique "vaze" para o quadro da entidade
-                        onArticulatorClick(item.ARTICULADOR);
-                      }}
-                    >
-                      {item.ARTICULADOR || '-'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="block text-[0.8em] uppercase font-bold opacity-70">Data</span>
-                    {item['DATA DA SOLICITAÇÃO'] || '-'}
-                  </div>
-                </div>
+      {columns.map((col) => {
+        const isCollapsed = collapsedCols[col.id];
+        const colData = getColData(col.id);
 
-                <div className={`mt-3 pt-2 border-t-[2px] ${theme.border} flex gap-1`}>
-                  {['1 ', '2 ', '3 ', '4 ', '5 ', '8 ', '9 '].map(num => {
-                    const docKey = Object.keys(item).find(k => k.startsWith(num.trim()));
-                    const val = String(item[docKey] || '').toUpperCase();
-                    const hasDoc = val === 'TRUE' || val === 'VERDADEIRO' || val === 'SIM';
-                    return (
-                      <div 
-                        key={num} 
-                        title={docKey}
-                        className={`flex-1 h-2 ${hasDoc ? 'bg-black dark:bg-white' : 'bg-transparent border border-current opacity-30'}`}
-                      />
-                    );
-                  })}
-                </div>
+        return (
+          <div key={col.id} className={`flex flex-col ${thick} ${theme.cardBg} transition-all duration-300 ${isCollapsed ? 'flex-none md:w-20' : 'flex-1'}`}>
+            
+            {/* CABEÇALHO DA COLUNA (Botão para Recolher) */}
+            <div 
+              onClick={() => toggleCol(col.id)}
+              className={`p-3 font-bold flex items-center gap-2 uppercase tracking-wider border-b-[4px] ${theme.border} cursor-pointer hover:brightness-110 transition-all select-none ${isCollapsed ? 'justify-center md:flex-col md:py-6 h-full border-b-0' : 'justify-between'}`}
+              style={{ backgroundColor: col.color, color: 'black' }}
+              title={isCollapsed ? "Expandir Coluna" : "Recolher Coluna"}
+            >
+              <div className={`flex items-center gap-2 ${isCollapsed ? 'md:flex-col' : ''}`}>
+                {col.icon}
+                {!isCollapsed && <span>{col.label}</span>}
               </div>
-            ))}
-            {getColData(col.id).length === 0 && (
-              <div className="text-center opacity-50 p-4 border-2 border-dashed border-current">
-                Vazio
+              <span className={`bg-black text-white px-2 py-0.5 rounded-full font-black ${isCollapsed ? 'mt-2 md:mt-4' : ''}`} style={{ fontSize: '0.8em' }}>
+                {colData.length}
+              </span>
+            </div>
+            
+            {/* ÁREA DOS CARDS */}
+            {!isCollapsed && (
+              <div className="p-3 flex flex-col gap-3 overflow-y-auto">
+                {colData.map((item, i) => {
+                  
+                  // Lógica do Termômetro de Documentos
+                  const docStatuses = DOC_MAPPING.map(doc => {
+                    const docKey = Object.keys(item).find(k => k.startsWith(doc.keyMatch));
+                    const val = String(item[docKey] || '').toUpperCase();
+                    return {
+                      label: doc.label,
+                      hasDoc: val === 'TRUE' || val === 'VERDADEIRO' || val === 'SIM'
+                    };
+                  });
+
+                  const deliveredCount = docStatuses.filter(d => d.hasDoc).length;
+                  
+                  // Cor baseada na quantidade (Apenas pinta se a quantidade estiver na faixa, caso contrário fica transparente)
+                  let progressColor = 'transparent';
+                  if (deliveredCount > 0 && deliveredCount <= 3) progressColor = COLORS.crimson;
+                  else if (deliveredCount >= 4 && deliveredCount <= 8) progressColor = COLORS.mustard;
+                  else if (deliveredCount === 9) progressColor = COLORS.cyan;
+
+                  return (
+                    <div 
+                      key={i} 
+                      className={`p-3 ${med} hover:-translate-y-1 transition-transform cursor-pointer ${theme.bg}`}
+                      onClick={() => onEntityClick(item)}
+                    >
+                      <h3 
+                        className="font-bold mb-2 uppercase" 
+                        style={{ fontSize: '1.1em', color: isDark ? 'white' : 'black' }}
+                      >
+                        {item.ENTIDADE || 'Sem Nome'}
+                      </h3>
+                      
+                      <div className="grid grid-cols-2 gap-2 opacity-80" style={{ fontSize: '0.9em' }}>
+                        <div>
+                          <span className="block text-[0.8em] uppercase font-bold opacity-70">Articulador</span>
+                          <span 
+                            className="cursor-pointer hover:underline decoration-2 underline-offset-2 relative z-10 font-bold"
+                            style={{ textDecorationColor: COLORS.cyan, color: COLORS.cyan }}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Impede de abrir a ficha da entidade
+                              onArticulatorClick(item.ARTICULADOR);
+                            }}
+                          >
+                            {item.ARTICULADOR || '-'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="block text-[0.8em] uppercase font-bold opacity-70">Data</span>
+                          {item['DATA DA SOLICITAÇÃO'] || '-'}
+                        </div>
+                      </div>
+
+                      {/* 9 NÍVEIS DE DOCUMENTOS */}
+                      <div className={`mt-3 pt-2 border-t-[2px] ${theme.border} flex gap-1 h-3`}>
+                        {docStatuses.map((doc, idx) => (
+                          <div 
+                            key={idx} 
+                            className="group relative flex-1 h-full cursor-help"
+                          >
+                            <div 
+                              className={`w-full h-full transition-colors duration-300 ${doc.hasDoc ? '' : 'border border-current opacity-10 dark:opacity-20'}`}
+                              style={{ backgroundColor: doc.hasDoc ? progressColor : 'transparent' }}
+                            />
+                            
+                            {/* Tooltip Hover/Long-Press */}
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block group-active:block z-50 pointer-events-none">
+                              <div className="bg-black text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 whitespace-nowrap shadow-md">
+                                {doc.label} {doc.hasDoc ? '✓' : 'pendente'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+                {colData.length === 0 && (
+                  <div className="text-center opacity-50 p-4 border-2 border-dashed border-current">
+                    Vazio
+                  </div>
+                )}
               </div>
             )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -358,15 +416,15 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className={`md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4`}>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
           <span className="font-bold uppercase opacity-70">Total de Pedidos</span>
           <span className="text-4xl font-black">{total}</span>
         </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.crimson, borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
           <span className="font-bold uppercase opacity-70">Protocolados na ALESC</span>
           <span className="text-4xl font-black">{protocolados}</span>
         </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.crimson, borderTopWidth: '8px' }}>
           <span className="font-bold uppercase opacity-70">Em Análise Interna</span>
           <span className="text-4xl font-black">{emAnalise}</span>
         </div>
@@ -377,7 +435,7 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
         <div className="flex-1 flex flex-col justify-end gap-2 h-40">
           <div className="flex items-end gap-2 h-full">
             <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
-              <div className="w-full transition-all duration-500" style={{ height: `${(emAnalise/total)*100 || 0}%`, backgroundColor: COLORS.cyan, border: '2px solid currentcolor' }}></div>
+              <div className="w-full transition-all duration-500" style={{ height: `${(emAnalise/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '2px solid currentcolor' }}></div>
               <span className="text-[10px] uppercase font-bold text-center">Análise</span>
             </div>
             <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
@@ -385,7 +443,7 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
               <span className="text-[10px] uppercase font-bold text-center">Docs</span>
             </div>
             <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
-              <div className="w-full transition-all duration-500" style={{ height: `${(protocolados/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '2px solid currentcolor' }}></div>
+              <div className="w-full transition-all duration-500" style={{ height: `${(protocolados/total)*100 || 0}%`, backgroundColor: COLORS.cyan, border: '2px solid currentcolor' }}></div>
               <span className="text-[10px] uppercase font-bold text-center">ALESC</span>
             </div>
           </div>
@@ -414,13 +472,13 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
                 </td>
                 <td 
                   className="p-3 border-r-[2px] border-current cursor-pointer hover:underline decoration-2 underline-offset-2"
-                  style={{ textDecorationColor: COLORS.mustard }}
+                  style={{ textDecorationColor: COLORS.cyan }}
                   onClick={() => onArticulatorClick(row.ARTICULADOR)}
                 >
                   {row.ARTICULADOR}
                 </td>
                 <td className="p-3 border-r-[2px] border-current">
-                  <span className="px-2 py-1 bg-black text-white rounded text-[0.85em]">
+                  <span className="px-2 py-1 bg-black text-white rounded text-[0.85em] uppercase font-bold">
                     {row['STATUS DA ANÁLISE'] || '-'}
                   </span>
                 </td>
@@ -502,7 +560,7 @@ function ArticulatorView({ articulator, data, onBack, onEntityClick, theme, thic
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className={`p-6 ${thick} ${theme.cardBg} lg:col-span-1 flex flex-col border-t-[8px] h-fit`} style={{ borderTopColor: COLORS.mustard }}>
+        <div className={`p-6 ${thick} ${theme.cardBg} lg:col-span-1 flex flex-col border-t-[8px] h-fit`} style={{ borderTopColor: COLORS.cyan }}>
           <h3 className="text-2xl md:text-3xl font-black uppercase">{articulator || 'Sem Nome'}</h3>
           <p className="opacity-70 font-bold uppercase tracking-wider mt-2">Membro da Equipe</p>
           
@@ -560,7 +618,7 @@ function ArticulatorView({ articulator, data, onBack, onEntityClick, theme, thic
                           className="h-full transition-all duration-500" 
                           style={{ 
                             width: `${(docsEntregues/docsTotal)*100 || 0}%`,
-                            backgroundColor: COLORS.mustard,
+                            backgroundColor: COLORS.cyan,
                             borderRight: docsEntregues > 0 ? `2px solid ${isDark ? '#fff' : '#000'}` : 'none'
                           }}
                         />
@@ -586,7 +644,7 @@ function ArticulatorView({ articulator, data, onBack, onEntityClick, theme, thic
 }
 
 function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUrl, setWebhookUrl, fetchFromWebhook, exportCSV, importCSV, syncStatus, theme, thick, med }) {
-  const [openSection, setOpenSection] = useState('aparencia'); // 'aparencia' já começa aberto
+  const [openSection, setOpenSection] = useState('aparencia'); 
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -610,7 +668,6 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         
         {openSection === 'aparencia' && (
           <div className={`p-4 border-t-[4px] ${theme.border} flex flex-col gap-6`}>
-            {/* TEMA VISUAL */}
             <div className="flex flex-col gap-3">
               <label className="font-bold uppercase tracking-wider opacity-80">Modo de Exibição</label>
               <div className="flex gap-4">
@@ -629,7 +686,6 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
               </div>
             </div>
 
-            {/* TAMANHO DA FONTE */}
             <div className="flex flex-col gap-3">
               <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
                 <Type size={18}/> Tamanho da Fonte
@@ -736,7 +792,6 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
   );
 }
 
-// Utilitário de Botão de Navegação
 function NavButton({ active, onClick, icon, label, isDark }) {
   const activeClass = active 
     ? (isDark ? 'bg-white text-black border-white scale-105 shadow-[0_4px_0_rgba(255,255,255,0.3)]' : 'bg-black text-white border-black scale-105 shadow-[0_4px_0_rgba(0,0,0,0.3)]') 
