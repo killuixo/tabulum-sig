@@ -24,6 +24,7 @@ const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0
 const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
 const ChevronRight = (p) => <Icon {...p} path={<path d="m9 18 6-6-6-6"/>} />;
 const UserIcon = (p) => <Icon {...p} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
+const PlusIcon = (p) => <Icon {...p} path={<><path d="M5 12h14"/><path d="M12 5v14"/></>} />;
 
 // --- CORES TEMA MONDRIAN ---
 const COLORS = {
@@ -42,7 +43,7 @@ export default function App() {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedArticulator, setSelectedArticulator] = useState(null);
 
-  // URL DO WEBHOOK JÁ PRÉ-CONFIGURADA
+  // URL DO WEBHOOK JÁ PRÉ-CONFIGURADA E EMBUTIDA NO CÓDIGO
   const [webhookUrl, setWebhookUrl] = useState('https://script.google.com/macros/s/AKfycbye_nWzL6sFN31psbTaBL5n9kbbHY_XFK5jUOMFEEHFTaomw3C0MX7OYoSR0YQRH6Ou/exec');
   const [syncStatus, setSyncStatus] = useState('');
 
@@ -57,6 +58,7 @@ export default function App() {
     setView('articulator_details');
   };
 
+  // Ao iniciar, ele vê que a URL existe e já puxa os dados automaticamente
   useEffect(() => {
     if (webhookUrl) {
       fetchFromWebhook();
@@ -72,7 +74,7 @@ export default function App() {
     }
     
     setLoading(true);
-    setSyncStatus('Sincronizando com Arquivo Central...');
+    setSyncStatus('Acessando Arquivo Central...');
     try {
       const response = await fetch(webhookUrl);
       if (!response.ok) throw new Error('Falha na resposta da rede.');
@@ -107,11 +109,33 @@ export default function App() {
     }
   };
 
+  // Enviar novo pedido para a planilha via POST
+  const handleSubmitNewEntity = async (newEntity) => {
+    // 1. Atualiza a tela imediatamente (Optimistic UI) para não fazer o usuário esperar
+    setData([...data, newEntity]);
+    setView('kanban');
+
+    // 2. Envia silenciosamente para o Google Sheets em background
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors', // Necessário para evitar bloqueios do Google Sheets
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(newEntity)
+        });
+      } catch (error) {
+        console.error("Erro ao salvar no arquivo central:", error);
+      }
+    }
+  };
+
   const exportCSV = () => {
     if (data.length === 0) {
       alert("Nenhum dado para exportar.");
       return;
     }
+    
     const headers = Object.keys(data[0]);
     const csvRows = [];
     csvRows.push(headers.join(','));
@@ -125,6 +149,7 @@ export default function App() {
       });
       csvRows.push(values.join(','));
     }
+
     const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -141,6 +166,7 @@ export default function App() {
   const importCSV = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
     setLoading(true);
     const reader = new FileReader();
     reader.onload = (evt) => {
@@ -161,8 +187,10 @@ export default function App() {
   const parseCSV = (str) => {
     const lines = str.split(/\r?\n/).filter(line => line.trim() !== '');
     if (lines.length < 2) return [];
+    
     const headers = lines[0].split(',').map(h => h.replace(/(^"|"$)/g, '').trim());
     const result = [];
+    
     for (let i = 1; i < lines.length; i++) {
       const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       const obj = {};
@@ -216,37 +244,39 @@ export default function App() {
         </div>
 
         {/* NAVEGAÇÃO SUPERIOR */}
-        <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
+        <nav className={`flex p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center justify-start md:justify-center`}>
           <NavButton active={view === 'kanban'} onClick={() => setView('kanban')} icon={<Kanban />} label="Kanban" isDark={isDark} />
           <NavButton active={view === 'dashboard'} onClick={() => setView('dashboard')} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} />
+          <NavButton active={view === 'add_entity'} onClick={() => setView('add_entity')} icon={<PlusIcon />} label="Novo" isDark={isDark} />
           <NavButton active={view === 'settings'} onClick={() => setView('settings')} icon={<Settings />} label="Ajustes" isDark={isDark} />
         </nav>
       </header>
 
       {/* ÁREA PRINCIPAL */}
-      <main className="p-4 md:p-6 flex-1 flex flex-col">
+      <main className="p-4 md:p-6 flex-1 flex flex-col relative">
         {loading ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-50 backdrop-blur-sm">
             <RefreshCw className="animate-spin" size={48} style={{ color: COLORS.cyan }} />
-            <span className="font-black uppercase tracking-widest text-sm opacity-80 animate-pulse">{syncStatus || "Acessando Arquivo Central..."}</span>
+            <span className="font-black uppercase tracking-widest text-sm opacity-80 animate-pulse bg-black text-white px-4 py-2">{syncStatus || "Acessando Arquivo Central..."}</span>
           </div>
-        ) : (
-          <>
-            {view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
-            {view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
-            {view === 'entity_details' && selectedEntity && <EntityDetailsView entity={selectedEntity} onBack={() => setView('kanban')} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
-            {view === 'articulator_details' && selectedArticulator && <ArticulatorView articulator={selectedArticulator} data={data} onBack={() => setView('kanban')} onEntityClick={handleEntityClick} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
-            {view === 'settings' && (
-              <SettingsView 
-                isDark={isDark} setIsDark={setIsDark} 
-                fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
-                webhookUrl={webhookUrl} setWebhookUrl={setWebhookUrl} fetchFromWebhook={fetchFromWebhook}
-                exportCSV={exportCSV} importCSV={importCSV}
-                syncStatus={syncStatus} theme={themeConfig} thick={bThick} med={bMedium}
-              />
-            )}
-          </>
-        )}
+        ) : null}
+
+        <>
+          {view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
+          {view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
+          {view === 'add_entity' && <AddEntityView onSubmit={handleSubmitNewEntity} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
+          {view === 'entity_details' && selectedEntity && <EntityDetailsView entity={selectedEntity} onBack={() => setView('kanban')} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
+          {view === 'articulator_details' && selectedArticulator && <ArticulatorView articulator={selectedArticulator} data={data} onBack={() => setView('kanban')} onEntityClick={handleEntityClick} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
+          {view === 'settings' && (
+            <SettingsView 
+              isDark={isDark} setIsDark={setIsDark} 
+              fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
+              webhookUrl={webhookUrl} setWebhookUrl={setWebhookUrl} fetchFromWebhook={fetchFromWebhook}
+              exportCSV={exportCSV} importCSV={importCSV}
+              syncStatus={syncStatus} theme={themeConfig} thick={bThick} med={bMedium}
+            />
+          )}
+        </>
       </main>
     </div>
   );
@@ -256,22 +286,126 @@ export default function App() {
 // COMPONENTES DE VISUALIZAÇÃO
 // ==========================================
 
+function AddEntityView({ onSubmit, theme, thick, med, isDark }) {
+  const [formData, setFormData] = useState({
+    'ENTIDADE': '',
+    'ARTICULADOR': '',
+    'LIDERANÇA': '',
+    'TELEFONE': '',
+    'EMAIL': '',
+    'OBSERVAÇÕES': ''
+  });
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSave = () => {
+    if (!formData['ENTIDADE'] || !formData['ARTICULADOR']) {
+      alert("Entidade e Articulador são obrigatórios.");
+      return;
+    }
+
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+
+    // Montando o objeto exatamente com as colunas da planilha
+    const newEntity = {
+      ...formData,
+      'DATA DA SOLICITAÇÃO': dataAtual,
+      'STATUS DA ANÁLISE': 'Aguardando Documentos',
+      'MANUAL/MODELOS ENVIADOS': 'FALSE',
+      '1 ATA DE FUNDAÇÃO': 'FALSE',
+      '2 ATA DE ELEIÇÃO/POSSE': 'FALSE',
+      '3 CNPJ': 'FALSE',
+      '4 DECLARAÇÃO NÃO OSCIP': 'FALSE',
+      '5 DECLARAÇÃO FUNCIONAMENTO': 'FALSE',
+      '6 - 7 DECLARAÇÃO REMUNERAÇÃO': 'FALSE',
+      '8 ESTATUTO': 'FALSE',
+      '9 RELATÓRIO DE ATIVIDADES': 'FALSE',
+      'DATA DO ENVIO ALESC': '',
+      'Nº DO PROCESSO ALESC': '',
+      'ESTÁGIO ATUAL': ''
+    };
+
+    onSubmit(newEntity);
+  };
+
+  const InputLabel = ({ label }) => <label className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-2 block">{label}</label>;
+  const InputField = ({ name, placeholder }) => (
+    <input 
+      type="text" name={name} placeholder={placeholder} value={formData[name]} onChange={handleChange}
+      className={`w-full p-4 ${med} bg-transparent outline-none focus:border-[${COLORS.cyan}] font-bold transition-colors mb-4`} 
+    />
+  );
+
+  return (
+    <div className={`max-w-3xl mx-auto flex flex-col w-full animate-in fade-in duration-300 ${thick} ${theme.cardBg} p-6 md:p-8`}>
+      <div className="flex items-center gap-3 border-b-[4px] border-current pb-4 mb-6">
+        <div className="w-8 h-8 flex items-center justify-center bg-black text-white dark:bg-white dark:text-black">
+          <PlusIcon size={20} />
+        </div>
+        <h2 className="text-xl md:text-2xl font-black uppercase tracking-widest">Novo Pedido</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+        <div className="md:col-span-2">
+          <InputLabel label="Nome da Entidade (Obrigatório)" />
+          <InputField name="ENTIDADE" placeholder="Associação Comunitária..." />
+        </div>
+        
+        <div className="md:col-span-1">
+          <InputLabel label="Articulador Responsável (Obrigatório)" />
+          <InputField name="ARTICULADOR" placeholder="Nome do Membro da Equipe" />
+        </div>
+
+        <div className="md:col-span-1">
+          <InputLabel label="Liderança Comunitária" />
+          <InputField name="LIDERANÇA" placeholder="Nome do Presidente/Representante" />
+        </div>
+
+        <div className="md:col-span-1">
+          <InputLabel label="Telefone de Contato" />
+          <InputField name="TELEFONE" placeholder="(00) 00000-0000" />
+        </div>
+
+        <div className="md:col-span-1">
+          <InputLabel label="E-mail" />
+          <InputField name="EMAIL" placeholder="contato@entidade.org" />
+        </div>
+
+        <div className="md:col-span-2">
+          <InputLabel label="Observações Iniciais" />
+          <textarea 
+            name="OBSERVAÇÕES" value={formData['OBSERVAÇÕES']} onChange={handleChange} rows="3"
+            className={`w-full p-4 ${med} bg-transparent outline-none focus:border-[${COLORS.cyan}] font-bold transition-colors resize-none`}
+            placeholder="Informações adicionais importantes..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div className="mt-8 flex justify-end">
+        <button 
+          onClick={handleSave}
+          className={`px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest border-[4px] border-transparent hover:scale-105 transition-transform shadow-[4px_4px_0px_rgba(0,183,235,1)] hover:shadow-none`}
+        >
+          Registrar no Arquivo
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticulatorClick }) {
-  // Estado para controlar as colunas recolhidas
   const [collapsedCols, setCollapsedCols] = useState({});
 
   const toggleCol = (id) => {
     setCollapsedCols(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Cores atualizadas conforme solicitado
   const columns = [
     { id: 'Aguardando Documentos', label: 'Aguardando Docs', color: COLORS.mustard, icon: <AlertCircle size={16}/> },
     { id: 'Em análise', label: 'Em Análise', color: COLORS.crimson, icon: <Clock size={16}/> },
     { id: 'Protocolado', label: 'Protocolado', color: COLORS.cyan, icon: <CheckCircle2 size={16} /> }
   ];
 
-  // Configuração dos 9 blocos visuais de documentos (Dividindo o 6 e 7)
   const DOC_MAPPING = [
     { label: 'Ata de Fundação', keyMatch: '1 ' },
     { label: 'Ata de Eleição/Posse', keyMatch: '2 ' },
@@ -297,8 +431,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
 
         return (
           <div key={col.id} className={`flex flex-col ${thick} ${theme.cardBg} transition-all duration-300 ${isCollapsed ? 'flex-none md:w-20' : 'flex-1'}`}>
-            
-            {/* CABEÇALHO DA COLUNA (Botão para Recolher) */}
             <div 
               onClick={() => toggleCol(col.id)}
               className={`p-3 font-bold flex items-center gap-2 uppercase tracking-wider border-b-[4px] ${theme.border} cursor-pointer hover:brightness-110 transition-all select-none ${isCollapsed ? 'justify-center md:flex-col md:py-6 h-full border-b-0' : 'justify-between'}`}
@@ -314,12 +446,9 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
               </span>
             </div>
             
-            {/* ÁREA DOS CARDS */}
             {!isCollapsed && (
               <div className="p-3 flex flex-col gap-3 overflow-y-auto">
                 {colData.map((item, i) => {
-                  
-                  // Lógica do Termômetro de Documentos
                   const docStatuses = DOC_MAPPING.map(doc => {
                     const docKey = Object.keys(item).find(k => k.startsWith(doc.keyMatch));
                     const val = String(item[docKey] || '').toUpperCase();
@@ -331,7 +460,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
 
                   const deliveredCount = docStatuses.filter(d => d.hasDoc).length;
                   
-                  // Cor baseada na quantidade (Apenas pinta se a quantidade estiver na faixa, caso contrário fica transparente)
                   let progressColor = 'transparent';
                   if (deliveredCount > 0 && deliveredCount <= 3) progressColor = COLORS.crimson;
                   else if (deliveredCount >= 4 && deliveredCount <= 8) progressColor = COLORS.mustard;
@@ -357,7 +485,7 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                             className="cursor-pointer hover:underline decoration-2 underline-offset-2 relative z-10 font-bold"
                             style={{ textDecorationColor: COLORS.cyan, color: COLORS.cyan }}
                             onClick={(e) => {
-                              e.stopPropagation(); // Impede de abrir a ficha da entidade
+                              e.stopPropagation(); 
                               onArticulatorClick(item.ARTICULADOR);
                             }}
                           >
@@ -370,7 +498,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                         </div>
                       </div>
 
-                      {/* 9 NÍVEIS DE DOCUMENTOS */}
                       <div className={`mt-3 pt-2 border-t-[2px] ${theme.border} flex gap-1 h-3`}>
                         {docStatuses.map((doc, idx) => (
                           <div 
@@ -381,8 +508,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                               className={`w-full h-full transition-colors duration-300 ${doc.hasDoc ? '' : 'border border-current opacity-10 dark:opacity-20'}`}
                               style={{ backgroundColor: doc.hasDoc ? progressColor : 'transparent' }}
                             />
-                            
-                            {/* Tooltip Hover/Long-Press */}
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block group-active:block z-50 pointer-events-none">
                               <div className="bg-black text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 whitespace-nowrap shadow-md">
                                 {doc.label} {doc.hasDoc ? '✓' : 'pendente'}
@@ -656,7 +781,6 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         <Settings /> Configurações do Tabulum
       </h2>
 
-      {/* BLOCO 1: APARÊNCIA E LEITURA */}
       <div className={`${thick} ${theme.cardBg}`}>
         <button 
           onClick={() => toggleSection('aparencia')}
@@ -707,7 +831,6 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         )}
       </div>
 
-      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
       <div className={`${thick} ${theme.cardBg}`}>
         <button 
           onClick={() => toggleSection('backup')}
@@ -749,7 +872,6 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         )}
       </div>
 
-      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
       <div className={`border-[4px] border-gray-400 dark:border-gray-600 ${isDark ? 'bg-[#121212]' : 'bg-[#e5e5e5]'}`}>
         <button 
           onClick={() => toggleSection('sistema')}
@@ -768,22 +890,17 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
               <input 
                 type="text" 
                 placeholder="https://script.google.com/macros/s/..." 
-                className={`flex-1 p-3 border-[3px] border-current bg-transparent outline-none focus:border-[${COLORS.cyan}] opacity-70`}
+                className={`flex-1 p-3 border-[3px] border-current bg-transparent outline-none focus:border-[${COLORS.cyan}] opacity-50 cursor-not-allowed`}
                 value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
+                readOnly
               />
               <button 
                 onClick={fetchFromWebhook}
                 className="p-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
               >
-                <RefreshCw size={18} /> Testar Link
+                <RefreshCw size={18} /> Sincronizar
               </button>
             </div>
-            {syncStatus && (
-              <p className="font-bold mt-1" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : COLORS.cyan }}>
-                {syncStatus}
-              </p>
-            )}
           </div>
         )}
       </div>
@@ -800,8 +917,8 @@ function NavButton({ active, onClick, icon, label, isDark }) {
   return (
     <button 
       onClick={onClick}
-      className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`}
-      style={{ fontSize: '1.05em', minWidth: '150px' }}
+      className={`flex-none md:flex-none flex items-center justify-center gap-2 px-4 py-3 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`}
+      style={{ fontSize: '1.0em', minWidth: '120px' }}
     >
       {icon} <span>{label}</span>
     </button>
