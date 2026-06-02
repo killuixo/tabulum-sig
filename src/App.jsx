@@ -17,7 +17,7 @@ const RefreshCw = (p) => <Icon {...p} path={<><path d="M3 12a9 9 0 1 0 9-9 9.75 
 const CheckCircle2 = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>} />;
 const Clock = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>} />;
 const AlertCircle = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></>} />;
-const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></>} />;
+const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />;
 const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></>} />;
 const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
 const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
@@ -32,7 +32,6 @@ const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 const Users = (p) => <Icon {...p} path={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
-
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
@@ -182,14 +181,11 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
-  
-  // Novo estado para o detalhe do Membro da Equipe
   const [activeMembroEquipe, setActiveMembroEquipe] = useState(null);
-  
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
-  const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson]; // Amarelo, Azul, Vermelho
+  const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson];
   const [accentIndex, setAccentIndex] = useState(0);
   const accentColor = accentColors[accentIndex];
   const cycleAccent = () => setAccentIndex(prev => (prev + 1) % 3);
@@ -211,13 +207,19 @@ export default function App() {
   useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
   useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
 
-  useEffect(() => { fetchFromWebhooks(); }, [webhookUtilidade, webhookEquipe]);
+  useEffect(() => { 
+    // Carrega dados na inicialização
+    fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
+  }, []);
 
-  const fetchFromWebhooks = async () => {
-    setLoading(true); setSyncStatus('Sincronizando Banco Central...');
-    if (webhookUtilidade) {
+  // Passamos as URLs como parâmetro para evitar o "Bug da Memória Fantasma" (stale state no momento do clique)
+  const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade, currentUrlEquipe = webhookEquipe) => {
+    setLoading(true); 
+    setSyncStatus('Sincronizando Banco Central...');
+    
+    if (currentUrlUtilidade) {
       try {
-        const response = await fetch(webhookUtilidade);
+        const response = await fetch(currentUrlUtilidade);
         const text = await response.text();
         try {
           const jsonData = JSON.parse(text);
@@ -238,25 +240,46 @@ export default function App() {
       } catch (error) { console.error("Erro Entidades:", error); }
     }
 
-    if (webhookEquipe) {
+    if (currentUrlEquipe) {
       try {
-        const resEq = await fetch(webhookEquipe);
+        const resEq = await fetch(currentUrlEquipe);
         const textEq = await resEq.text();
-        const jsonEq = JSON.parse(textEq);
-        // IMPORTANTE: Absorve todos os campos da planilha, criando a chave "Nome" primária
-        const formattedEq = jsonEq.map(item => ({ 
-          ...item,
-          Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-        }));
-        if (formattedEq.length > 0) setEquipe(formattedEq);
+        
+        // Bloqueio contra erros de permissão do Google Script
+        if (textEq.toLowerCase().includes('<!doctype html>') || textEq.toLowerCase().includes('<html')) {
+          console.error("Script da Equipe não está público.");
+          setSyncStatus('⚠️ Erro: Script da Equipe exige acesso "Qualquer pessoa"');
+        } else {
+          try {
+            const jsonEq = JSON.parse(textEq);
+            const formattedEq = jsonEq.map(item => ({ 
+              ...item,
+              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
+            }));
+            if (formattedEq.length > 0) setEquipe(formattedEq);
+          } catch(e) {
+            const parsedEq = parseCSV(textEq);
+            const formattedEq = parsedEq.map(item => ({ 
+              ...item,
+              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
+            }));
+            if (formattedEq.length > 0) setEquipe(formattedEq);
+          }
+        }
       } catch(e) { console.error("Erro Equipe:", e); }
     }
-    setLoading(false); setSyncStatus('Sincronizado!');
-    setTimeout(() => setSyncStatus(''), 3000);
+    
+    setLoading(false); 
+    if(!syncStatus.includes('Erro')) setSyncStatus('Sincronizado!');
+    setTimeout(() => setSyncStatus(''), 5000);
   };
 
   const applyNetworkSettings = (newUtilidade, newEquipe, newEmail) => {
-    setWebhookUtilidade(newUtilidade); setWebhookEquipe(newEquipe); setEmailCentral(newEmail);
+    setWebhookUtilidade(newUtilidade); 
+    setWebhookEquipe(newEquipe); 
+    setEmailCentral(newEmail);
+    // Dispara a busca forçando as URLs novas imediatamente
+    fetchFromWebhooks(newUtilidade, newEquipe);
   };
 
   const deleteItem = async (entidadeName) => {
@@ -288,7 +311,6 @@ export default function App() {
   };
 
   const handleUpdateEquipe = async (originalName, updatedFields) => {
-    // Atualização otimista local
     setEquipe(prev => prev.map(p => {
       if (p.Nome === originalName) {
         const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : p.Nome;
@@ -297,7 +319,6 @@ export default function App() {
       return p;
     }));
     
-    // Atualiza a ficha atual para não quebrar a tela
     setActiveMembroEquipe(prev => {
        if(prev && prev.Nome === originalName) {
          const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : prev.Nome;
@@ -398,8 +419,6 @@ export default function App() {
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
           <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
           <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
-          <NavButton active={view === 'equipe_list' && !isFormOpen} onClick={() => {setView('equipe_list'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Users />} label="Equipe" isDark={isDark} accentColor={accentColor} />
-          
           <button 
             onClick={() => {setIsFormOpen(true); cycleAccent();}}
             className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
@@ -410,7 +429,7 @@ export default function App() {
           >
             +
           </button>
-          <NavButton active={view === 'settings' && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={(view === 'settings' || view === 'equipe_list') && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
         </nav>
       </header>
 
@@ -418,11 +437,11 @@ export default function App() {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
             <RefreshCw className="animate-spin mb-4" size={48} style={{ color: COLORS.cyan }} />
-            <p className="font-black uppercase tracking-widest animate-pulse">{syncStatus}</p>
+            <p className="font-black uppercase tracking-widest animate-pulse" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : 'inherit' }}>{syncStatus}</p>
           </div>
         ) : (
           <>
-            {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} isDark={isDark} fetchFromWebhooks={fetchFromWebhooks} equipe={equipe} webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} accentColor={accentColor} cycleAccent={cycleAccent} />}
+            {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} isDark={isDark} fetchFromWebhooks={() => fetchFromWebhooks()} equipe={equipe} webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} accentColor={accentColor} cycleAccent={cycleAccent} />}
             
             {!isFormOpen && view === 'entity_details' && activeFicha && (
               <FichaEntidade 
@@ -437,7 +456,7 @@ export default function App() {
             
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
-            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
+            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('settings'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
             {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
               <FichaMembroEquipe 
@@ -457,7 +476,7 @@ export default function App() {
                 fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
                 webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
                 applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
-                theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
+                setView={setView} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
               />
             )}
           </>
@@ -626,15 +645,18 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// LISTA COMPLETA DA EQUIPE (NOVO)
+// LISTA COMPLETA DA EQUIPE
 // ==========================================
-function ListaEquipeView({ equipe, onMembroClick, theme, thick, isDark }) {
+function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
   return (
     <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
       <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
-        <div className="border-b-[6px] border-current pb-4">
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
-          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.8em]">Banco de Dados da Secretaria / RH</p>
+        <div className="flex items-center gap-4 border-b-[6px] border-current pb-4">
+          <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
+          <div>
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
+            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.8em] text-sky-600 dark:text-sky-400">Banco de Dados da Secretaria / RH</p>
+          </div>
         </div>
 
         <div className="overflow-x-auto border-[4px] border-current mt-4">
@@ -673,10 +695,9 @@ function ListaEquipeView({ equipe, onMembroClick, theme, thick, isDark }) {
 }
 
 // ==========================================
-// FICHA COMPLETA DO MEMBRO DA EQUIPE (NOVO)
+// FICHA COMPLETA DO MEMBRO DA EQUIPE
 // ==========================================
 function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent }) {
-  // Pega todas as chaves dinamicamente (excluindo a chave 'Nome' que usamos como índice interno principal se for duplicada)
   const keys = Object.keys(membro).filter(k => k !== 'Nome');
 
   return (
@@ -694,7 +715,6 @@ function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, ac
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {keys.map((key, i) => {
           const val = membro[key];
-          // Chaves que merecem mais espaço na tela
           const isLarge = key.toLowerCase().includes('endereço') || key.toLowerCase().includes('observação');
 
           return (
@@ -914,6 +934,117 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
       </div>
       
       {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} isDark={isDark} />}
+    </div>
+  );
+}
+
+// ==========================================
+// COMPONENTE: MANUAL DE REQUISITOS
+// ==========================================
+function ManualModal({ onClose, theme, thick, isDark }) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className={`w-full max-w-4xl p-6 md:p-10 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,183,235,1)] relative max-h-[95vh] overflow-hidden`}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform bg-black text-white dark:bg-white dark:text-black w-10 h-10 flex items-center justify-center">X</button>
+        
+        <div className="border-b-[6px] border-current pb-4 pr-12 flex-shrink-0">
+          <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
+            <BookOpen size={32} /> Manual de Requisitos
+          </h2>
+          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-sky-600 dark:text-sky-400">Pedido de Utilidade Pública Estadual</p>
+        </div>
+
+        <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
+          <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
+            <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
+            <p className="mt-3 text-rose-600 dark:text-rose-400">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
+            <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
+          </section>
+
+          <div>
+            <h3 className="text-lg font-black uppercase border-b-[3px] border-current pb-1 mb-4">Documentos que a ENTIDADE precisa entregar ao ARTICULADOR:</h3>
+            
+            <div className="space-y-4">
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">001 Ata de Fundação</h4>
+                <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
+              </div>
+
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
+                <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
+              </div>
+
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
+                  <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
+                  <li>Este documento não tem prazo.</li>
+                </ul>
+              </div>
+
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">004 Declaração de não qualificação OSCIP</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
+                  <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
+                  <li>Deve constar a qualidade de presidente o nome da associação e a declaração de que não é OSCIP em si.</li>
+                  <li>Necessário constar local, data, assinatura e o nome do presidente, conforme o modelo.</li>
+                </ul>
+              </div>
+
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">005 Declaração de funcionamento</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
+                  <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
+                  <li>Devem constar o número do registro no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
+                </ul>
+              </div>
+
+              <div className="p-3 border-[2px] border-current bg-mustard/20">
+                <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
+                <ul className="list-disc pl-5 space-y-1 mb-3">
+                  <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
+                  <li>Deve ter no máximo <b>180 dias antes</b> do protocolo.</li>
+                  <li>Necessário ter o nome, nacionalidade, estado civil, residência completa, RG e CPF.</li>
+                  <li>Deve constar que é presidente da associação o local da associação e a declaração com local data e assinatura do presidente, conforme o modelo.</li>
+                </ul>
+                <div className="font-black text-center my-2 text-xl">OU</div>
+                <h4 className="font-black uppercase mb-1">007 Declaração de remuneração</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
+                  <li>A entidade por seu representante legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
+                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condição de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
+                </ul>
+              </div>
+
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">008 Estatuto da entidade</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Necessita <b>registro de cartório</b>.</li>
+                  <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
+                </ul>
+              </div>
+
+              <div className="p-3 border-[2px] border-current">
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">009 Relatório de Atividades</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
+                  <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="border-t-[4px] border-current pt-4 mt-2 flex-shrink-0">
+          <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
+            Entendido, Voltar.
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1177,125 +1308,13 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 }
 
 // ==========================================
-// COMPONENTE: MANUAL DE REQUISITOS
-// ==========================================
-function ManualModal({ onClose, theme, thick, isDark }) {
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className={`w-full max-w-4xl p-6 md:p-10 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,183,235,1)] relative max-h-[95vh] overflow-hidden`}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform bg-black text-white dark:bg-white dark:text-black w-10 h-10 flex items-center justify-center">X</button>
-        
-        <div className="border-b-[6px] border-current pb-4 pr-12 flex-shrink-0">
-          <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
-            <BookOpen size={32} /> Manual de Requisitos
-          </h2>
-          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-sky-600 dark:text-sky-400">Pedido de Utilidade Pública Estadual</p>
-        </div>
-
-        <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
-          <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-            <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
-            <p className="mt-3 text-rose-600 dark:text-rose-400">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
-            <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
-          </section>
-
-          <div>
-            <h3 className="text-lg font-black uppercase border-b-[3px] border-current pb-1 mb-4">Documentos que a ENTIDADE precisa entregar ao ARTICULADOR:</h3>
-            
-            <div className="space-y-4">
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">001 Ata de Fundação</h4>
-                <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
-                <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
-                  <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
-                  <li>Este documento não tem prazo.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">004 Declaração de não qualificação OSCIP</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
-                  <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
-                  <li>Deve constar a qualidade de presidente o nome da associação e a declaração de que não é OSCIP em si.</li>
-                  <li>Necessário constar local, data, assinatura e o nome do presidente, conforme o modelo.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">005 Declaração de funcionamento</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
-                  <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
-                  <li>Devem constar o número do registro no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current bg-mustard/20">
-                <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
-                <ul className="list-disc pl-5 space-y-1 mb-3">
-                  <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
-                  <li>Deve ter no máximo <b>180 dias antes</b> do protocolo.</li>
-                  <li>Necessário ter o nome, nacionalidade, estado civil, residência completa, RG e CPF.</li>
-                  <li>Deve constar que é presidente da associação o local da associação e a declaração com local data e assinatura do presidente, conforme o modelo.</li>
-                </ul>
-                <div className="font-black text-center my-2 text-xl">OU</div>
-                <h4 className="font-black uppercase mb-1">007 Declaração de remuneração</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
-                  <li>A entidade por seu representante legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
-                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condição de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">008 Estatuto da entidade</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Necessita <b>registro de cartório</b>.</li>
-                  <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">009 Relatório de Atividades</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
-                  <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="border-t-[4px] border-current pt-4 mt-2 flex-shrink-0">
-          <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
-            Entendido, Voltar.
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
 // AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E EQUIPE)
 // ==========================================
 function SettingsView({ 
   isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
   webhookUtilidade, webhookEquipe, emailCentral, 
   applyNetworkSettings, exportCSV, importCSV, 
-  theme, thick, med, accentColor, cycleAccent,
-  equipe, onUpdateEquipe
+  setView, theme, thick, med, accentColor, cycleAccent
 }) {
   const [openSection, setOpenSection] = useState('aparencia'); 
   const [openNetwork, setOpenNetwork] = useState(false);
@@ -1321,7 +1340,7 @@ function SettingsView({
   };
 
   return (
-    <div className={`max-w-4xl mx-auto flex flex-col gap-4 w-full p-6 md:p-8 ${thick} ${theme.cardBg}`}>
+    <div className={`max-w-3xl mx-auto flex flex-col gap-4 w-full p-6 md:p-8 ${thick} ${theme.cardBg}`}>
       <h2 className="font-black uppercase tracking-widest text-2xl border-b-[6px] border-current pb-4 flex items-center gap-3">
         <Settings size={28}/> Ajustes do Sistema
       </h2>
@@ -1379,7 +1398,18 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
+      {/* BLOCO 2: GESTÃO DE EQUIPE (Acesso Rápido) */}
+      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: accentColor }}>
+        <button 
+          onClick={() => { setView('equipe_list'); cycleAccent(); }}
+          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        >
+          <span className="flex items-center gap-2"><Users size={18} /> Acessar Banco de Dados da Equipe</span>
+          <span className="text-xl leading-none font-mono">→</span>
+        </button>
+      </div>
+
+      {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('backup'); cycleAccent(); }}
@@ -1421,7 +1451,7 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
+      {/* BLOCO 4: SISTEMA (AVANÇADO) */}
       <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
         <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
