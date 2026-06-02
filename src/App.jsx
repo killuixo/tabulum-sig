@@ -9,7 +9,10 @@ const Icon = ({ path, className = "w-6 h-6", onClick, size = 24, style }) => (
 
 const LayoutDashboard = (p) => <Icon {...p} path={<><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></>} />;
 const Kanban = (p) => <Icon {...p} path={<><path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/></>} />;
+
+// NOVO ÍCONE DE AJUSTES (Mais limpo)
 const Settings = (p) => <Icon {...p} path={<><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></>} />;
+
 const Sun = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></>} />;
 const Moon = (p) => <Icon {...p} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
 const Type = (p) => <Icon {...p} path={<><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></>} />;
@@ -17,6 +20,12 @@ const RefreshCw = (p) => <Icon {...p} path={<><path d="M3 12a9 9 0 1 0 9-9 9.75 
 const CheckCircle2 = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>} />;
 const Clock = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>} />;
 const AlertCircle = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></>} />;
+const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></>} />;
+const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></>} />;
+const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
+const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
+const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
+const UserIcon = (p) => <Icon {...p} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
 const SearchIcon = (p) => <Icon {...p} path={<><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></>} />;
 const Trash2 = (p) => <Icon {...p} path={<><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></>} />;
 const Mail = (p) => <Icon {...p} path={<><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></>} />;
@@ -24,20 +33,22 @@ const DownloadCloud = (p) => <Icon {...p} path={<><path d="M4 14.899A7 7 0 1 1 1
 const Folder = (p) => <Icon {...p} path={<><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></>} />;
 const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></>} />;
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
-const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 
-// ==========================================
-// CONFIGURAÇÕES GLOBAIS BLINDADAS (HARDCODED)
-// ==========================================
-const WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
-const WEBHOOK_EQUIPE = ""; 
-const EMAIL_ARQUIVO_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
+// --- CORES TEMA MONDRIAN ---
 const COLORS = {
-  cyan: '#00b7eb', crimson: '#DC143C', mustard: '#FFDB58',
-  white: '#FFFFFF', black: '#000000', darkBg: '#0f0f0f', darkCard: '#1a1a1a'
+  cyan: '#00b7eb', // Ciano confortável
+  crimson: '#DC143C', // Carmesim
+  mustard: '#FFDB58' // Amarelo Mostarda
 };
+
+// ==========================================
+// CONFIGURAÇÕES MATRIZES (FALLBACK GLOBAL)
+// ==========================================
+const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
+const DEFAULT_WEBHOOK_EQUIPE = ""; 
+const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
   '1 ATA DE FUNDAÇÃO', '2 ATA DE ELEIÇÃO/POSSE', '3 CNPJ', 
@@ -162,6 +173,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
+  // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
@@ -171,41 +183,68 @@ export default function App() {
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || WEBHOOK_UTILIDADE);
-  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || WEBHOOK_EQUIPE);
-  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || EMAIL_ARQUIVO_CENTRAL);
+  // URLs de Rede (Se estiver vazio no navegador, usa as Matrizes no código)
+  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
+  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
+  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
 
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  const handleEntityClick = (entityData) => {
+    setActiveFicha(entityData);
+    setView('entity_details');
+  };
+
+  const handleArticulatorClick = (articulatorName) => {
+    if (!articulatorName || articulatorName === '-') return;
+    setActiveArticulador(articulatorName);
+    setView('articulator_details');
+  };
+
+  // Persistência local contínua
   useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
   useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
   useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
   useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
   useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
 
-  useEffect(() => { fetchFromWebhooks(); }, [webhookUtilidade, webhookEquipe]);
+  useEffect(() => {
+    fetchFromWebhooks();
+  }, [webhookUtilidade, webhookEquipe]); // Atualiza automaticamente se o link mudar
 
   const fetchFromWebhooks = async () => {
-    setLoading(true); setSyncStatus('Sincronizando Banco Central...');
+    setLoading(true);
+    setSyncStatus('Sincronizando Banco Central...');
+    
     if (webhookUtilidade) {
       try {
         const response = await fetch(webhookUtilidade);
         const text = await response.text();
-        const jsonData = JSON.parse(text);
-        const formattedData = jsonData.map(item => {
-          let newItem = {};
-          for (let key in item) {
-            let val = item[key];
-            if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { val = new Date(val).toLocaleDateString('pt-BR'); }
-            newItem[key] = val;
-          }
-          return newItem;
-        });
-        setData(formattedData);
-      } catch (error) { console.error("Erro Entidades:", error); }
+        
+        try {
+          const jsonData = JSON.parse(text);
+          const formattedData = jsonData.map(item => {
+            let newItem = {};
+            for (let key in item) {
+              let val = item[key];
+              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) {
+                val = new Date(val).toLocaleDateString('pt-BR');
+              }
+              newItem[key] = val;
+            }
+            return newItem;
+          });
+          setData(formattedData);
+        } catch(e) {
+            setData(parseCSV(text));
+            setSyncStatus('Sincronizado (Formato CSV).');
+        }
+      } catch (error) {
+        console.error("Erro Entidades:", error);
+      }
     }
 
     if (webhookEquipe) {
@@ -215,11 +254,20 @@ export default function App() {
         const jsonEq = JSON.parse(textEq);
         const formattedEq = jsonEq.map(item => ({ Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' }));
         if (formattedEq.length > 0) setEquipe(formattedEq);
-      } catch(e) { console.error("Erro Equipe:", e); }
+      } catch(e) {
+        console.error("Erro Equipe:", e);
+      }
     }
 
-    setLoading(false); setSyncStatus('Sincronizado!');
+    setLoading(false);
+    setSyncStatus('Sincronizado!');
     setTimeout(() => setSyncStatus(''), 3000);
+  };
+
+  const applyNetworkSettings = (newUtilidade, newEquipe, newEmail) => {
+    setWebhookUtilidade(newUtilidade);
+    setWebhookEquipe(newEquipe);
+    setEmailCentral(newEmail);
   };
 
   const deleteItem = async (entidadeName) => {
@@ -228,16 +276,23 @@ export default function App() {
       setSyncStatus('Apagando registro no banco de dados...');
       try {
         await fetch(webhookUtilidade, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'delete', ENTIDADE: entidadeName })
         });
         setData(prevData => prevData.filter(d => d.ENTIDADE !== entidadeName));
-        setActiveFicha(null); setSyncStatus('Registro apagado.');
-      } catch (error) { console.error(error); } finally { setTimeout(() => setSyncStatus(''), 3000); }
+        setActiveFicha(null);
+        setView('kanban');
+        setSyncStatus('Registro apagado.');
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setTimeout(() => setSyncStatus(''), 3000);
+      }
     }
   };
 
-  // Motor Otimista de Edição de Ficha
   const handleUpdateEntity = async (originalName, updatedFields) => {
     setData(prev => prev.map(d => d.ENTIDADE === originalName ? { ...d, ...updatedFields } : d));
     setActiveFicha(prev => prev && prev.ENTIDADE === originalName ? { ...prev, ...updatedFields } : prev);
@@ -252,23 +307,102 @@ export default function App() {
     }
   };
 
+  const exportCSV = () => {
+    if (data.length === 0) {
+      alert("Nenhum dado para exportar.");
+      return;
+    }
+    
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+    csvRows.push(headers.join(','));
+
+    for (const row of data) {
+      const values = headers.map(header => {
+        const val = row[header] === null || row[header] === undefined ? '' : String(row[header]);
+        let escaped = val.replace(/"/g, '""');
+        if (escaped.search(/("|,|\n)/g) >= 0) escaped = `"${escaped}"`;
+        return escaped;
+      });
+      csvRows.push(values.join(','));
+    }
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Tabulum_Backup_${new Date().toISOString().slice(0,10)}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const importCSV = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const parsedData = parseCSV(evt.target.result);
+      setData(parsedData);
+      setLoading(false);
+      setSyncStatus('Backup carregado na tela atual!');
+      setTimeout(() => setSyncStatus(''), 5000);
+    };
+    reader.onerror = () => {
+      setLoading(false);
+      setSyncStatus('Erro ao ler arquivo.');
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const parseCSV = (str) => {
+    const lines = str.split(/\r?\n/).filter(line => line.trim() !== '');
+    if (lines.length < 2) return [];
+    
+    const headers = lines[0].split(',').map(h => h.replace(/(^"|"$)/g, '').trim());
+    const result = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+      const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      const obj = {};
+      for (let j = 0; j < headers.length; j++) {
+        const val = currentline[j] ? currentline[j].replace(/(^"|"$)/g, '').trim() : '';
+        obj[headers[j]] = val;
+      }
+      result.push(obj);
+    }
+    return result;
+  };
+
   const fontSizes = { 1: 'text-[10px] leading-tight', 2: 'text-xs', 3: 'text-sm', 4: 'text-base', 5: 'text-lg' };
 
   const themeConfig = {
-    bg: isDark ? 'bg-[#0f0f0f]' : 'bg-[#f4f4f0]', text: isDark ? 'text-gray-100' : 'text-gray-900',
-    border: isDark ? 'border-gray-200' : 'border-black', cardBg: isDark ? 'bg-[#1a1a1a]' : 'bg-white',
-    inputBg: isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100'
+    bg: isDark ? 'bg-[#0f0f0f]' : 'bg-[#f4f4f0]',
+    text: isDark ? 'text-gray-100' : 'text-gray-900',
+    border: isDark ? 'border-gray-200' : 'border-black',
+    cardBg: isDark ? 'bg-[#1a1a1a]' : 'bg-white',
+    inputBg: isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100',
+    gridLines: isDark ? 'bg-gray-200' : 'bg-black'
   };
 
-  const bThick = `border-[4px] ${themeConfig.border}`; const bMedium = `border-[2px] ${themeConfig.border}`;
+  const bThick = `border-[4px] ${themeConfig.border}`;
+  const bMedium = `border-[2px] ${themeConfig.border}`;
 
   return (
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} ${fontSizes[fontSizeLevel]} transition-colors duration-300 flex flex-col`}>
+      
+      {/* HEADER MONDRIAN */}
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div>
             <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1">Sist. Integrado de Gestão • Dep. Marquito</p>
+            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-cyan-600 dark:text-cyan-400">Sist. Integrado de Gestão • Dep. Marquito</p>
           </div>
           <div className="hidden md:flex gap-2">
             <div className="w-8 h-8" style={{ backgroundColor: COLORS.cyan, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
@@ -276,14 +410,24 @@ export default function App() {
             <div className="w-8 h-8" style={{ backgroundColor: COLORS.crimson, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
           </div>
         </div>
+
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
-          <NavButton active={view === 'kanban' && !activeFicha && !activeArticulador} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<Kanban />} label="Kanban" isDark={isDark} />
-          <NavButton active={view === 'dashboard' && !activeFicha && !activeArticulador} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} />
-          <button onClick={() => setIsFormOpen(true)} className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] border-current transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(255,219,88,1)] ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`} title="Adicionar Novo Pedido">+</button>
+          <NavButton active={view === 'kanban'} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<Kanban />} label="Kanban" isDark={isDark} />
+          <NavButton active={view === 'dashboard'} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} />
+          
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] border-current transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(255,219,88,1)] ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
+            title="Adicionar Novo Pedido"
+          >
+            +
+          </button>
+
           <NavButton active={view === 'settings'} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<Settings />} label="Ajustes" isDark={isDark} />
         </nav>
       </header>
 
+      {/* ÁREA PRINCIPAL */}
       <main className="p-4 md:p-6 flex-1 flex flex-col relative">
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
@@ -292,23 +436,56 @@ export default function App() {
           </div>
         ) : (
           <>
-            {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} isDark={isDark} fetchFromWebhooks={fetchFromWebhooks} equipe={equipe} webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} />}
+            {isFormOpen && (
+              <FormNovoPedido 
+                onClose={() => setIsFormOpen(false)} 
+                theme={themeConfig} thick={bThick} isDark={isDark}
+                fetchFromWebhooks={fetchFromWebhooks} equipe={equipe}
+                webhookUtilidade={webhookUtilidade} emailCentral={emailCentral}
+              />
+            )}
 
-            {!isFormOpen && activeFicha && (
+            {!isFormOpen && view === 'entity_details' && activeFicha && (
               <FichaEntidade 
                 item={activeFicha} equipe={equipe} emailCentral={emailCentral}
-                onClose={() => setActiveFicha(null)} 
-                onArticuladorClick={(nome) => {setActiveFicha(null); setActiveArticulador(nome);}}
+                onClose={() => {setActiveFicha(null); setView('kanban');}} 
+                onArticuladorClick={handleArticulatorClick}
                 onDelete={() => deleteItem(activeFicha.ENTIDADE)}
                 onUpdate={(fields) => handleUpdateEntity(activeFicha.ENTIDADE, fields)}
                 theme={themeConfig} thick={bThick} isDark={isDark}
               />
             )}
             
-            {!isFormOpen && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => setActiveArticulador(null)} onEntidadeClick={(item) => {setActiveArticulador(null); setActiveFicha(item);}} theme={themeConfig} thick={bThick} isDark={isDark} />}
-            {!isFormOpen && !activeFicha && !activeArticulador && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onItemClick={setActiveFicha} onArticuladorClick={setActiveArticulador} />}
-            {!isFormOpen && !activeFicha && !activeArticulador && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onItemClick={setActiveFicha} />}
-            {!isFormOpen && !activeFicha && !activeArticulador && view === 'settings' && <SettingsView isDark={isDark} setIsDark={setIsDark} fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel} webhookUtilidade={webhookUtilidade} setWebhookUtilidade={setWebhookUtilidade} webhookEquipe={webhookEquipe} setWebhookEquipe={setWebhookEquipe} emailCentral={emailCentral} setEmailCentral={setEmailCentral} fetchFromWebhooks={fetchFromWebhooks} theme={themeConfig} thick={bThick} />}
+            {!isFormOpen && view === 'articulator_details' && activeArticulador && (
+              <PainelArticulador 
+                nome={activeArticulador} data={data} 
+                onClose={() => {setActiveArticulador(null); setView('kanban');}}
+                onEntidadeClick={handleEntityClick}
+                theme={themeConfig} thick={bThick} isDark={isDark}
+              />
+            )}
+
+            {!isFormOpen && view === 'kanban' && (
+              <KanbanView 
+                data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} 
+                onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick}
+              />
+            )}
+            
+            {!isFormOpen && view === 'dashboard' && (
+              <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />
+            )}
+            
+            {!isFormOpen && view === 'settings' && (
+              <SettingsView 
+                isDark={isDark} setIsDark={setIsDark} 
+                fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
+                webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
+                applyNetworkSettings={applyNetworkSettings}
+                exportCSV={exportCSV} importCSV={importCSV}
+                theme={themeConfig} thick={bThick} med={bMedium}
+              />
+            )}
           </>
         )}
       </main>
@@ -317,213 +494,10 @@ export default function App() {
 }
 
 // ==========================================
-// FORMULÁRIO COM DOWNLOAD LOCAL
+// COMPONENTES DE VISUALIZAÇÃO
 // ==========================================
-function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
-  const [stagedFiles, setStagedFiles] = useState({});
-  const [sending, setSending] = useState(false);
-  const [successMode, setSuccessMode] = useState(false);
-  const [busca, setBusca] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  
-  const [isManualOpen, setIsManualOpen] = useState(false);
-  const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
-  
-  const handleFileChange = (docKey, e) => {
-    const file = e.target.files[0];
-    if (file) setStagedFiles(prev => ({ ...prev, [docKey]: file }));
-  };
 
-  const executeDownloads = () => {
-    const safeEntidade = (formData.ENTIDADE || 'ENTIDADE').replace(/[^a-zA-Z0-9 -]/g, "").trim().toUpperCase();
-    Object.keys(stagedFiles).forEach(key => {
-      const file = stagedFiles[key];
-      const ext = file.name.split('.').pop();
-      const standardName = `${DOCS_PREFIX_MAP[key]} - ${safeEntidade}.${ext}`;
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a'); a.href = url; a.download = standardName;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!webhookUtilidade) { alert("Erro de Sistema: Webhook Central Ausente. Verifique os Ajustes."); return; }
-    if (!formData.ENTIDADE.trim()) { alert("O nome da entidade é obrigatório."); return; }
-
-    setSending(true);
-    try {
-      const payload = {
-        "action": "add",
-        "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": "", "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
-        "ARTICULADOR": formData.ARTICULADOR, "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'),
-        "MANUAL/MODELOS ENVIADOS": "FALSE",
-        "1 ATA DE FUNDAÇÃO": stagedFiles['1 ATA DE FUNDAÇÃO'] ? "TRUE" : "FALSE",
-        "2 ATA DE ELEIÇÃO/POSSE": stagedFiles['2 ATA DE ELEIÇÃO/POSSE'] ? "TRUE" : "FALSE",
-        "3 CNPJ": stagedFiles['3 CNPJ'] ? "TRUE" : "FALSE",
-        "4 DECLARAÇÃO NÃO OSCIP": stagedFiles['4 DECLARAÇÃO NÃO OSCIP'] ? "TRUE" : "FALSE",
-        "5 DECLARAÇÃO FUNCIONAMENTO": stagedFiles['5 DECLARAÇÃO FUNCIONAMENTO'] ? "TRUE" : "FALSE",
-        "6 - 7 DECLARAÇÃO REMUNERAÇÃO": stagedFiles['6 - 7 DECLARAÇÃO REMUNERAÇÃO'] ? "TRUE" : "FALSE",
-        "8 ESTATUTO": stagedFiles['8 ESTATUTO'] ? "TRUE" : "FALSE",
-        "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
-        "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
-        "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES
-      };
-
-      await fetch(webhookUtilidade, {
-        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-      await fetchFromWebhooks();
-      setSuccessMode(true); 
-    } catch (error) { console.error(error); alert("Erro ao comunicar com o Arquivo Central."); } finally { setSending(false); }
-  };
-
-  const filteredEquipe = equipe.filter(p => p.Nome.toLowerCase().includes(busca.toLowerCase()));
-
-  if (successMode) {
-    const hasFiles = Object.keys(stagedFiles).length > 0;
-    return (
-      <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
-        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} border-sky-500 shadow-[8px_8px_0px_rgba(0,183,235,1)]`}>
-          <CheckCircle2 className="w-20 h-20 mx-auto text-sky-500" />
-          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
-          <p className="font-bold opacity-80 leading-relaxed text-sm">
-            Os dados da entidade foram inseridos com sucesso.<br/>
-            Para enviar anexos, acesse a Ficha Institucional.
-          </p>
-          <button onClick={onClose} className="mt-4 p-4 border-[4px] border-current font-black uppercase tracking-widest hover:-translate-y-1 transition-transform">
-            Concluir e Voltar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <>
-    {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} isDark={isDark} />}
-    
-    <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(255,219,88,1)] relative overflow-y-auto max-h-[90vh]`}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b-[4px] border-current pb-2 pr-8 gap-4">
-          <h2 className="text-2xl font-black uppercase tracking-widest">Abertura de Processo</h2>
-          <button type="button" onClick={() => setIsManualOpen(true)} className="flex items-center gap-2 px-3 py-2 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-[2px_2px_0px_currentColor]">
-            <BookOpen size={16} /> Consultar Manual de Requisitos
-          </button>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <div className={`p-4 border-[3px] border-current ${theme.bg} flex flex-col gap-4`}>
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Nome da Entidade *</label>
-              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} placeholder="Ex: Associação de Moradores..." />
-            </div>
-
-            <div className="flex flex-col gap-1 relative">
-              <label className="font-black uppercase tracking-widest text-[10px]">Articulador Responsável</label>
-              <div className="relative">
-                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => setShowDropdown(true)} className={`w-full p-3 border-[3px] border-current outline-none font-bold pr-10 ${theme.inputBg}`} placeholder="Busque ou digite o nome..." />
-                <SearchIcon className="absolute right-3 top-3 opacity-50" />
-              </div>
-              {showDropdown && (
-                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] border-current z-10 max-h-40 overflow-y-auto ${theme.cardBg}`}>
-                  {filteredEquipe.map((p, idx) => (
-                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-[${COLORS.cyan}] hover:text-black transition-colors border-b border-current opacity-20`}>{p.Nome}</div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="font-black uppercase tracking-widest text-[10px]">E-mail de Contato</label>
-                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="font-black uppercase tracking-widest text-[10px]">Telefone</label>
-                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Observações</label>
-              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold resize-none ${theme.inputBg}`}></textarea>
-            </div>
-          </div>
-
-          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'} ${isDark ? 'bg-yellow-600 text-white border-yellow-400' : 'bg-mustard text-black'}`} style={{ backgroundColor: isDark ? '' : COLORS.mustard }}>
-            {sending ? 'Salvando...' : 'Salvar Ficha Oficial'}
-          </button>
-
-          <div className={`border-[3px] border-current ${theme.bg}`}>
-             <button type="button" onClick={() => setIsPadronizadorOpen(!isPadronizadorOpen)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-               <h3 className="font-black uppercase tracking-widest text-[12px] flex items-center gap-2">
-                 <Folder size={18} /> Padronização de Anexos (Opcional)
-               </h3>
-               <span className="text-xl leading-none font-mono">{isPadronizadorOpen ? '−' : '+'}</span>
-             </button>
-
-             {isPadronizadorOpen && (
-               <div className="p-4 border-t-[3px] border-current">
-                 <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
-                   <p className="text-[10px] font-bold leading-relaxed">
-                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/><button type="button" onClick={() => setIsManualOpen(true)} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
-                   </p>
-                 </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                   {DOCS_KEYS.map((key, idx) => {
-                     const file = stagedFiles[key];
-                     const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
-                     return (
-                       <div key={idx} className={`p-2 border-[2px] border-current flex items-center justify-between transition-colors ${file ? (isDark ? 'bg-sky-900 border-sky-500' : 'bg-sky-200 border-sky-600') : ''}`}>
-                         <div className="flex-1 overflow-hidden pr-2">
-                            <span className="font-black uppercase tracking-widest text-[9px] block mb-0.5 opacity-80 truncate">{displayLabel}</span>
-                            {file ? <span className="font-mono text-[9px] font-bold truncate block">{file.name}</span> : <span className="font-bold text-[9px] italic opacity-40">Nenhum</span>}
-                         </div>
-                         <div className="flex-shrink-0">
-                           {!file ? (
-                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white transition-colors flex items-center gap-1">
-                               <FileText className="w-3 h-3"/> Anexar <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
-                             </label>
-                           ) : (
-                             <button type="button" onClick={() => setStagedFiles(prev => {const n = {...prev}; delete n[key]; return n;})} className="px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors">X</button>
-                           )}
-                         </div>
-                       </div>
-                     );
-                   })}
-                 </div>
-                 
-                 <button 
-                     type="button" 
-                     onClick={executeDownloads} 
-                     disabled={Object.keys(stagedFiles).length === 0}
-                     className={`w-full p-3 font-black uppercase tracking-widest text-[10px] border-[2px] border-current transition-transform flex items-center justify-center gap-2 mt-2 ${Object.keys(stagedFiles).length > 0 ? 'bg-black text-white dark:bg-white dark:text-black hover:-translate-y-1 cursor-pointer' : 'opacity-40 cursor-not-allowed grayscale'}`}
-                 >
-                     <DownloadCloud size={16} /> Baixar Documentos Formatados
-                 </button>
-               </div>
-             )}
-          </div>
-        </form>
-      </div>
-      {showDropdown && <div className="fixed inset-0 z-0" onClick={() => setShowDropdown(false)}></div>}
-    </div>
-    </>
-  );
-}
-
-// ==========================================
-// KANBAN VIEW
-// ==========================================
-function KanbanView({ data, theme, thick, med, isDark, onItemClick, onArticuladorClick }) {
+function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticulatorClick }) {
   const [collapsedCols, setCollapsedCols] = useState({});
   const toggleCol = (id) => setCollapsedCols(prev => ({ ...prev, [id]: !prev[id] }));
 
@@ -567,12 +541,12 @@ function KanbanView({ data, theme, thick, med, isDark, onItemClick, onArticulado
                   });
 
                   return (
-                    <div key={i} onClick={() => onItemClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer ${theme.bg}`}>
+                    <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer ${theme.bg}`}>
                       <h3 className="font-black mb-3 uppercase leading-tight" style={{ fontSize: '1.1em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
                       <div className="flex justify-between items-end gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest">Articulador</span>
-                          <span onClick={(e) => { e.stopPropagation(); onArticuladorClick(item.ARTICULADOR); }} className={`font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer`} style={{ textDecorationColor: col.color }}>{item.ARTICULADOR || '-'}</span>
+                          <span onClick={(e) => { e.stopPropagation(); onArticulatorClick(item.ARTICULADOR); }} className={`font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer`} style={{ textDecorationColor: col.color }}>{item.ARTICULADOR || '-'}</span>
                         </div>
                         <div className="text-right">
                           <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest block">Data</span>
@@ -605,8 +579,80 @@ function KanbanView({ data, theme, thick, med, isDark, onItemClick, onArticulado
   );
 }
 
+function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorClick, isDark }) {
+  const total = data.length;
+  const protocolados = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado').length;
+  const emAnalise = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'em análise').length;
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={`md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4`}>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Total</span>
+          <span className="text-5xl font-black mt-2">{total}</span>
+        </div>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.crimson, borderTopWidth: '8px' }}>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span>
+          <span className="text-5xl font-black mt-2">{protocolados}</span>
+        </div>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Análise</span>
+          <span className="text-5xl font-black mt-2">{emAnalise}</span>
+        </div>
+      </div>
+
+      <div className={`md:col-span-1 p-4 ${thick} ${theme.cardBg} flex flex-col`}>
+        <h2 className="font-black uppercase tracking-widest border-b-[4px] border-current pb-2 mb-4 text-[0.9em]">Visão Geral</h2>
+        <div className="flex-1 flex flex-col justify-end gap-2 h-40">
+          <div className="flex items-end gap-2 h-full">
+            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
+              <div className="w-full transition-all duration-500" style={{ height: `${(emAnalise/total)*100 || 0}%`, backgroundColor: COLORS.mustard, border: '3px solid currentcolor' }}></div>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Int</span>
+            </div>
+            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
+              <div className="w-full transition-all duration-500" style={{ height: `${((total-emAnalise-protocolados)/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '3px solid currentcolor' }}></div>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Docs</span>
+            </div>
+            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
+              <div className="w-full transition-all duration-500" style={{ height: `${(protocolados/total)*100 || 0}%`, backgroundColor: COLORS.cyan, border: '3px solid currentcolor' }}></div>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Ext</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`md:col-span-3 mt-4 ${thick} ${theme.cardBg} overflow-x-auto max-h-[500px]`}>
+        <table className="w-full text-left border-collapse min-w-[600px]">
+          <thead className="sticky top-0 z-10" style={{ backgroundColor: theme.cardBg === 'bg-white' ? 'white' : '#1a1a1a' }}>
+            <tr className={`border-b-[6px] ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
+              <th className="p-4 border-r-[4px] border-current">Entidade</th>
+              <th className="p-4 border-r-[4px] border-current">Articulador</th>
+              <th className="p-4 border-r-[4px] border-current">Status</th>
+              <th className="p-4">Solicitação</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, i) => (
+              <tr key={i} className={`border-b-[3px] ${theme.border} hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors`}>
+                <td className="p-4 border-r-[4px] border-current font-bold cursor-pointer hover:underline decoration-2" onClick={() => onEntityClick(row)}>{row.ENTIDADE}</td>
+                <td className="p-4 border-r-[4px] border-current font-bold opacity-80 cursor-pointer hover:underline decoration-2" onClick={() => onArticulatorClick(row.ARTICULADOR)}>{row.ARTICULADOR}</td>
+                <td className="p-4 border-r-[4px] border-current">
+                   <span className="px-2 py-1 font-black uppercase text-[0.75em] tracking-widest" style={{ backgroundColor: getStatusColor(row['STATUS DA ANÁLISE']) || 'black', color: getTextColorForStatus(getStatusColor(row['STATUS DA ANÁLISE'])) || (isDark ? 'white' : 'black') }}>
+                     {row['STATUS DA ANÁLISE'] || '-'}
+                   </span>
+                </td>
+                <td className="p-4 font-bold opacity-80">{row['DATA DA SOLICITAÇÃO'] || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 // ==========================================
-// FICHA COMPLETA COM EDIÇÃO INLINE
+// FICHA COMPLETA COM EDIÇÃO INLINE E MALOTE
 // ==========================================
 function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipe, emailCentral }) {
   const [stagedFiles, setStagedFiles] = useState({});
@@ -643,7 +689,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
-      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform">X</button>
+      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
       
       <div className="pr-10 border-b-[6px] border-current pb-4">
         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
@@ -798,6 +844,261 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 }
 
 // ==========================================
+// PAINEL DO ARTICULADOR E DASHBOARD
+// ==========================================
+function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
+  const processos = data.filter(d => d.ARTICULADOR === nome);
+  const protocolados = processos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
+
+  return (
+    <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
+      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform">X</button>
+      
+      <div className="pr-10 border-b-[6px] border-current pb-4 flex items-center gap-4">
+        <div className="w-16 h-16 border-[4px] border-current bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-black text-3xl uppercase">
+          {nome.charAt(0)}
+        </div>
+        <div>
+          <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest">Dossiê Articulador</span>
+          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none">{nome}</h2>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
+          <span className="text-5xl font-black leading-none">{processos.length}</span>
+          <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Processos Assumidos</span>
+        </div>
+        <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
+          <span className="text-5xl font-black leading-none">{protocolados.length}</span>
+          <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Sucessos (Protocolados)</span>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3">
+        <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
+        {processos.map((p, i) => (
+          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all ${theme.bg}`}>
+            <div>
+              <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
+              <span className="font-bold opacity-70 text-[0.8em]">{p['DATA DA SOLICITAÇÃO']}</span>
+            </div>
+            <div className="mt-3 md:mt-0 px-3 py-1 font-black uppercase text-[0.7em] tracking-widest w-max" style={{ backgroundColor: getStatusColor(p['STATUS DA ANÁLISE']) || 'black', color: getTextColorForStatus(getStatusColor(p['STATUS DA ANÁLISE'])) || (isDark ? 'white' : 'black') }}>
+              {p['STATUS DA ANÁLISE'] || 'Pendente'}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// FORMULÁRIO DE NOVO PROCESSO
+// ==========================================
+function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral }) {
+  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
+  const [stagedFiles, setStagedFiles] = useState({});
+  const [sending, setSending] = useState(false);
+  const [successMode, setSuccessMode] = useState(false);
+  const [busca, setBusca] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  
+  const [isManualOpen, setIsManualOpen] = useState(false);
+  const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
+  
+  const handleFileChange = (docKey, e) => {
+    const file = e.target.files[0];
+    if (file) setStagedFiles(prev => ({ ...prev, [docKey]: file }));
+  };
+
+  const executeDownloads = () => {
+    const safeEntidade = (formData.ENTIDADE || 'ENTIDADE').replace(/[^a-zA-Z0-9 -]/g, "").trim().toUpperCase();
+    Object.keys(stagedFiles).forEach(key => {
+      const file = stagedFiles[key];
+      const ext = file.name.split('.').pop();
+      const standardName = `${DOCS_PREFIX_MAP[key]} - ${safeEntidade}.${ext}`;
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a'); a.href = url; a.download = standardName;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!webhookUtilidade) { alert("Erro de Sistema: Webhook Central Ausente. Verifique os Ajustes."); return; }
+    if (!formData.ENTIDADE.trim()) { alert("O nome da entidade é obrigatório."); return; }
+
+    setSending(true);
+    try {
+      const payload = {
+        "action": "add",
+        "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": "", "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
+        "ARTICULADOR": formData.ARTICULADOR, "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'),
+        "MANUAL/MODELOS ENVIADOS": "FALSE",
+        "1 ATA DE FUNDAÇÃO": stagedFiles['1 ATA DE FUNDAÇÃO'] ? "TRUE" : "FALSE",
+        "2 ATA DE ELEIÇÃO/POSSE": stagedFiles['2 ATA DE ELEIÇÃO/POSSE'] ? "TRUE" : "FALSE",
+        "3 CNPJ": stagedFiles['3 CNPJ'] ? "TRUE" : "FALSE",
+        "4 DECLARAÇÃO NÃO OSCIP": stagedFiles['4 DECLARAÇÃO NÃO OSCIP'] ? "TRUE" : "FALSE",
+        "5 DECLARAÇÃO FUNCIONAMENTO": stagedFiles['5 DECLARAÇÃO FUNCIONAMENTO'] ? "TRUE" : "FALSE",
+        "6 - 7 DECLARAÇÃO REMUNERAÇÃO": stagedFiles['6 - 7 DECLARAÇÃO REMUNERAÇÃO'] ? "TRUE" : "FALSE",
+        "8 ESTATUTO": stagedFiles['8 ESTATUTO'] ? "TRUE" : "FALSE",
+        "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
+        "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
+        "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES
+      };
+
+      await fetch(webhookUtilidade, {
+        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      await fetchFromWebhooks();
+      setSuccessMode(true); 
+    } catch (error) { console.error(error); alert("Erro ao comunicar com o Arquivo Central."); } finally { setSending(false); }
+  };
+
+  const filteredEquipe = equipe.filter(p => p.Nome.toLowerCase().includes(busca.toLowerCase()));
+
+  if (successMode) {
+    const hasFiles = Object.keys(stagedFiles).length > 0;
+    return (
+      <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
+        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} border-sky-500 shadow-[8px_8px_0px_rgba(0,183,235,1)]`}>
+          <CheckCircle2 className="w-20 h-20 mx-auto text-sky-500" />
+          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
+          <p className="font-bold opacity-80 leading-relaxed text-sm">
+            Os dados da entidade foram inseridos com sucesso.<br/>
+            Para enviar anexos, acesse a Ficha Institucional.
+          </p>
+          <button onClick={onClose} className="mt-4 p-4 border-[4px] border-current font-black uppercase tracking-widest hover:-translate-y-1 transition-transform">
+            Concluir e Voltar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+    {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} isDark={isDark} />}
+    
+    <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(255,219,88,1)] relative overflow-y-auto max-h-[90vh]`}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
+        
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b-[4px] border-current pb-2 pr-8 gap-4">
+          <h2 className="text-2xl font-black uppercase tracking-widest">Abertura de Processo</h2>
+          <button type="button" onClick={() => setIsManualOpen(true)} className="flex items-center gap-2 px-3 py-2 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-[2px_2px_0px_currentColor]">
+            <BookOpen size={16} /> Consultar Manual de Requisitos
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <div className={`p-4 border-[3px] border-current ${theme.bg} flex flex-col gap-4`}>
+            <h3 className="font-black uppercase tracking-widest text-[12px] opacity-70 mb-2 border-b-[2px] border-current pb-1">1. Metadados Essenciais</h3>
+            <div className="flex flex-col gap-1">
+              <label className="font-black uppercase tracking-widest text-[10px]">Nome da Entidade *</label>
+              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} placeholder="Ex: Associação de Moradores..." />
+            </div>
+
+            <div className="flex flex-col gap-1 relative">
+              <label className="font-black uppercase tracking-widest text-[10px]">Articulador Responsável</label>
+              <div className="relative">
+                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => setShowDropdown(true)} className={`w-full p-3 border-[3px] border-current outline-none font-bold pr-10 ${theme.inputBg}`} placeholder="Busque ou digite o nome..." />
+                <SearchIcon className="absolute right-3 top-3 opacity-50" />
+              </div>
+              {showDropdown && (
+                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] border-current z-10 max-h-40 overflow-y-auto ${theme.cardBg}`}>
+                  {filteredEquipe.map((p, idx) => (
+                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-[${COLORS.cyan}] hover:text-black transition-colors border-b border-current opacity-20`}>{p.Nome}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="font-black uppercase tracking-widest text-[10px]">E-mail de Contato</label>
+                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="font-black uppercase tracking-widest text-[10px]">Telefone</label>
+                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="font-black uppercase tracking-widest text-[10px]">Observações</label>
+              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold resize-none ${theme.inputBg}`}></textarea>
+            </div>
+          </div>
+
+          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'} ${isDark ? 'bg-yellow-600 text-white border-yellow-400' : 'bg-mustard text-black'}`} style={{ backgroundColor: isDark ? '' : COLORS.mustard }}>
+            {sending ? 'Salvando...' : 'Salvar Ficha Oficial'}
+          </button>
+
+          <div className={`border-[3px] border-current ${theme.bg}`}>
+             <button type="button" onClick={() => setIsPadronizadorOpen(!isPadronizadorOpen)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+               <h3 className="font-black uppercase tracking-widest text-[12px] flex items-center gap-2">
+                 <Folder size={18} /> Padronização de Anexos (Opcional)
+               </h3>
+               <span className="text-xl leading-none font-mono">{isPadronizadorOpen ? '−' : '+'}</span>
+             </button>
+
+             {isPadronizadorOpen && (
+               <div className="p-4 border-t-[3px] border-current">
+                 <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+                   <p className="text-[10px] font-bold leading-relaxed">
+                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
+                     <br/><button type="button" onClick={() => setIsManualOpen(true)} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
+                   </p>
+                 </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                   {DOCS_KEYS.map((key, idx) => {
+                     const file = stagedFiles[key];
+                     const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
+                     return (
+                       <div key={idx} className={`p-2 border-[2px] border-current flex items-center justify-between transition-colors ${file ? (isDark ? 'bg-sky-900 border-sky-500' : 'bg-sky-200 border-sky-600') : ''}`}>
+                         <div className="flex-1 overflow-hidden pr-2">
+                            <span className="font-black uppercase tracking-widest text-[9px] block mb-0.5 opacity-80 truncate">{displayLabel}</span>
+                            {file ? <span className="font-mono text-[9px] font-bold truncate block">{file.name}</span> : <span className="font-bold text-[9px] italic opacity-40">Nenhum</span>}
+                         </div>
+                         <div className="flex-shrink-0">
+                           {!file ? (
+                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white transition-colors flex items-center gap-1">
+                               <FileText className="w-3 h-3"/> Anexar <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
+                             </label>
+                           ) : (
+                             <button type="button" onClick={() => setStagedFiles(prev => {const n = {...prev}; delete n[key]; return n;})} className="px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors">X</button>
+                           )}
+                         </div>
+                       </div>
+                     );
+                   })}
+                 </div>
+                 
+                 <button 
+                     type="button" 
+                     onClick={executeDownloads} 
+                     disabled={Object.keys(stagedFiles).length === 0}
+                     className={`w-full p-3 font-black uppercase tracking-widest text-[10px] border-[2px] border-current transition-transform flex items-center justify-center gap-2 mt-2 ${Object.keys(stagedFiles).length > 0 ? 'bg-black text-white dark:bg-white dark:text-black hover:-translate-y-1 cursor-pointer' : 'opacity-40 cursor-not-allowed grayscale'}`}
+                 >
+                     <DownloadCloud size={16} /> Baixar Documentos Formatados
+                 </button>
+               </div>
+             )}
+          </div>
+        </form>
+      </div>
+      {showDropdown && <div className="fixed inset-0 z-0" onClick={() => setShowDropdown(false)}></div>}
+    </div>
+    </>
+  );
+}
+
+// ==========================================
 // COMPONENTE: MANUAL DE REQUISITOS
 // ==========================================
 function ManualModal({ onClose, theme, thick, isDark }) {
@@ -909,139 +1210,29 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 }
 
 // ==========================================
-// PAINEL DO ARTICULADOR E DASHBOARD
+// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO)
 // ==========================================
-function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
-  const processos = data.filter(d => d.ARTICULADOR === nome);
-  const protocolados = processos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
-
-  return (
-    <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
-      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform">X</button>
-      
-      <div className="pr-10 border-b-[6px] border-current pb-4 flex items-center gap-4">
-        <div className="w-16 h-16 border-[4px] border-current bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-black text-3xl uppercase">
-          {nome.charAt(0)}
-        </div>
-        <div>
-          <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest">Dossiê Articulador</span>
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none">{nome}</h2>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
-          <span className="text-5xl font-black leading-none">{processos.length}</span>
-          <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Processos Assumidos</span>
-        </div>
-        <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
-          <span className="text-5xl font-black leading-none">{protocolados.length}</span>
-          <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Sucessos (Protocolados)</span>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3">
-        <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
-        {processos.map((p, i) => (
-          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all ${theme.bg}`}>
-            <div>
-              <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
-              <span className="font-bold opacity-70 text-[0.8em]">{p['DATA DA SOLICITAÇÃO']}</span>
-            </div>
-            <div className="mt-3 md:mt-0 px-3 py-1 bg-black text-white dark:bg-white dark:text-black font-black uppercase text-[0.7em] tracking-widest w-max" style={{ backgroundColor: getStatusColor(p['STATUS DA ANÁLISE']) || 'black', color: getTextColorForStatus(getStatusColor(p['STATUS DA ANÁLISE'])) || (isDark ? 'white' : 'black') }}>
-              {p['STATUS DA ANÁLISE'] || 'Pendente'}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DashboardView({ data, theme, thick, med, onItemClick }) {
-  const total = data.length;
-  const protocolados = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado').length;
-  const emAnalise = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'em análise').length;
-  
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className={`md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4`}>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Total</span>
-          <span className="text-5xl font-black mt-2">{total}</span>
-        </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span>
-          <span className="text-5xl font-black mt-2">{protocolados}</span>
-        </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Análise</span>
-          <span className="text-5xl font-black mt-2">{emAnalise}</span>
-        </div>
-      </div>
-
-      <div className={`md:col-span-1 p-4 ${thick} ${theme.cardBg} flex flex-col`}>
-        <h2 className="font-black uppercase tracking-widest border-b-[4px] border-current pb-2 mb-4 text-[0.9em]">Visão Geral</h2>
-        <div className="flex-1 flex flex-col justify-end gap-2 h-40">
-          <div className="flex items-end gap-2 h-full">
-            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
-              <div className="w-full transition-all duration-500" style={{ height: `${(emAnalise/total)*100 || 0}%`, backgroundColor: COLORS.cyan, border: '3px solid currentcolor' }}></div>
-              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Int</span>
-            </div>
-            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
-              <div className="w-full transition-all duration-500" style={{ height: `${((total-emAnalise-protocolados)/total)*100 || 0}%`, backgroundColor: COLORS.mustard, border: '3px solid currentcolor' }}></div>
-              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Docs</span>
-            </div>
-            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
-              <div className="w-full transition-all duration-500" style={{ height: `${(protocolados/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '3px solid currentcolor' }}></div>
-              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Ext</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={`md:col-span-3 mt-4 ${thick} ${theme.cardBg} overflow-x-auto max-h-[500px]`}>
-        <table className="w-full text-left border-collapse min-w-[600px]">
-          <thead className="sticky top-0 z-10" style={{ backgroundColor: theme.cardBg === 'bg-white' ? 'white' : '#1a1a1a' }}>
-            <tr className={`border-b-[6px] ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
-              <th className="p-4 border-r-[4px] border-current">Entidade</th>
-              <th className="p-4 border-r-[4px] border-current">Articulador</th>
-              <th className="p-4 border-r-[4px] border-current">Status</th>
-              <th className="p-4">Solicitação</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, i) => (
-              <tr key={i} onClick={() => onItemClick(row)} className={`border-b-[3px] ${theme.border} hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer`}>
-                <td className="p-4 border-r-[4px] border-current font-bold">{row.ENTIDADE}</td>
-                <td className="p-4 border-r-[4px] border-current font-bold opacity-80">{row.ARTICULADOR}</td>
-                <td className="p-4 border-r-[4px] border-current"><span className="px-2 py-1 bg-black text-white dark:bg-white dark:text-black font-black uppercase text-[0.75em] tracking-widest">{row['STATUS DA ANÁLISE'] || '-'}</span></td>
-                <td className="p-4 font-bold opacity-80">{row['DATA DA SOLICITAÇÃO'] || '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
-// AJUSTES LOCAIS
-// ==========================================
-function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUtilidade, setWebhookUtilidade, webhookEquipe, setWebhookEquipe, emailCentral, setEmailCentral, fetchFromWebhooks, theme, thick }) {
+function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUtilidade, webhookEquipe, emailCentral, applyNetworkSettings, exportCSV, importCSV, theme, thick, med }) {
   const [openAppearance, setOpenAppearance] = useState(true);
   const [openNetwork, setOpenNetwork] = useState(false);
+  const [openBackup, setOpenBackup] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
 
+  // ESTADO DE RASCUNHO
+  const [draftUtilidade, setDraftUtilidade] = useState(webhookUtilidade);
+  const [draftEquipe, setDraftEquipe] = useState(webhookEquipe);
+  const [draftEmail, setDraftEmail] = useState(emailCentral);
+
   const handleSaveNetwork = () => {
-    fetchFromWebhooks();
-    setSavedMessage('Configuração sobreposta localmente com sucesso!');
-    setTimeout(() => setSavedMessage(''), 4000);
+    if(window.confirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?")) {
+        applyNetworkSettings(draftUtilidade, draftEquipe, draftEmail);
+        setSavedMessage('Configuração sobreposta localmente com sucesso!');
+        setTimeout(() => setSavedMessage(''), 4000);
+    }
   };
 
   return (
-    <div className={`max-w-3xl mx-auto w-full p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg}`}>
+    <div className={`max-w-3xl mx-auto flex flex-col gap-4 w-full p-6 md:p-8 ${thick} ${theme.cardBg}`}>
       <h2 className="font-black uppercase tracking-widest text-2xl border-b-[6px] border-current pb-4 flex items-center gap-3">
         <Settings size={28}/> Ajustes do Sistema
       </h2>
@@ -1057,8 +1248,8 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
             <div className="flex flex-col gap-3">
               <label className="font-black uppercase tracking-widest opacity-80 text-[0.9em]">Luminosidade (Tema)</label>
               <div className="flex gap-4">
-                <button onClick={() => setIsDark(false)} className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 ${!isDark ? 'bg-black text-white' : 'bg-white text-black'}`}><Sun size={20} /> Claro</button>
-                <button onClick={() => setIsDark(true)} className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'}`}><Moon size={20} /> Escuro</button>
+                <button onClick={() => setIsDark(false)} className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 bg-white text-black ${!isDark ? 'border-[#00b7eb] shadow-[0_0_0_2px_#00b7eb]' : 'border-black'}`}><Sun size={20} /> Claro</button>
+                <button onClick={() => setIsDark(true)} className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 bg-black text-white ${isDark ? 'border-[#00b7eb] shadow-[0_0_0_2px_#00b7eb]' : 'border-transparent'}`}><Moon size={20} /> Escuro</button>
               </div>
             </div>
 
@@ -1068,6 +1259,33 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
                 {[1, 2, 3, 4, 5].map(level => (
                   <button key={level} onClick={() => setFontSizeLevel(level)} className={`w-12 h-12 flex items-center justify-center font-black text-lg border-[3px] border-current transition-colors ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}>{level}</button>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className={`border-[3px] border-current ${theme.bg}`}>
+        <button onClick={() => setOpenBackup(!openBackup)} className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <span className="flex items-center gap-2"><Save size={18} /> Backup e Restauração (.CSV)</span>
+          <span className="text-xl leading-none font-mono">{openBackup ? '−' : '+'}</span>
+        </button>
+        
+        {openBackup && (
+          <div className="p-6 border-t-[3px] border-current flex flex-col gap-3">
+            <p className="opacity-80 font-bold text-[0.9em]">
+              Baixe os dados atuais para preservação ou carregue um arquivo CSV de backup para visualização imediata no Kanban.
+            </p>
+            <div className="flex flex-col md:flex-row gap-4 mt-2">
+              <button onClick={exportCSV} className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest hover:bg-[${COLORS.mustard}] hover:text-black transition-colors bg-[${COLORS.cyan}] text-black`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
+                <Download size={20} /> Baixar CSV
+              </button>
+              
+              <div className="flex-1 relative">
+                <input type="file" accept=".csv" onChange={importCSV} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Carregar Backup CSV" />
+                <div className={`p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest pointer-events-none bg-[${COLORS.mustard}] text-black`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
+                  <Upload size={20} /> Restaurar CSV
+                </div>
               </div>
             </div>
           </div>
@@ -1090,17 +1308,17 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Utilidade Pública</label>
-              <input type="text" value={webhookUtilidade} onChange={(e) => setWebhookUtilidade(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
+              <input type="text" value={draftUtilidade} onChange={(e) => setDraftUtilidade(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
-              <input type="text" value={webhookEquipe} onChange={(e) => setWebhookEquipe(e.target.value)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
+              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">E-mail do Arquivo Central</label>
-              <input type="text" value={emailCentral} onChange={(e) => setEmailCentral(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
+              <input type="text" value={draftEmail} onChange={(e) => setDraftEmail(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
             </div>
 
             <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-red-800 hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
@@ -1115,9 +1333,12 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
 }
 
 function NavButton({ active, onClick, icon, label, isDark }) {
-  const activeClass = active ? (isDark ? 'bg-white text-black border-white' : 'bg-black text-white border-black') : 'border-[rgba(128,128,128,0.3)] hover:border-current opacity-80 hover:opacity-100 hover:-translate-y-1';
+  const activeClass = active 
+    ? (isDark ? 'bg-white text-black border-white scale-105 shadow-[0_4px_0_rgba(255,255,255,0.3)]' : 'bg-black text-white border-black scale-105 shadow-[0_4px_0_rgba(0,0,0,0.3)]') 
+    : 'border-[rgba(128,128,128,0.3)] hover:border-current opacity-80 hover:opacity-100 hover:scale-[1.02]';
+
   return (
-    <button onClick={onClick} className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-black uppercase tracking-widest border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`} style={{ fontSize: '1.05em', minWidth: '150px' }}>
+    <button onClick={onClick} className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`} style={{ fontSize: '1.05em', minWidth: '150px' }}>
       {icon} <span>{label}</span>
     </button>
   );
