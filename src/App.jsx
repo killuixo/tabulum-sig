@@ -47,7 +47,7 @@ export default function App() {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedArticulator, setSelectedArticulator] = useState(null);
 
-  // Armazena URLs de Integração no LocalStorage
+  // Armazenamento das URLs de Webhook (Utilidade Pública e Equipe)
   const [webhookUrl, setWebhookUrl] = useState(() => localStorage.getItem('tabulum_webhook') || '');
   const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_equipe') || '');
   const [syncStatus, setSyncStatus] = useState('');
@@ -55,7 +55,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('tabulum_webhook', webhookUrl); }, [webhookUrl]);
   useEffect(() => { localStorage.setItem('tabulum_equipe', webhookEquipe); }, [webhookEquipe]);
 
-  // Rotina de Inicialização
+  // Rotinas de Inicialização
   useEffect(() => {
     if (webhookUrl) fetchFromWebhook();
     else setLoading(false);
@@ -64,7 +64,7 @@ export default function App() {
 
   const handleEntityClick = (entityData) => { setSelectedEntity(entityData); setView('entity_details'); };
   const handleArticulatorClick = (e, articulatorName) => {
-    e.stopPropagation(); // Impede que o clique "vaze" para o card da entidade
+    e.stopPropagation(); 
     if (!articulatorName || articulatorName === '-') return;
     setSelectedArticulator(articulatorName); setView('articulator_details');
   };
@@ -100,7 +100,7 @@ export default function App() {
       const response = await fetch(webhookEquipe);
       const text = await response.text();
       const jsonData = JSON.parse(text);
-      // Extrai nomes considerando que a planilha de equipe tem uma coluna chamada NOME ou ARTICULADOR
+      // Extrai os nomes da coluna NOME ou ARTICULADOR
       const nomes = jsonData.map(item => item.NOME || item.ARTICULADOR).filter(Boolean);
       if (nomes.length > 0) setEquipe(nomes.sort());
     } catch(e) { console.warn("Falha ao puxar equipe", e); }
@@ -182,7 +182,6 @@ export default function App() {
 
   return (
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} ${fontSizes[fontSizeLevel]} transition-colors duration-300 flex flex-col`}>
-      
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div>
@@ -219,7 +218,7 @@ export default function App() {
           {view === 'entity_details' && selectedEntity && <EntityDetailsView entity={selectedEntity} onBack={() => setView('kanban')} onDelete={() => handleDeleteEntity(selectedEntity.ENTIDADE)} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
           {view === 'articulator_details' && selectedArticulator && <ArticulatorView articulator={selectedArticulator} data={data} onBack={() => setView('kanban')} onEntityClick={handleEntityClick} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} />}
           {view === 'settings' && <SettingsView isDark={isDark} setIsDark={setIsDark} fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel} exportCSV={exportCSV} importCSV={importCSV} theme={themeConfig} thick={bThick} med={bMedium} onOpenSystem={() => setView('system')} />}
-          {view === 'system' && <SystemView webhookUrl={webhookUrl} setWebhookUrl={setWebhookUrl} webhookEquipe={webhookEquipe} setWebhookEquipe={setWebhookEquipe} fetchFromWebhook={fetchFromWebhook} syncStatus={syncStatus} theme={themeConfig} thick={bThick} onBack={() => setView('settings')} />}
+          {view === 'system' && <SystemView webhookUrl={webhookUrl} setWebhookUrl={setWebhookUrl} webhookEquipe={webhookEquipe} setWebhookEquipe={setWebhookEquipe} fetchFromWebhook={fetchFromWebhook} fetchEquipe={fetchEquipe} syncStatus={syncStatus} theme={themeConfig} thick={bThick} onBack={() => setView('settings')} />}
         </>
       </main>
     </div>
@@ -234,7 +233,7 @@ function AddEntityView({ equipe, onSubmit, theme, thick, med, isDark }) {
 
   const filteredEquipe = equipe.filter(nome => nome.toLowerCase().includes(searchArt.toLowerCase()));
 
-  // Fecha o dropdown se clicar fora
+  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => { if (dropRef.current && !dropRef.current.contains(event.target)) setShowDropdown(false); };
     document.addEventListener("mousedown", handleClickOutside);
@@ -244,7 +243,7 @@ function AddEntityView({ equipe, onSubmit, theme, thick, med, isDark }) {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSave = () => {
-    if (!formData.ENTIDADE || !formData.ARTICULADOR) { alert("Entidade e Articulador são obrigatórios."); return; }
+    if (!formData.ENTIDADE || !formData.ARTICULADOR) { alert("Atenção: Nome da Entidade e Articulador são preenchimentos obrigatórios."); return; }
     const dataAtual = new Date().toLocaleDateString('pt-BR');
     const newEntity = {
       ...formData,
@@ -264,20 +263,20 @@ function AddEntityView({ equipe, onSubmit, theme, thick, med, isDark }) {
     <div className={`max-w-3xl mx-auto flex flex-col w-full animate-in fade-in duration-300 ${thick} ${theme.cardBg} p-6 md:p-8`}>
       <div className="flex items-center gap-3 border-b-[4px] border-current pb-4 mb-6">
         <div className="w-8 h-8 flex items-center justify-center bg-black text-white dark:bg-white dark:text-black"><PlusIcon size={20} /></div>
-        <h2 className="text-xl md:text-2xl font-black uppercase tracking-widest">Novo Pedido</h2>
+        <h2 className="text-xl md:text-2xl font-black uppercase tracking-widest">Novo Processo</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 relative">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
         <div className="md:col-span-2">
-          <label className={labelClass}>Nome da Entidade (Obrigatório)</label>
+          <label className={labelClass}>Nome da Entidade Institucional *</label>
           <input type="text" name="ENTIDADE" placeholder="Associação Comunitária..." value={formData.ENTIDADE} onChange={handleChange} className={inputClass} />
         </div>
         
-        {/* COMPONENTE SUSPENSO DE ARTICULADOR */}
+        {/* COMPONENTE SUSPENSO DE BUSCA DO ARTICULADOR */}
         <div className="md:col-span-1 relative" ref={dropRef}>
-          <label className={labelClass}>Articulador Responsável (Obrigatório)</label>
+          <label className={labelClass}>Articulador Responsável *</label>
           <div className="relative">
-             <input type="text" placeholder="Buscar ou Selecionar..." value={searchArt || formData.ARTICULADOR} 
+             <input type="text" placeholder="Buscar ou Digitar Novo..." value={searchArt || formData.ARTICULADOR} 
                     onChange={(e) => { setSearchArt(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }}
                     onFocus={() => setShowDropdown(true)}
                     className={`${inputClass} pr-10`} />
@@ -292,32 +291,32 @@ function AddEntityView({ equipe, onSubmit, theme, thick, med, isDark }) {
                   {nome}
                 </div>
               ))}
-              {filteredEquipe.length === 0 && <div className="p-3 opacity-50 text-xs uppercase font-black tracking-widest">Nenhum encontrado. Digite para forçar novo.</div>}
+              {filteredEquipe.length === 0 && <div className="p-3 opacity-50 text-[10px] uppercase font-black tracking-widest text-center">Nenhum na equipe. Pressione Salvar para criar novo.</div>}
             </div>
           )}
         </div>
 
         <div className="md:col-span-1">
-          <label className={labelClass}>Liderança Comunitária</label>
-          <input type="text" name="LIDERANÇA" placeholder="Presidente/Representante" value={formData['LIDERANÇA']} onChange={handleChange} className={inputClass} />
+          <label className={labelClass}>Liderança Comunitária (Contato Local)</label>
+          <input type="text" name="LIDERANÇA" placeholder="Nome do Presidente/Representante" value={formData['LIDERANÇA']} onChange={handleChange} className={inputClass} />
         </div>
         <div className="md:col-span-1">
-          <label className={labelClass}>Telefone</label>
+          <label className={labelClass}>Telefone de Contato</label>
           <input type="text" name="TELEFONE" placeholder="(00) 00000-0000" value={formData.TELEFONE} onChange={handleChange} className={inputClass} />
         </div>
         <div className="md:col-span-1">
-          <label className={labelClass}>E-mail</label>
-          <input type="text" name="EMAIL" placeholder="contato@ong.org" value={formData.EMAIL} onChange={handleChange} className={inputClass} />
+          <label className={labelClass}>Correio Eletrônico (E-mail)</label>
+          <input type="text" name="EMAIL" placeholder="contato@instituicao.org" value={formData.EMAIL} onChange={handleChange} className={inputClass} />
         </div>
         <div className="md:col-span-2">
-          <label className={labelClass}>Observações Iniciais</label>
-          <textarea name="OBSERVAÇÕES" value={formData['OBSERVAÇÕES']} onChange={handleChange} rows="3" placeholder="Informações vitais..." className={`${inputClass} resize-none`}></textarea>
+          <label className={labelClass}>Observações e Anotações Iniciais</label>
+          <textarea name="OBSERVAÇÕES" value={formData['OBSERVAÇÕES']} onChange={handleChange} rows="3" placeholder="Informações de contexto..." className={`${inputClass} resize-none`}></textarea>
         </div>
       </div>
 
       <div className="mt-8 flex justify-end">
         <button onClick={handleSave} className="px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest border-[4px] border-transparent hover:-translate-y-1 transition-transform shadow-[4px_4px_0px_rgba(0,183,235,1)] hover:shadow-none">
-          Registrar Entrada
+          Salvar no Arquivo Central
         </button>
       </div>
     </div>
@@ -334,12 +333,11 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
     { id: 'Protocolado', label: 'Protocolado', color: COLORS.cyan, icon: <CheckCircle2 size={16} /> }
   ];
 
-  // Mapeamento que desdobra o doc 6/7 em dois visuais para gerar 9 caixas geométricas perfeitas
   const DOC_MAPPING = [
     { label: 'Ata de Fundação', keyMatch: '1 ' }, { label: 'Ata de Eleição/Posse', keyMatch: '2 ' },
     { label: 'CNPJ', keyMatch: '3 ' }, { label: 'Declaração Não OSCIP', keyMatch: '4 ' },
-    { label: 'Declaração de Funcionamento', keyMatch: '5 ' }, { label: 'Declaração Remuneração (1)', keyMatch: '6 - 7' },
-    { label: 'Declaração Remuneração (2)', keyMatch: '6 - 7' }, { label: 'Estatuto', keyMatch: '8 ' },
+    { label: 'Declaração de Funcionamento', keyMatch: '5 ' }, { label: 'Declaração Remuneração (P1)', keyMatch: '6 - 7' },
+    { label: 'Declaração Remuneração (P2)', keyMatch: '6 - 7' }, { label: 'Estatuto', keyMatch: '8 ' },
     { label: 'Relatório de Atividades', keyMatch: '9 ' }
   ];
 
@@ -390,7 +388,7 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                           <div key={idx} className="group relative flex-1 h-full cursor-help">
                             <div className={`w-full h-full transition-colors duration-300 ${doc.hasDoc ? '' : 'border border-current opacity-20'}`} style={{ backgroundColor: doc.hasDoc ? progressColor : 'transparent' }} />
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-50 pointer-events-none">
-                              <div className="bg-black text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 whitespace-nowrap shadow-md">{doc.label} {doc.hasDoc ? '✓' : ''}</div>
+                              <div className="bg-black text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 whitespace-nowrap shadow-md">{doc.label} {doc.hasDoc ? '✓' : 'Pendente'}</div>
                             </div>
                           </div>
                         ))}
@@ -453,8 +451,8 @@ function EntityDetailsView({ entity, onBack, onDelete, theme, thick, med, isDark
           <button onClick={onBack} className={`p-2 ${thick} ${theme.cardBg} hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
           <h2 className="text-xl md:text-2xl font-black uppercase tracking-widest">Ficha Institucional</h2>
         </div>
-        <button onClick={onDelete} className={`flex items-center gap-2 p-2 px-4 ${thick} bg-red-100 text-red-800 border-red-500 hover:bg-red-500 hover:text-white transition-colors`} title="Apagar da Planilha">
-          <TrashIcon size={18} /> <span className="text-xs font-black uppercase tracking-widest">Apagar</span>
+        <button onClick={onDelete} className={`flex items-center gap-2 p-2 px-4 ${thick} bg-red-100 text-red-800 border-red-500 hover:bg-red-500 hover:text-white transition-colors`} title="Apagar Registro do Banco de Dados">
+          <TrashIcon size={18} /> <span className="text-[10px] font-black uppercase tracking-widest">Apagar Registro</span>
         </button>
       </div>
       <div className={`p-6 ${thick} ${theme.cardBg} flex flex-col gap-6`}>
@@ -465,10 +463,10 @@ function EntityDetailsView({ entity, onBack, onDelete, theme, thick, med, isDark
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {keys.map((key, i) => {
             if (key === 'ENTIDADE' || key === 'ARTICULADOR') return null;
-            const val = entity[key]; const isBool = ['TRUE', 'FALSE', 'VERDADEIRO', 'FALSO'].includes(val);
+            const val = entity[key]; const isBool = ['TRUE', 'FALSE', 'VERDADEIRO', 'FALSO'].includes(String(val).toUpperCase());
             let displayVal = val || '-'; let valColor = 'inherit';
             if (isBool) {
-               const isTrue = val === 'TRUE' || val === 'VERDADEIRO';
+               const isTrue = String(val).toUpperCase() === 'TRUE' || String(val).toUpperCase() === 'VERDADEIRO';
                displayVal = isTrue ? '✓ Entregue' : 'Pendente';
                valColor = isTrue ? (isDark ? '#4ade80' : '#166534') : (isDark ? '#f87171' : '#991b1b');
             }
@@ -587,7 +585,7 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, expo
       </div>
 
       <div className="mt-8 text-center">
-        <button onClick={onOpenSystem} className={`px-6 py-3 font-black uppercase tracking-widest border-[4px] shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none transition-all ${isDark ? 'bg-gray-800 text-red-400 border-red-500 shadow-[4px_4px_0px_rgba(200,0,0,0.5)]' : 'bg-white text-red-600 border-red-600'}`}>
+        <button onClick={onOpenSystem} className={`px-6 py-4 font-black uppercase tracking-widest border-[4px] shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none transition-all ${isDark ? 'bg-gray-900 text-rose-400 border-rose-500 shadow-[4px_4px_0px_rgba(244,63,94,0.5)]' : 'bg-white text-rose-600 border-rose-600'}`}>
            <Database size={18} className="inline mr-2" /> Acessar Sistema e Rede (Avançado)
         </button>
       </div>
@@ -595,33 +593,36 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, expo
   );
 }
 
-function SystemView({ webhookUrl, setWebhookUrl, webhookEquipe, setWebhookEquipe, fetchFromWebhook, syncStatus, theme, thick, onBack }) {
+function SystemView({ webhookUrl, setWebhookUrl, webhookEquipe, setWebhookEquipe, fetchFromWebhook, fetchEquipe, syncStatus, theme, thick, onBack }) {
   const handleSyncConfirm = () => {
-    if (window.confirm("Deseja confirmar os endereços e sincronizar o banco de dados agora?")) fetchFromWebhook();
+    if (window.confirm("Atenção: Modificar o banco de dados afetará todos os usuários conectados. Deseja confirmar os endereços e sincronizar agora?")) {
+      fetchFromWebhook();
+      if(webhookEquipe) fetchEquipe();
+    }
   };
 
   return (
-    <div className={`max-w-3xl mx-auto flex flex-col gap-6 w-full p-6 ${thick} ${theme.cardBg} border-red-500`}>
-      <div className="flex items-center gap-4 border-b-[4px] border-red-500 pb-4 mb-2 text-red-600 dark:text-red-400">
-        <button onClick={onBack} className={`p-2 border-[2px] border-current`}><ChevronLeft size={24} /></button>
+    <div className={`max-w-3xl mx-auto flex flex-col gap-6 w-full p-6 md:p-10 ${thick} ${theme.cardBg}`} style={{ borderColor: COLORS.crimson }}>
+      <div className="flex items-center gap-4 border-b-[4px] pb-4 mb-2" style={{ borderColor: COLORS.crimson, color: COLORS.crimson }}>
+        <button onClick={onBack} className={`p-2 border-[4px] border-current active:translate-y-1 active:translate-x-1 transition-all`}><ChevronLeft size={24} /></button>
         <h2 className="font-black uppercase text-xl flex items-center gap-2"><Database /> Central de Conexões</h2>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <div>
-          <label className="font-bold uppercase tracking-widest text-xs opacity-80 mb-2 block">1. Webhook - Utilidade Pública</label>
-          <input type="text" placeholder="https://script.google.com/.../exec" className={`w-full p-4 border-[3px] border-current bg-transparent outline-none font-mono text-xs opacity-70`} value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} />
+          <label className="font-black uppercase tracking-widest text-[10px] opacity-80 mb-2 block">1. URL do Servidor - Utilidade Pública (Obrigatório)</label>
+          <input type="text" placeholder="Cole o link do Google Apps Script (doGet/doPost)..." className={`w-full p-4 border-[4px] border-current bg-transparent outline-none font-mono text-xs focus:bg-gray-100 dark:focus:bg-gray-800 transition-colors`} value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} />
         </div>
         
         <div>
-          <label className="font-bold uppercase tracking-widest text-xs opacity-80 mb-2 block">2. Webhook - Gestão de Equipe (Opcional)</label>
-          <input type="text" placeholder="URL da planilha de equipe..." className={`w-full p-4 border-[3px] border-current bg-transparent outline-none font-mono text-xs opacity-70`} value={webhookEquipe} onChange={(e) => setWebhookEquipe(e.target.value)} />
+          <label className="font-black uppercase tracking-widest text-[10px] opacity-80 mb-2 block">2. URL do Servidor - Gestão de Equipe (Opcional)</label>
+          <input type="text" placeholder="Cole o link do script da planilha de equipe..." className={`w-full p-4 border-[4px] border-current bg-transparent outline-none font-mono text-xs focus:bg-gray-100 dark:focus:bg-gray-800 transition-colors`} value={webhookEquipe} onChange={(e) => setWebhookEquipe(e.target.value)} />
         </div>
 
-        <button onClick={handleSyncConfirm} className="mt-4 w-full p-4 bg-red-600 text-white font-black uppercase tracking-widest border-[4px] border-black hover:-translate-y-1 transition-transform">
-          <RefreshCw size={18} className="inline mr-2" /> Salvar Configurações e Forçar Sincronia
+        <button onClick={handleSyncConfirm} className="mt-4 w-full p-5 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest border-[4px] border-current active:translate-y-1 active:shadow-none transition-all shadow-[4px_4px_0px_rgba(220,20,60,1)] hover:shadow-[4px_4px_0px_rgba(220,20,60,0.5)]">
+          <RefreshCw size={18} className="inline mr-2" /> Salvar Modificações e Forçar Sincronia
         </button>
-        {syncStatus && <p className="font-bold text-center uppercase tracking-widest text-xs p-2 bg-black text-white">{syncStatus}</p>}
+        {syncStatus && <p className="font-black text-center uppercase tracking-widest text-[10px] p-3 border-[2px] border-current" style={{ color: COLORS.cyan }}>{syncStatus}</p>}
       </div>
     </div>
   );
