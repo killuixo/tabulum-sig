@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // ==========================================
 // ÍCONES NATIVOS (SVG PURO)
@@ -24,13 +24,14 @@ const DownloadCloud = (p) => <Icon {...p} path={<><path d="M4 14.899A7 7 0 1 1 1
 const Folder = (p) => <Icon {...p} path={<><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></>} />;
 const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></>} />;
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
+const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />;
 
 // ==========================================
-// CONFIGURAÇÕES GLOBAIS BLINDADAS (HARDCODED)
+// CONFIGURAÇÕES MATRIZES (FALLBACK GLOBAL)
 // ==========================================
-const WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
-const WEBHOOK_EQUIPE = ""; // Insira o link da equipe quando criar
-const EMAIL_ARQUIVO_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
+const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
+const DEFAULT_WEBHOOK_EQUIPE = ""; 
+const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const COLORS = {
   cyan: '#00b7eb', crimson: '#DC143C', mustard: '#FFDB58',
@@ -68,7 +69,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
-  // Ajustes Visuais (Estes continuam locais)
+  // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
@@ -78,25 +79,34 @@ export default function App() {
     return saved !== null ? parseInt(saved) : 2;
   });
 
+  // URLs de Rede (Se estiver vazio no navegador, usa as Matrizes no código)
+  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
+  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
+  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
+
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  // Persistência local contínua
   useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
   useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
+  useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
+  useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
+  useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
 
   useEffect(() => {
     fetchFromWebhooks();
-  }, []);
+  }, [webhookUtilidade, webhookEquipe]); // Atualiza automaticamente se o link mudar
 
   const fetchFromWebhooks = async () => {
     setLoading(true);
     setSyncStatus('Sincronizando Banco Central...');
     
-    if (WEBHOOK_UTILIDADE) {
+    if (webhookUtilidade) {
       try {
-        const response = await fetch(WEBHOOK_UTILIDADE);
+        const response = await fetch(webhookUtilidade);
         const text = await response.text();
         const jsonData = JSON.parse(text);
         const formattedData = jsonData.map(item => {
@@ -116,9 +126,9 @@ export default function App() {
       }
     }
 
-    if (WEBHOOK_EQUIPE) {
+    if (webhookEquipe) {
       try {
-        const resEq = await fetch(WEBHOOK_EQUIPE);
+        const resEq = await fetch(webhookEquipe);
         const textEq = await resEq.text();
         const jsonEq = JSON.parse(textEq);
         const formattedEq = jsonEq.map(item => ({ Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' }));
@@ -134,11 +144,11 @@ export default function App() {
   };
 
   const deleteItem = async (entidadeName) => {
-    if (!WEBHOOK_UTILIDADE) return;
+    if (!webhookUtilidade) return;
     if (window.confirm(`Arquivista, confirma a exclusão definitiva do processo de: ${entidadeName}?`)) {
       setSyncStatus('Apagando registro no banco de dados...');
       try {
-        await fetch(WEBHOOK_UTILIDADE, {
+        await fetch(webhookUtilidade, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -215,6 +225,7 @@ export default function App() {
                 onClose={() => setIsFormOpen(false)} 
                 theme={themeConfig} thick={bThick} isDark={isDark}
                 fetchFromWebhooks={fetchFromWebhooks} equipe={equipe}
+                webhookUtilidade={webhookUtilidade} emailCentral={emailCentral}
               />
             )}
 
@@ -252,6 +263,10 @@ export default function App() {
               <SettingsView 
                 isDark={isDark} setIsDark={setIsDark} 
                 fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
+                webhookUtilidade={webhookUtilidade} setWebhookUtilidade={setWebhookUtilidade}
+                webhookEquipe={webhookEquipe} setWebhookEquipe={setWebhookEquipe}
+                emailCentral={emailCentral} setEmailCentral={setEmailCentral}
+                fetchFromWebhooks={fetchFromWebhooks}
                 theme={themeConfig} thick={bThick}
               />
             )}
@@ -265,7 +280,7 @@ export default function App() {
 // ==========================================
 // FORMULÁRIO COM DOWNLOAD LOCAL + MAILTO
 // ==========================================
-function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe }) {
+function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
@@ -273,7 +288,6 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
   const [busca, setBusca] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   
-  // Controle de abas/accordion e manual
   const [isManualOpen, setIsManualOpen] = useState(false);
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
   
@@ -303,7 +317,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!WEBHOOK_UTILIDADE) { alert("Erro de Sistema: Webhook Central Ausente."); return; }
+    if (!webhookUtilidade) { alert("Erro de Sistema: Webhook Central Ausente. Verifique os Ajustes."); return; }
     if (!formData.ENTIDADE.trim()) { alert("O nome da entidade é obrigatório."); return; }
 
     setSending(true);
@@ -332,14 +346,13 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
         "OBSERVAÇÕES": formData.OBSERVAÇÕES
       };
 
-      await fetch(WEBHOOK_UTILIDADE, {
+      await fetch(webhookUtilidade, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       });
       
-      // Baixa os PDFs renomeados direto pro computador
       if (Object.keys(stagedFiles).length > 0) {
         executeDownloads();
       }
@@ -357,7 +370,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
   const handleSendEmail = () => {
     const subject = encodeURIComponent(`[NOVO PROCESSO] Dossiê Utilidade Pública - ${formData.ENTIDADE}`);
     const body = encodeURIComponent(`Prezada equipe do Arquivo Central,\n\nUm novo processo de Utilidade Pública foi iniciado.\n\nEntidade: ${formData.ENTIDADE}\nArticulador: ${formData.ARTICULADOR}\n\n[ATENÇÃO ARTICULADOR: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`);
-    window.location.href = `mailto:${EMAIL_ARQUIVO_CENTRAL}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${emailCentral}?subject=${subject}&body=${body}`;
     onClose();
   };
 
@@ -428,7 +441,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
               {showDropdown && (
                 <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] border-current z-10 max-h-40 overflow-y-auto ${theme.cardBg}`}>
                   {filteredEquipe.map((p, idx) => (
-                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-[${COLORS.cyan}] hover:text-black transition-colors border-b border-current opacity-20`}>{p.Nome}</div>
+                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-[#00b7eb] hover:text-black transition-colors border-b border-current opacity-20`}>{p.Nome}</div>
                   ))}
                 </div>
               )}
@@ -530,10 +543,10 @@ function KanbanView({ data, theme, thick, med, isDark, onItemClick, onArticulado
   const getColData = (status) => data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === status.toLowerCase());
 
   const getProgressColor = (count) => {
-    if (count === 0) return 'bg-transparent border-[2px] border-current opacity-30';
-    if (count <= 3) return `bg-[${COLORS.crimson}] border-[2px] border-current`;
-    if (count <= 7) return `bg-[${COLORS.mustard}] border-[2px] border-current`;
-    return `bg-[${COLORS.cyan}] border-[2px] border-current`;
+    if (count === 0) return null;
+    if (count <= 3) return COLORS.crimson;
+    if (count <= 7) return COLORS.mustard;
+    return COLORS.cyan;
   };
 
   return (
@@ -580,7 +593,17 @@ function KanbanView({ data, theme, thick, med, isDark, onItemClick, onArticulado
                         </div>
                       </div>
                       <div className="mt-4 flex gap-1 h-3">
-                        {itemProgressBoxes.map((box, bIdx) => <div key={bIdx} title={box.key} className={`flex-1 transition-colors duration-500 ${box.has ? getProgressColor(hasCount) : 'bg-transparent border-[1px] border-current opacity-20'}`} /> )}
+                        {itemProgressBoxes.map((box, bIdx) => {
+                          const activeColor = box.has ? getProgressColor(hasCount) : null;
+                          return (
+                            <div 
+                              key={bIdx} 
+                              title={box.key} 
+                              className={`flex-1 transition-colors duration-500 ${box.has ? 'border-[2px] border-current' : 'bg-transparent border-[1px] border-current opacity-20'}`}
+                              style={activeColor ? { backgroundColor: activeColor } : {}}
+                            /> 
+                          );
+                        })}
                       </div>
                     </div>
                   );
@@ -984,48 +1007,102 @@ function DashboardView({ data, theme, thick, med, onItemClick }) {
 }
 
 // ==========================================
-// AJUSTES LOCAIS
+// AJUSTES COM ACORDEÕES E ESTADO MISTO
 // ==========================================
-function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, theme, thick }) {
+function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUtilidade, setWebhookUtilidade, webhookEquipe, setWebhookEquipe, emailCentral, setEmailCentral, fetchFromWebhooks, theme, thick }) {
+  const [openAppearance, setOpenAppearance] = useState(true);
+  const [openNetwork, setOpenNetwork] = useState(false);
+  const [savedMessage, setSavedMessage] = useState('');
+
+  const handleSaveNetwork = () => {
+    fetchFromWebhooks();
+    setSavedMessage('Configuração sobreposta localmente com sucesso!');
+    setTimeout(() => setSavedMessage(''), 4000);
+  };
+
   return (
-    <div className={`max-w-3xl mx-auto w-full p-6 md:p-8 flex flex-col gap-10 ${thick} ${theme.cardBg}`}>
+    <div className={`max-w-3xl mx-auto w-full p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg}`}>
       <h2 className="font-black uppercase tracking-widest text-2xl border-b-[6px] border-current pb-4 flex items-center gap-3">
-        <Settings size={28}/> Ajustes da Estação
+        <Settings size={28}/> Ajustes do Sistema
       </h2>
 
-      <div className="flex flex-col gap-4">
-        <label className="font-black uppercase tracking-widest opacity-80 text-[0.9em]">Luminosidade (Tema)</label>
-        <div className="flex gap-4">
-          <button onClick={() => setIsDark(false)} className={`flex-1 p-5 border-[4px] border-current flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 ${!isDark ? 'bg-black text-white' : 'bg-white text-black'}`}>
-            <Sun size={24} /> Claro
-          </button>
-          <button onClick={() => setIsDark(true)} className={`flex-1 p-5 border-[4px] border-current flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'}`}>
-            <Moon size={24} /> Escuro
-          </button>
-        </div>
+      {/* ACORDEÃO 1: APARÊNCIA */}
+      <div className={`border-[3px] border-current ${theme.bg}`}>
+        <button onClick={() => setOpenAppearance(!openAppearance)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <h3 className="font-black uppercase tracking-widest text-[14px] flex items-center gap-2">
+            <Sun size={18} /> Aparência e Leitura
+          </h3>
+          <span className="text-xl leading-none font-mono">{openAppearance ? '−' : '+'}</span>
+        </button>
+
+        {openAppearance && (
+          <div className="p-6 border-t-[3px] border-current flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
+              <label className="font-black uppercase tracking-widest opacity-80 text-[0.9em]">Luminosidade (Tema)</label>
+              <div className="flex gap-4">
+                <button onClick={() => setIsDark(false)} className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 ${!isDark ? 'bg-black text-white' : 'bg-white text-black'}`}>
+                  <Sun size={20} /> Claro
+                </button>
+                <button onClick={() => setIsDark(true)} className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'}`}>
+                  <Moon size={20} /> Escuro
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <label className="font-black uppercase tracking-widest opacity-80 flex items-center gap-2 text-[0.9em]">
+                <Type size={18}/> Conforto de Leitura (Zoom)
+              </label>
+              <div className={`flex items-center justify-between p-2 border-[3px] ${theme.border}`}>
+                {[1, 2, 3, 4, 5].map(level => (
+                  <button key={level} onClick={() => setFontSizeLevel(level)} className={`w-12 h-12 flex items-center justify-center font-black text-lg border-[3px] border-current transition-colors ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}>
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-col gap-4">
-        <label className="font-black uppercase tracking-widest opacity-80 flex items-center gap-2 text-[0.9em]">
-          <Type size={20}/> Conforto de Leitura (Zoom)
-        </label>
-        <div className={`flex items-center justify-between p-3 border-[4px] ${theme.border}`}>
-          {[1, 2, 3, 4, 5].map(level => (
-            <button key={level} onClick={() => setFontSizeLevel(level)} className={`w-14 h-14 flex items-center justify-center font-black text-xl border-[4px] border-current transition-colors ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}>
-              {level}
+      {/* ACORDEÃO 2: SISTEMA E REDE */}
+      <div className={`border-[3px] border-current ${theme.bg}`}>
+        <button onClick={() => setOpenNetwork(!openNetwork)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <h3 className="font-black uppercase tracking-widest text-[14px] flex items-center gap-2">
+            <Database size={18} /> Sistema e Rede (Avançado)
+          </h3>
+          <span className="text-xl leading-none font-mono">{openNetwork ? '−' : '+'}</span>
+        </button>
+
+        {openNetwork && (
+          <div className="p-6 border-t-[3px] border-current flex flex-col gap-6">
+            <div className="p-4 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+              <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest">
+                ⚠️ <b>O Paradoxo do Arquivo:</b> As alterações feitas nestas caixas sobrescrevem o código original e ficam salvas <b>apenas no seu navegador atual</b>. Para alterar a configuração matriz que aparece <b>igualmente para toda a equipe</b> de forma automática, o link deve ser substituído no código-fonte principal do GitHub.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Utilidade Pública (Obrigatório)</label>
+              <input type="text" value={webhookUtilidade} onChange={(e) => setWebhookUtilidade(e.target.value)} className={`w-full p-3 border-[3px] border-current outline-none font-mono text-[10px] ${theme.inputBg}`} />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
+              <input type="text" value={webhookEquipe} onChange={(e) => setWebhookEquipe(e.target.value)} placeholder="Cole aqui caso crie um script para a equipe..." className={`w-full p-3 border-[3px] border-current outline-none font-mono text-[10px] ${theme.inputBg}`} />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">E-mail do Arquivo Central</label>
+              <input type="text" value={emailCentral} onChange={(e) => setEmailCentral(e.target.value)} className={`w-full p-3 border-[3px] border-current outline-none font-mono text-[10px] ${theme.inputBg}`} />
+            </div>
+
+            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[11px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
+              <RefreshCw size={16} /> Salvar Localmente e Sincronizar
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="border-t-[4px] border-current pt-8 mt-4 flex flex-col gap-4">
-         <h3 className="font-black uppercase tracking-widest opacity-80 text-[0.9em]">Configurações do Sistema (Globais)</h3>
-         <p className="text-[10px] font-bold opacity-60">Os caminhos do banco de dados e o e-mail de recebimento estão gravados na raiz do código para garantir a padronização do fluxo arquivístico.</p>
-         
-         <div className="p-4 border-[2px] border-current bg-black text-white dark:bg-white dark:text-black font-mono text-[9px] break-all">
-            <span className="font-black uppercase tracking-widest mb-1 block opacity-70">Arquivo Central (E-mail):</span>
-            {EMAIL_ARQUIVO_CENTRAL}
-         </div>
+            {savedMessage && <p className="font-black text-center uppercase tracking-widest text-[10px] text-sky-600 dark:text-sky-400">{savedMessage}</p>}
+          </div>
+        )}
       </div>
     </div>
   );
