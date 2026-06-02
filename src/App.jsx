@@ -10,9 +10,7 @@ const Icon = ({ path, className = "w-6 h-6", onClick, size = 24, style }) => (
 const LayoutDashboard = (p) => <Icon {...p} path={<><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></>} />;
 const Kanban = (p) => <Icon {...p} path={<><path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/></>} />;
 
-// NOVO ÍCONE DE AJUSTES (Mais limpo)
 const Settings = (p) => <Icon {...p} path={<><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></>} />;
-
 const Sun = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></>} />;
 const Moon = (p) => <Icon {...p} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
 const Type = (p) => <Icon {...p} path={<><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></>} />;
@@ -35,17 +33,14 @@ const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 
-
-// --- CORES TEMA MONDRIAN ---
+// --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
-  cyan: '#00b7eb', // Ciano confortável
-  crimson: '#DC143C', // Carmesim
-  mustard: '#FFDB58' // Amarelo Mostarda
+  mustard: '#FFDB58', // Amarelo Mostarda (Ciclo 1)
+  cyan: '#00b7eb', // Ciano confortável (Ciclo 2)
+  crimson: '#DC143C', // Carmesim (Ciclo 3)
+  white: '#FFFFFF', black: '#000000', darkBg: '#0f0f0f', darkCard: '#1a1a1a'
 };
 
-// ==========================================
-// CONFIGURAÇÕES MATRIZES (FALLBACK GLOBAL)
-// ==========================================
 const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
 const DEFAULT_WEBHOOK_EQUIPE = ""; 
 const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
@@ -75,7 +70,7 @@ const DEFAULT_EQUIPE = [
   { Nome: 'Tânia' }, { Nome: 'Toninho' }, { Nome: 'Victor Klauck' }, { Nome: 'Vina' }, { Nome: 'Xalinska' }
 ];
 
-// Helper para obter cores de Status
+// Helper para obter cores de Status Kanban
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
   if (s.includes('aguardando')) return COLORS.crimson;
@@ -83,15 +78,11 @@ const getStatusColor = (status) => {
   if (s.includes('protocolado')) return COLORS.cyan;
   return null;
 };
-
-// Helper de legibilidade de texto no fundo colorido
 const getTextColorForStatus = (statusColor) => {
   if (statusColor === COLORS.crimson) return 'white';
   if (statusColor === COLORS.mustard || statusColor === COLORS.cyan) return 'black';
   return 'inherit';
 };
-
-// Helper para cor da barra de progresso (Checklist de 8 itens)
 const getProgressColor = (count) => {
   if (count === 0) return null;
   if (count <= 3) return COLORS.crimson;
@@ -100,9 +91,9 @@ const getProgressColor = (count) => {
 };
 
 // ==========================================
-// COMPONENTES DE EDIÇÃO INLINE
+// COMPONENTES DE EDIÇÃO INLINE (AGORA COM COR MÁGICA)
 // ==========================================
-function EditableField({ value, label, onSave, multiline = false, isDark, textClass = "" }) {
+function EditableField({ value, onSave, multiline = false, isDark, textClass = "", accentColor, cycleAccent }) {
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || '');
   let pressTimer;
@@ -110,54 +101,53 @@ function EditableField({ value, label, onSave, multiline = false, isDark, textCl
   const handleSave = () => { setEditing(false); if(val !== value) onSave(val); };
   const handleKeyDown = (e) => { if(e.key === 'Enter' && !multiline) handleSave(); if(e.key === 'Escape') { setVal(value); setEditing(false); } };
 
-  const startPress = () => { pressTimer = setTimeout(() => setEditing(true), 500); };
+  const startPress = () => { pressTimer = setTimeout(() => { setEditing(true); if(cycleAccent) cycleAccent(); }, 500); };
   const endPress = () => clearTimeout(pressTimer);
 
   if (editing) {
     return multiline ? (
-      <textarea autoFocus value={val} onChange={e=>setVal(e.target.value)} onBlur={handleSave} onKeyDown={handleKeyDown} className={`w-full p-2 border-[2px] border-sky-500 outline-none resize-y ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`} rows={4} />
+      <textarea autoFocus value={val} onChange={e=>setVal(e.target.value)} onBlur={handleSave} onKeyDown={handleKeyDown} className={`w-full p-2 border-[2px] outline-none resize-y transition-colors duration-300 ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`} style={{ borderColor: accentColor }} rows={4} />
     ) : (
-      <input autoFocus type="text" value={val} onChange={e=>setVal(e.target.value)} onBlur={handleSave} onKeyDown={handleKeyDown} className={`w-full p-1 border-b-[2px] border-sky-500 outline-none ${isDark ? 'bg-gray-800 text-white' : 'bg-transparent text-black'}`} />
+      <input autoFocus type="text" value={val} onChange={e=>setVal(e.target.value)} onBlur={handleSave} onKeyDown={handleKeyDown} className={`w-full p-1 border-b-[2px] outline-none transition-colors duration-300 ${isDark ? 'bg-gray-800 text-white' : 'bg-transparent text-black'}`} style={{ borderColor: accentColor }} />
     );
   }
 
   return (
     <div className="group relative cursor-pointer flex-1 flex items-start w-full" onTouchStart={startPress} onTouchEnd={endPress} onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress} title="Clique no ícone ou segure para editar">
        <span className={textClass}>{value || '-'}</span>
-       <button onClick={(e) => {e.stopPropagation(); setEditing(true);}} className="absolute -right-5 top-0 opacity-0 group-hover:opacity-100 p-1 bg-black text-white dark:bg-white dark:text-black rounded-sm shadow-md transition-opacity">
+       <button onClick={(e) => {e.stopPropagation(); setEditing(true); if(cycleAccent) cycleAccent();}} className="absolute -right-5 top-0 opacity-0 group-hover:opacity-100 p-1 bg-black text-white dark:bg-white dark:text-black rounded-sm shadow-md transition-opacity">
          <Edit2 size={12} />
        </button>
     </div>
   );
 }
 
-function EditableSelect({ value, options, onSave, isDark, textClass = "", isStatus = false }) {
+function EditableSelect({ value, options, onSave, isDark, textClass = "", isStatus = false, accentColor, cycleAccent }) {
   const [editing, setEditing] = useState(false);
   
   if (editing) {
     return (
-      <select autoFocus value={value || ''} onChange={e => { setEditing(false); if(e.target.value !== value) onSave(e.target.value); }} onBlur={() => setEditing(false)} className={`p-1 border-[2px] border-sky-500 outline-none ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
+      <select autoFocus value={value || ''} onChange={e => { setEditing(false); if(e.target.value !== value) onSave(e.target.value); }} onBlur={() => setEditing(false)} className={`p-1 border-[2px] outline-none transition-colors duration-300 ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`} style={{ borderColor: accentColor }}>
         <option value="">Selecione...</option>
         {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
       </select>
     );
   }
 
-  let statusColor = null;
-  let textColor = 'inherit';
+  let statusColor = null; let textColor = 'inherit';
   if (isStatus) {
     statusColor = getStatusColor(value);
     textColor = getTextColorForStatus(statusColor) || (isDark ? 'white' : 'black');
   }
 
   return (
-    <div className="group relative cursor-pointer flex items-center w-max" onDoubleClick={() => setEditing(true)} onTouchStart={(e) => { e.target.pressTimer = setTimeout(()=>setEditing(true), 500); }} onTouchEnd={(e) => clearTimeout(e.target.pressTimer)}>
+    <div className="group relative cursor-pointer flex items-center w-max" onDoubleClick={() => {setEditing(true); if(cycleAccent) cycleAccent();}} onTouchStart={(e) => { e.target.pressTimer = setTimeout(()=>{setEditing(true); if(cycleAccent) cycleAccent();}, 500); }} onTouchEnd={(e) => clearTimeout(e.target.pressTimer)}>
        {isStatus ? (
          <span className={textClass} style={{ backgroundColor: statusColor || 'transparent', color: textColor, borderColor: statusColor || 'currentcolor' }}>{value || '-'}</span>
        ) : (
          <span className={textClass}>{value || '-'}</span>
        )}
-       <button onClick={(e) => {e.stopPropagation(); setEditing(true);}} className="opacity-0 group-hover:opacity-100 p-1 ml-1 bg-black text-white dark:bg-white dark:text-black rounded-sm shadow-md transition-opacity">
+       <button onClick={(e) => {e.stopPropagation(); setEditing(true); if(cycleAccent) cycleAccent();}} className="opacity-0 group-hover:opacity-100 p-1 ml-1 bg-black text-white dark:bg-white dark:text-black rounded-sm shadow-md transition-opacity">
          <Edit2 size={12} />
        </button>
     </div>
@@ -173,7 +163,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
-  // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
@@ -183,7 +172,6 @@ export default function App() {
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  // URLs de Rede (Se estiver vazio no navegador, usa as Matrizes no código)
   const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
   const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
   const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
@@ -192,6 +180,12 @@ export default function App() {
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
+  const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson]; // Amarelo, Azul, Vermelho
+  const [accentIndex, setAccentIndex] = useState(0);
+  const accentColor = accentColors[accentIndex];
+  const cycleAccent = () => setAccentIndex(prev => (prev + 1) % 3);
 
   const handleEntityClick = (entityData) => {
     setActiveFicha(entityData);
@@ -204,35 +198,27 @@ export default function App() {
     setView('articulator_details');
   };
 
-  // Persistência local contínua
   useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
   useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
   useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
   useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
   useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
 
-  useEffect(() => {
-    fetchFromWebhooks();
-  }, [webhookUtilidade, webhookEquipe]); // Atualiza automaticamente se o link mudar
+  useEffect(() => { fetchFromWebhooks(); }, [webhookUtilidade, webhookEquipe]);
 
   const fetchFromWebhooks = async () => {
-    setLoading(true);
-    setSyncStatus('Sincronizando Banco Central...');
-    
+    setLoading(true); setSyncStatus('Sincronizando Banco Central...');
     if (webhookUtilidade) {
       try {
         const response = await fetch(webhookUtilidade);
         const text = await response.text();
-        
         try {
           const jsonData = JSON.parse(text);
           const formattedData = jsonData.map(item => {
             let newItem = {};
             for (let key in item) {
               let val = item[key];
-              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) {
-                val = new Date(val).toLocaleDateString('pt-BR');
-              }
+              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { val = new Date(val).toLocaleDateString('pt-BR'); }
               newItem[key] = val;
             }
             return newItem;
@@ -242,9 +228,7 @@ export default function App() {
             setData(parseCSV(text));
             setSyncStatus('Sincronizado (Formato CSV).');
         }
-      } catch (error) {
-        console.error("Erro Entidades:", error);
-      }
+      } catch (error) { console.error("Erro Entidades:", error); }
     }
 
     if (webhookEquipe) {
@@ -254,20 +238,14 @@ export default function App() {
         const jsonEq = JSON.parse(textEq);
         const formattedEq = jsonEq.map(item => ({ Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' }));
         if (formattedEq.length > 0) setEquipe(formattedEq);
-      } catch(e) {
-        console.error("Erro Equipe:", e);
-      }
+      } catch(e) { console.error("Erro Equipe:", e); }
     }
-
-    setLoading(false);
-    setSyncStatus('Sincronizado!');
+    setLoading(false); setSyncStatus('Sincronizado!');
     setTimeout(() => setSyncStatus(''), 3000);
   };
 
   const applyNetworkSettings = (newUtilidade, newEquipe, newEmail) => {
-    setWebhookUtilidade(newUtilidade);
-    setWebhookEquipe(newEquipe);
-    setEmailCentral(newEmail);
+    setWebhookUtilidade(newUtilidade); setWebhookEquipe(newEquipe); setEmailCentral(newEmail);
   };
 
   const deleteItem = async (entidadeName) => {
@@ -276,27 +254,18 @@ export default function App() {
       setSyncStatus('Apagando registro no banco de dados...');
       try {
         await fetch(webhookUtilidade, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'delete', ENTIDADE: entidadeName })
         });
         setData(prevData => prevData.filter(d => d.ENTIDADE !== entidadeName));
-        setActiveFicha(null);
-        setView('kanban');
-        setSyncStatus('Registro apagado.');
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setTimeout(() => setSyncStatus(''), 3000);
-      }
+        setActiveFicha(null); setView('kanban'); setSyncStatus('Registro apagado.');
+      } catch (error) { console.error(error); } finally { setTimeout(() => setSyncStatus(''), 3000); }
     }
   };
 
   const handleUpdateEntity = async (originalName, updatedFields) => {
     setData(prev => prev.map(d => d.ENTIDADE === originalName ? { ...d, ...updatedFields } : d));
     setActiveFicha(prev => prev && prev.ENTIDADE === originalName ? { ...prev, ...updatedFields } : prev);
-    
     if (webhookUtilidade) {
       try {
         await fetch(webhookUtilidade, {
@@ -308,15 +277,10 @@ export default function App() {
   };
 
   const exportCSV = () => {
-    if (data.length === 0) {
-      alert("Nenhum dado para exportar.");
-      return;
-    }
-    
+    if (data.length === 0) { alert("Nenhum dado para exportar."); return; }
     const headers = Object.keys(data[0]);
     const csvRows = [];
     csvRows.push(headers.join(','));
-
     for (const row of data) {
       const values = headers.map(header => {
         const val = row[header] === null || row[header] === undefined ? '' : String(row[header]);
@@ -326,48 +290,32 @@ export default function App() {
       });
       csvRows.push(values.join(','));
     }
-
     const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Tabulum_Backup_${new Date().toISOString().slice(0,10)}.csv`;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const link = document.createElement('a'); link.href = url; link.download = `Tabulum_Backup_${new Date().toISOString().slice(0,10)}.csv`;
+    link.style.display = 'none'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
   };
 
   const importCSV = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
     setLoading(true);
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const parsedData = parseCSV(evt.target.result);
-      setData(parsedData);
-      setLoading(false);
-      setSyncStatus('Backup carregado na tela atual!');
+      setData(parseCSV(evt.target.result));
+      setLoading(false); setSyncStatus('Backup carregado na tela atual!');
       setTimeout(() => setSyncStatus(''), 5000);
     };
-    reader.onerror = () => {
-      setLoading(false);
-      setSyncStatus('Erro ao ler arquivo.');
-    };
-    reader.readAsText(file);
-    e.target.value = '';
+    reader.onerror = () => { setLoading(false); setSyncStatus('Erro ao ler arquivo.'); };
+    reader.readAsText(file); e.target.value = '';
   };
 
   const parseCSV = (str) => {
     const lines = str.split(/\r?\n/).filter(line => line.trim() !== '');
     if (lines.length < 2) return [];
-    
     const headers = lines[0].split(',').map(h => h.replace(/(^"|"$)/g, '').trim());
     const result = [];
-    
     for (let i = 1; i < lines.length; i++) {
       const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       const obj = {};
@@ -383,21 +331,15 @@ export default function App() {
   const fontSizes = { 1: 'text-[10px] leading-tight', 2: 'text-xs', 3: 'text-sm', 4: 'text-base', 5: 'text-lg' };
 
   const themeConfig = {
-    bg: isDark ? 'bg-[#0f0f0f]' : 'bg-[#f4f4f0]',
-    text: isDark ? 'text-gray-100' : 'text-gray-900',
-    border: isDark ? 'border-gray-200' : 'border-black',
-    cardBg: isDark ? 'bg-[#1a1a1a]' : 'bg-white',
-    inputBg: isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100',
-    gridLines: isDark ? 'bg-gray-200' : 'bg-black'
+    bg: isDark ? 'bg-[#0f0f0f]' : 'bg-[#f4f4f0]', text: isDark ? 'text-gray-100' : 'text-gray-900',
+    border: isDark ? 'border-gray-200' : 'border-black', cardBg: isDark ? 'bg-[#1a1a1a]' : 'bg-white',
+    inputBg: isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100', gridLines: isDark ? 'bg-gray-200' : 'bg-black'
   };
 
-  const bThick = `border-[4px] ${themeConfig.border}`;
-  const bMedium = `border-[2px] ${themeConfig.border}`;
+  const bThick = `border-[4px] ${themeConfig.border}`; const bMedium = `border-[2px] ${themeConfig.border}`;
 
   return (
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} ${fontSizes[fontSizeLevel]} transition-colors duration-300 flex flex-col`}>
-      
-      {/* HEADER MONDRIAN */}
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div>
@@ -412,22 +354,22 @@ export default function App() {
         </div>
 
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
-          <NavButton active={view === 'kanban'} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<Kanban />} label="Kanban" isDark={isDark} />
-          <NavButton active={view === 'dashboard'} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} />
-          
+          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
           <button 
-            onClick={() => setIsFormOpen(true)}
-            className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] border-current transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(255,219,88,1)] ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
+            onClick={() => {setIsFormOpen(true); cycleAccent();}}
+            className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
+            style={isFormOpen 
+              ? { borderColor: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, backgroundColor: isDark ? 'white' : 'black', color: isDark ? 'black' : 'white', transform: 'scale(1.05)', zIndex: 10 } 
+              : { borderColor: 'currentColor', backgroundColor: isDark ? 'black' : 'white', color: isDark ? 'white' : 'black' }}
             title="Adicionar Novo Pedido"
           >
             +
           </button>
-
-          <NavButton active={view === 'settings'} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false);}} icon={<Settings />} label="Ajustes" isDark={isDark} />
+          <NavButton active={view === 'settings' && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
         </nav>
       </header>
 
-      {/* ÁREA PRINCIPAL */}
       <main className="p-4 md:p-6 flex-1 flex flex-col relative">
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
@@ -436,56 +378,21 @@ export default function App() {
           </div>
         ) : (
           <>
-            {isFormOpen && (
-              <FormNovoPedido 
-                onClose={() => setIsFormOpen(false)} 
-                theme={themeConfig} thick={bThick} isDark={isDark}
-                fetchFromWebhooks={fetchFromWebhooks} equipe={equipe}
-                webhookUtilidade={webhookUtilidade} emailCentral={emailCentral}
-              />
-            )}
-
+            {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} isDark={isDark} fetchFromWebhooks={fetchFromWebhooks} equipe={equipe} webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} accentColor={accentColor} cycleAccent={cycleAccent} />}
             {!isFormOpen && view === 'entity_details' && activeFicha && (
               <FichaEntidade 
                 item={activeFicha} equipe={equipe} emailCentral={emailCentral}
-                onClose={() => {setActiveFicha(null); setView('kanban');}} 
+                onClose={() => {setActiveFicha(null); setView('kanban'); cycleAccent();}} 
                 onArticuladorClick={handleArticulatorClick}
                 onDelete={() => deleteItem(activeFicha.ENTIDADE)}
                 onUpdate={(fields) => handleUpdateEntity(activeFicha.ENTIDADE, fields)}
-                theme={themeConfig} thick={bThick} isDark={isDark}
+                theme={themeConfig} thick={bThick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent}
               />
             )}
-            
-            {!isFormOpen && view === 'articulator_details' && activeArticulador && (
-              <PainelArticulador 
-                nome={activeArticulador} data={data} 
-                onClose={() => {setActiveArticulador(null); setView('kanban');}}
-                onEntidadeClick={handleEntityClick}
-                theme={themeConfig} thick={bThick} isDark={isDark}
-              />
-            )}
-
-            {!isFormOpen && view === 'kanban' && (
-              <KanbanView 
-                data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} 
-                onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick}
-              />
-            )}
-            
-            {!isFormOpen && view === 'dashboard' && (
-              <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />
-            )}
-            
-            {!isFormOpen && view === 'settings' && (
-              <SettingsView 
-                isDark={isDark} setIsDark={setIsDark} 
-                fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
-                webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
-                applyNetworkSettings={applyNetworkSettings}
-                exportCSV={exportCSV} importCSV={importCSV}
-                theme={themeConfig} thick={bThick} med={bMedium}
-              />
-            )}
+            {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
+            {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
+            {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
+            {!isFormOpen && view === 'settings' && <SettingsView isDark={isDark} setIsDark={setIsDark} fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel} webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral} applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent} />}
           </>
         )}
       </main>
@@ -652,9 +559,9 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// FICHA COMPLETA COM EDIÇÃO INLINE E MALOTE
+// FICHA COMPLETA COM EDIÇÃO INLINE MÁGICA
 // ==========================================
-function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipe, emailCentral }) {
+function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipe, emailCentral, accentColor, cycleAccent }) {
   const [stagedFiles, setStagedFiles] = useState({});
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
@@ -693,7 +600,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
       
       <div className="pr-10 border-b-[6px] border-current pb-4">
         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
-          <EditableField value={item.ENTIDADE} onSave={(val) => onUpdate({ ENTIDADE: val })} isDark={isDark} />
+          <EditableField value={item.ENTIDADE} onSave={(val) => onUpdate({ ENTIDADE: val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} />
         </h2>
         <div className="flex flex-wrap gap-4 mt-3">
           <EditableSelect 
@@ -702,13 +609,15 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
             onSave={(val) => onUpdate({ 'STATUS DA ANÁLISE': val })}
             isDark={isDark}
             isStatus={true}
-            textClass="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current transition-colors duration-500"
+            textClass="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] transition-colors duration-500"
+            accentColor={accentColor} cycleAccent={cycleAccent}
           />
           <EditableField 
             value={item['DATA DA SOLICITAÇÃO']} 
             onSave={(val) => onUpdate({ 'DATA DA SOLICITAÇÃO': val })}
             isDark={isDark}
             textClass="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current opacity-70"
+            accentColor={accentColor} cycleAccent={cycleAccent}
           />
         </div>
       </div>
@@ -723,25 +632,26 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               onSave={(val) => onUpdate({ ARTICULADOR: val })}
               isDark={isDark}
               textClass="text-xl font-black hover:underline decoration-4 underline-offset-4 cursor-pointer truncate max-w-[200px]"
+              accentColor={accentColor} cycleAccent={cycleAccent}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className={`p-4 border-[2px] border-current ${theme.bg} flex flex-col items-start w-full`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Liderança</span>
-              <EditableField value={item.LIDERANÇA} onSave={(val) => onUpdate({ LIDERANÇA: val })} isDark={isDark} textClass="font-bold break-words max-w-full" />
+              <EditableField value={item.LIDERANÇA} onSave={(val) => onUpdate({ LIDERANÇA: val })} isDark={isDark} textClass="font-bold break-words max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} />
             </div>
             <div className={`p-4 border-[2px] border-current ${theme.bg} flex flex-col items-start w-full`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Telefone</span>
-              <EditableField value={item.TELEFONE} onSave={(val) => onUpdate({ TELEFONE: val })} isDark={isDark} textClass="font-bold break-words max-w-full" />
+              <EditableField value={item.TELEFONE} onSave={(val) => onUpdate({ TELEFONE: val })} isDark={isDark} textClass="font-bold break-words max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} />
             </div>
             <div className={`p-4 border-[2px] border-current ${theme.bg} col-span-2 flex flex-col items-start w-full`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">E-mail</span>
-              <EditableField value={item.EMAIL} onSave={(val) => onUpdate({ EMAIL: val })} isDark={isDark} textClass="font-bold break-all max-w-full" />
+              <EditableField value={item.EMAIL} onSave={(val) => onUpdate({ EMAIL: val })} isDark={isDark} textClass="font-bold break-all max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} />
             </div>
           </div>
           <div className={`p-4 border-[2px] border-current ${theme.bg} flex flex-col items-start w-full`}>
             <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Observações</span>
-            <EditableField value={item.OBSERVAÇÕES} onSave={(val) => onUpdate({ OBSERVAÇÕES: val })} isDark={isDark} multiline textClass="font-bold whitespace-pre-wrap leading-relaxed max-w-full" />
+            <EditableField value={item.OBSERVAÇÕES} onSave={(val) => onUpdate({ OBSERVAÇÕES: val })} isDark={isDark} multiline textClass="font-bold whitespace-pre-wrap leading-relaxed max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} />
           </div>
         </div>
 
@@ -749,9 +659,9 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           <div className={`p-4 border-[4px] transition-colors duration-500`} style={{ borderColor: statusColor || 'currentcolor' }}>
             <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC</span>
             <div className="grid grid-cols-2 gap-2 font-bold w-full">
-              <div className="flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Data Envio:</span> <EditableField value={item['DATA DO ENVIO ALESC']} onSave={(val) => onUpdate({ 'DATA DO ENVIO ALESC': val })} isDark={isDark} /></div>
-              <div className="flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Processo:</span> <EditableField value={item['Nº DO PROCESSO ALESC']} onSave={(val) => onUpdate({ 'Nº DO PROCESSO ALESC': val })} isDark={isDark} /></div>
-              <div className="col-span-2 mt-2 flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Estágio:</span> <EditableSelect value={item['ESTÁGIO ATUAL']} options={['Gabinete', 'Protocolo', 'CCJ', 'Plenário', 'Sancionado']} onSave={(val) => onUpdate({ 'ESTÁGIO ATUAL': val })} isDark={isDark} /></div>
+              <div className="flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Data Envio:</span> <EditableField value={item['DATA DO ENVIO ALESC']} onSave={(val) => onUpdate({ 'DATA DO ENVIO ALESC': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
+              <div className="flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Processo:</span> <EditableField value={item['Nº DO PROCESSO ALESC']} onSave={(val) => onUpdate({ 'Nº DO PROCESSO ALESC': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
+              <div className="col-span-2 mt-2 flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Estágio:</span> <EditableSelect value={item['ESTÁGIO ATUAL']} options={['Gabinete', 'Protocolo', 'CCJ', 'Plenário', 'Sancionado']} onSave={(val) => onUpdate({ 'ESTÁGIO ATUAL': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
             </div>
           </div>
           
@@ -778,8 +688,8 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         </div>
       </div>
 
-      <div className={`mt-8 border-[6px] shadow-[6px_6px_0px_rgba(0,183,235,1)] ${isDark ? 'bg-gray-900 border-gray-500' : 'bg-gray-100 border-black'}`}>
-        <button onClick={() => setIsPadronizadorOpen(!isPadronizadorOpen)} className="w-full p-6 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+      <div className={`mt-8 border-[6px] shadow-[6px_6px_0px_rgba(0,0,0,0.2)] transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`} style={{ borderColor: isPadronizadorOpen ? accentColor : (isDark ? '#4b5563' : '#000') }}>
+        <button onClick={() => { setIsPadronizadorOpen(!isPadronizadorOpen); cycleAccent(); }} className="w-full p-6 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
           <div className="flex items-center gap-3">
             <Folder className="w-8 h-8" />
             <h3 className="text-xl font-black uppercase tracking-widest">Padronizador Local</h3>
@@ -894,18 +804,21 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 }
 
 // ==========================================
-// FORMULÁRIO DE NOVO PROCESSO
+// FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
-function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral }) {
+function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
   const [busca, setBusca] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
   
   const [isManualOpen, setIsManualOpen] = useState(false);
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
+
+  const handleFocus = (fieldName) => { setFocusedField(fieldName); if(cycleAccent) cycleAccent(); };
   
   const handleFileChange = (docKey, e) => {
     const file = e.target.files[0];
@@ -964,8 +877,8 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
     const hasFiles = Object.keys(stagedFiles).length > 0;
     return (
       <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
-        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} border-sky-500 shadow-[8px_8px_0px_rgba(0,183,235,1)]`}>
-          <CheckCircle2 className="w-20 h-20 mx-auto text-sky-500" />
+        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.3)] border-[3px]`} style={{ borderColor: accentColor }}>
+          <CheckCircle2 className="w-20 h-20 mx-auto" style={{ color: accentColor }} />
           <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
           <p className="font-bold opacity-80 leading-relaxed text-sm">
             Os dados da entidade foram inseridos com sucesso.<br/>
@@ -984,12 +897,12 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
     {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} isDark={isDark} />}
     
     <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(255,219,88,1)] relative overflow-y-auto max-h-[90vh]`}>
+      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.3)] relative overflow-y-auto max-h-[90vh]`}>
         <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
         
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b-[4px] border-current pb-2 pr-8 gap-4">
           <h2 className="text-2xl font-black uppercase tracking-widest">Abertura de Processo</h2>
-          <button type="button" onClick={() => setIsManualOpen(true)} className="flex items-center gap-2 px-3 py-2 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-[2px_2px_0px_currentColor]">
+          <button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="flex items-center gap-2 px-3 py-2 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-[2px_2px_0px_currentColor]">
             <BookOpen size={16} /> Consultar Manual de Requisitos
           </button>
         </div>
@@ -999,19 +912,19 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
             <h3 className="font-black uppercase tracking-widest text-[12px] opacity-70 mb-2 border-b-[2px] border-current pb-1">1. Metadados Essenciais</h3>
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Nome da Entidade *</label>
-              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} placeholder="Ex: Associação de Moradores..." />
+              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} onFocus={() => handleFocus('ENTIDADE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'ENTIDADE' ? accentColor : 'currentcolor' }} placeholder="Ex: Associação de Moradores..." />
             </div>
 
             <div className="flex flex-col gap-1 relative">
               <label className="font-black uppercase tracking-widest text-[10px]">Articulador Responsável</label>
               <div className="relative">
-                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => setShowDropdown(true)} className={`w-full p-3 border-[3px] border-current outline-none font-bold pr-10 ${theme.inputBg}`} placeholder="Busque ou digite o nome..." />
+                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => {setShowDropdown(true); handleFocus('ARTICULADOR');}} onBlur={() => setTimeout(()=>setFocusedField(null), 200)} className={`w-full p-3 border-[3px] outline-none font-bold pr-10 transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'ARTICULADOR' ? accentColor : 'currentcolor' }} placeholder="Busque ou digite o nome..." />
                 <SearchIcon className="absolute right-3 top-3 opacity-50" />
               </div>
               {showDropdown && (
-                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] border-current z-10 max-h-40 overflow-y-auto ${theme.cardBg}`}>
+                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] z-10 max-h-40 overflow-y-auto ${theme.cardBg}`} style={{ borderColor: accentColor }}>
                   {filteredEquipe.map((p, idx) => (
-                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-[${COLORS.cyan}] hover:text-black transition-colors border-b border-current opacity-20`}>{p.Nome}</div>
+                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors border-b border-current opacity-60 hover:opacity-100`}>{p.Nome}</div>
                   ))}
                 </div>
               )}
@@ -1020,26 +933,26 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <label className="font-black uppercase tracking-widest text-[10px]">E-mail de Contato</label>
-                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} />
+                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="font-black uppercase tracking-widest text-[10px]">Telefone</label>
-                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold ${theme.inputBg}`} />
+                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} onFocus={() => handleFocus('TELEFONE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'currentcolor' }} />
               </div>
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Observações</label>
-              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} className={`p-3 border-[3px] border-current outline-none font-bold resize-none ${theme.inputBg}`}></textarea>
+              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} onFocus={() => handleFocus('OBSERVAÇÕES')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold resize-none transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'currentcolor' }}></textarea>
             </div>
           </div>
 
-          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'} ${isDark ? 'bg-yellow-600 text-white border-yellow-400' : 'bg-mustard text-black'}`} style={{ backgroundColor: isDark ? '' : COLORS.mustard }}>
+          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
             {sending ? 'Salvando...' : 'Salvar Ficha Oficial'}
           </button>
 
-          <div className={`border-[3px] border-current ${theme.bg}`}>
-             <button type="button" onClick={() => setIsPadronizadorOpen(!isPadronizadorOpen)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: isPadronizadorOpen ? accentColor : 'currentcolor' }}>
+             <button type="button" onClick={() => {setIsPadronizadorOpen(!isPadronizadorOpen); cycleAccent();}} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                <h3 className="font-black uppercase tracking-widest text-[12px] flex items-center gap-2">
                  <Folder size={18} /> Padronização de Anexos (Opcional)
                </h3>
@@ -1047,11 +960,11 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
              </button>
 
              {isPadronizadorOpen && (
-               <div className="p-4 border-t-[3px] border-current">
+               <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
                  <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
                    <p className="text-[10px] font-bold leading-relaxed">
                      ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/><button type="button" onClick={() => setIsManualOpen(true)} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
+                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
                    </p>
                  </div>
 
@@ -1212,16 +1125,21 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 // ==========================================
 // AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO)
 // ==========================================
-function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUtilidade, webhookEquipe, emailCentral, applyNetworkSettings, exportCSV, importCSV, theme, thick, med }) {
-  const [openAppearance, setOpenAppearance] = useState(true);
+function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUtilidade, webhookEquipe, emailCentral, applyNetworkSettings, exportCSV, importCSV, theme, thick, med, accentColor, cycleAccent }) {
+  const [openSection, setOpenSection] = useState('aparencia'); 
   const [openNetwork, setOpenNetwork] = useState(false);
-  const [openBackup, setOpenBackup] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [focusedField, setFocusedField] = useState(null);
 
-  // ESTADO DE RASCUNHO
   const [draftUtilidade, setDraftUtilidade] = useState(webhookUtilidade);
   const [draftEquipe, setDraftEquipe] = useState(webhookEquipe);
   const [draftEmail, setDraftEmail] = useState(emailCentral);
+
+  const handleFocus = (fieldName) => { setFocusedField(fieldName); if(cycleAccent) cycleAccent(); };
+
+  const toggleSection = (section) => {
+    setOpenSection(openSection === section ? null : section);
+  };
 
   const handleSaveNetwork = () => {
     if(window.confirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?")) {
@@ -1237,27 +1155,52 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         <Settings size={28}/> Ajustes do Sistema
       </h2>
 
-      <div className={`border-[3px] border-current ${theme.bg}`}>
-        <button onClick={() => setOpenAppearance(!openAppearance)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-          <h3 className="font-black uppercase tracking-widest text-[14px] flex items-center gap-2"><Sun size={18} /> Aparência e Leitura</h3>
-          <span className="text-xl leading-none font-mono">{openAppearance ? '−' : '+'}</span>
+      {/* BLOCO 1: APARÊNCIA E LEITURA */}
+      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'aparencia' ? accentColor : 'currentcolor' }}>
+        <button 
+          onClick={() => { toggleSection('aparencia'); cycleAccent(); }}
+          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        >
+          <span className="flex items-center gap-2"><Sun size={18} /> Aparência e Leitura</span>
+          <span className="text-xl leading-none font-mono">{openSection === 'aparencia' ? '−' : '+'}</span>
         </button>
-
-        {openAppearance && (
-          <div className="p-6 border-t-[3px] border-current flex flex-col gap-6">
+        
+        {openSection === 'aparencia' && (
+          <div className="p-4 border-t-[4px] flex flex-col gap-6" style={{ borderColor: accentColor }}>
             <div className="flex flex-col gap-3">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[0.9em]">Luminosidade (Tema)</label>
+              <label className="font-bold uppercase tracking-wider opacity-80">Modo de Exibição</label>
               <div className="flex gap-4">
-                <button onClick={() => setIsDark(false)} className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 bg-white text-black ${!isDark ? 'border-[#00b7eb] shadow-[0_0_0_2px_#00b7eb]' : 'border-black'}`}><Sun size={20} /> Claro</button>
-                <button onClick={() => setIsDark(true)} className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-3 uppercase font-black tracking-widest transition-transform hover:-translate-y-1 bg-black text-white ${isDark ? 'border-[#00b7eb] shadow-[0_0_0_2px_#00b7eb]' : 'border-transparent'}`}><Moon size={20} /> Escuro</button>
+                <button 
+                  onClick={() => { setIsDark(false); cycleAccent(); }}
+                  className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-2 uppercase font-bold transition-all hover:-translate-y-1 bg-white text-black`}
+                  style={!isDark ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}` } : { borderColor: 'black' }}
+                >
+                  <Sun size={20} /> Claro
+                </button>
+                <button 
+                  onClick={() => { setIsDark(true); cycleAccent(); }}
+                  className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-2 uppercase font-bold transition-all hover:-translate-y-1 bg-black text-white`}
+                  style={isDark ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}` } : { borderColor: 'transparent' }}
+                >
+                  <Moon size={20} /> Escuro
+                </button>
               </div>
             </div>
 
             <div className="flex flex-col gap-3">
-              <label className="font-black uppercase tracking-widest opacity-80 flex items-center gap-2 text-[0.9em]"><Type size={18}/> Conforto de Leitura (Zoom)</label>
+              <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
+                <Type size={18}/> Tamanho da Fonte
+              </label>
               <div className={`flex items-center justify-between p-2 border-[3px] ${theme.border}`}>
                 {[1, 2, 3, 4, 5].map(level => (
-                  <button key={level} onClick={() => setFontSizeLevel(level)} className={`w-12 h-12 flex items-center justify-center font-black text-lg border-[3px] border-current transition-colors ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}>{level}</button>
+                  <button
+                    key={level}
+                    onClick={() => { setFontSizeLevel(level); cycleAccent(); }}
+                    className={`w-12 h-12 flex items-center justify-center font-bold border-[3px] transition-colors ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}
+                    style={fontSizeLevel === level ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}` } : { borderColor: 'currentcolor' }}
+                  >
+                    {level}
+                  </button>
                 ))}
               </div>
             </div>
@@ -1265,25 +1208,40 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         )}
       </div>
 
-      <div className={`border-[3px] border-current ${theme.bg}`}>
-        <button onClick={() => setOpenBackup(!openBackup)} className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
+      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
+        <button 
+          onClick={() => { toggleSection('backup'); cycleAccent(); }}
+          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        >
           <span className="flex items-center gap-2"><Save size={18} /> Backup e Restauração (.CSV)</span>
-          <span className="text-xl leading-none font-mono">{openBackup ? '−' : '+'}</span>
+          <span className="text-xl leading-none font-mono">{openSection === 'backup' ? '−' : '+'}</span>
         </button>
         
-        {openBackup && (
-          <div className="p-6 border-t-[3px] border-current flex flex-col gap-3">
-            <p className="opacity-80 font-bold text-[0.9em]">
+        {openSection === 'backup' && (
+          <div className="p-4 border-t-[4px] flex flex-col gap-3" style={{ borderColor: accentColor }}>
+            <p className="opacity-80 font-bold" style={{ fontSize: '0.9em' }}>
               Baixe os dados atuais para preservação ou carregue um arquivo CSV de backup para visualização imediata no Kanban.
             </p>
             <div className="flex flex-col md:flex-row gap-4 mt-2">
-              <button onClick={exportCSV} className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest hover:bg-[${COLORS.mustard}] hover:text-black transition-colors bg-[${COLORS.cyan}] text-black`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
+              <button 
+                onClick={exportCSV}
+                className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest hover:opacity-80 transition-colors`}
+                style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}
+              >
                 <Download size={20} /> Baixar CSV
               </button>
               
               <div className="flex-1 relative">
-                <input type="file" accept=".csv" onChange={importCSV} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Carregar Backup CSV" />
-                <div className={`p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest pointer-events-none bg-[${COLORS.mustard}] text-black`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
+                <input 
+                  type="file" 
+                  accept=".csv"
+                  onChange={importCSV}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  title="Carregar Backup CSV"
+                />
+                <div className={`p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest pointer-events-none`}
+                     style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor), opacity: 0.8 }}>
                   <Upload size={20} /> Restaurar CSV
                 </div>
               </div>
@@ -1292,14 +1250,15 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         )}
       </div>
 
-      <div className="mt-8 pt-4 border-t-[2px] border-dashed border-current opacity-40 hover:opacity-100 transition-opacity duration-300">
-        <button onClick={() => setOpenNetwork(!openNetwork)} className="w-full py-2 flex items-center justify-between text-left">
+      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
+      <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
+        <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
           <span className="text-sm leading-none font-mono">{openNetwork ? '−' : '+'}</span>
         </button>
 
         {openNetwork && (
-          <div className="mt-4 p-5 flex flex-col gap-6 bg-black/5 dark:bg-white/5 border-[2px] border-current">
+          <div className="mt-4 p-5 flex flex-col gap-6 bg-black/5 dark:bg-white/5 border-[2px] transition-colors duration-300" style={{ borderColor: accentColor }}>
             <div className="p-3 border-l-[4px] border-red-500 text-black dark:text-gray-200">
               <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest text-red-600 dark:text-red-400">
                 ⚠️ <b>Atenção:</b> Alterações aqui afetam apenas o seu navegador. Cuidado ao editar estes links, pois podem desconectar você do Banco de Dados Central.
@@ -1308,37 +1267,54 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Utilidade Pública</label>
-              <input type="text" value={draftUtilidade} onChange={(e) => setDraftUtilidade(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
+              <input type="text" value={draftUtilidade} onChange={(e) => setDraftUtilidade(e.target.value)} onFocus={() => handleFocus('WH1')} onBlur={() => setFocusedField(null)} className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH1' ? accentColor : 'currentcolor' }} />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
-              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
+              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">E-mail do Arquivo Central</label>
-              <input type="text" value={draftEmail} onChange={(e) => setDraftEmail(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
+              <input type="text" value={draftEmail} onChange={(e) => setDraftEmail(e.target.value)} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} />
             </div>
 
-            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-red-800 hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
+            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2" style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
               <RefreshCw size={14} /> Salvar Localmente e Sincronizar
             </button>
-            {savedMessage && <p className="font-black text-center uppercase tracking-widest text-[10px] text-sky-600 dark:text-sky-400">{savedMessage}</p>}
+            {savedMessage && <p className="font-black text-center uppercase tracking-widest text-[10px]" style={{ color: accentColor }}>{savedMessage}</p>}
           </div>
         )}
       </div>
+
     </div>
   );
 }
 
-function NavButton({ active, onClick, icon, label, isDark }) {
+// Utilitário de Botão de Navegação
+function NavButton({ active, onClick, icon, label, isDark, accentColor }) {
+  const activeStyle = active 
+    ? { 
+        borderColor: accentColor, 
+        boxShadow: `0 4px 0 ${accentColor}`, 
+        backgroundColor: isDark ? 'white' : 'black', 
+        color: isDark ? 'black' : 'white',
+        transform: 'scale(1.05)',
+        zIndex: 10
+      } 
+    : { borderColor: 'rgba(128,128,128,0.3)' };
+
   const activeClass = active 
-    ? (isDark ? 'bg-white text-black border-white scale-105 shadow-[0_4px_0_rgba(255,255,255,0.3)]' : 'bg-black text-white border-black scale-105 shadow-[0_4px_0_rgba(0,0,0,0.3)]') 
-    : 'border-[rgba(128,128,128,0.3)] hover:border-current opacity-80 hover:opacity-100 hover:scale-[1.02]';
+    ? '' 
+    : 'hover:border-current opacity-80 hover:opacity-100 hover:scale-[1.02]';
 
   return (
-    <button onClick={onClick} className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`} style={{ fontSize: '1.05em', minWidth: '150px' }}>
+    <button 
+      onClick={onClick}
+      className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`}
+      style={{ fontSize: '1.05em', minWidth: '150px', ...activeStyle }}
+    >
       {icon} <span>{label}</span>
     </button>
   );
