@@ -29,11 +29,9 @@ const COLORS = {
   mustard: '#FFDB58' // Amarelo Mostarda
 };
 
-// --- DADOS MOCKADOS PARA DEMONSTRAÇÃO INICIAL ---
+// --- DADOS MOCKADOS PARA DEMONSTRAÇÃO (Fallback) ---
 const MOCK_CSV = `ENTIDADE,LIDERANÇA,TELEFONE,EMAIL,ARTICULADOR,DATA DA SOLICITAÇÃO,MANUAL/MODELOS ENVIADOS,1 ATA DE FUNDAÇÃO,2 ATA DE ELEIÇÃO/POSSE,3 CNPJ,4 DECLARAÇÃO NÃO OSCIP,5 DECLARAÇÃO FUNCIONAMENTO,6 - 7 DECLARAÇÃO REMUNERAÇÃO,8 ESTATUTO,9 RELATÓRIO DE ATIVIDADES,STATUS DA ANÁLISE,DATA DO ENVIO ALESC,Nº DO PROCESSO ALESC,ESTÁGIO ATUAL,OBSERVAÇÕES
-Associação Comunitária do Bairro de Cabeçudas,,,,Arthur,25/05/2026,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,Em análise,,,Gabinete,
-Associação Cannabis Sem Fronteira,Ana Cláudia,4891041202,,Vina,21/05/2026,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,Aguardando Documentos,,,Gabinete,
-Associação Cultural Cachola de Bernunça,,,cacholadebernca@gmail.com,Guto,28/05/2026,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,Protocolado,28/05/2026,,Protocolo,Ponto de Cultura certificado; Utilidade Pública municipal em 2023.`;
+Erro ao Carregar,,,,Sistema,01/01/2026,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,Aguardando Documentos,,,Gabinete,Não foi possível carregar os dados reais.`;
 
 export default function App() {
   const [data, setData] = useState([]);
@@ -42,11 +40,11 @@ export default function App() {
   const [isDark, setIsDark] = useState(true);
   const [fontSizeLevel, setFontSizeLevel] = useState(2); 
   
-  // URL do Webhook do Google Apps Script
-  const [webhookUrl, setWebhookUrl] = useState('');
+  // URL DO WEBHOOK JÁ PRÉ-CONFIGURADA E EMBUTIDA NO CÓDIGO
+  const [webhookUrl, setWebhookUrl] = useState('https://script.google.com/macros/s/AKfycbye_nWzL6sFN31psbTaBL5n9kbbHY_XFK5jUOMFEEHFTaomw3C0MX7OYoSR0YQRH6Ou/exec');
   const [syncStatus, setSyncStatus] = useState('');
 
-  // Ao iniciar, carrega mock ou tenta fetch se houver URL salva no localStorage no futuro
+  // Ao iniciar, ele vê que a URL existe e já puxa os dados automaticamente
   useEffect(() => {
     if (webhookUrl) {
       fetchFromWebhook();
@@ -89,7 +87,7 @@ export default function App() {
           return newItem;
         });
         setData(formattedData);
-        setSyncStatus('Sincronizado via Webhook com sucesso!');
+        setSyncStatus('Sincronizado com o Arquivo Central com sucesso!');
       } catch(e) {
         // Fallback: se o webhook retornar CSV por algum motivo
         setData(parseCSV(text));
@@ -97,7 +95,8 @@ export default function App() {
       }
     } catch (error) {
       console.error("Erro ao sincronizar:", error);
-      setSyncStatus('Erro ao sincronizar. Verifique a URL ou o CORS.');
+      setSyncStatus('Erro ao sincronizar. Verifique a internet ou o link do arquivo.');
+      setData(parseCSV(MOCK_CSV)); // Carrega fallback em caso de erro extremo
     } finally {
       setLoading(false);
       setTimeout(() => setSyncStatus(''), 5000);
@@ -230,8 +229,9 @@ export default function App() {
       {/* ÁREA PRINCIPAL */}
       <main className="p-4 md:p-6 flex-1 flex flex-col">
         {loading ? (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex flex-col items-center justify-center gap-4">
             <RefreshCw className="animate-spin" size={48} style={{ color: COLORS.cyan }} />
+            <span className="font-bold uppercase tracking-widest opacity-70">Acessando Arquivo Central...</span>
           </div>
         ) : (
           <>
@@ -415,13 +415,13 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
           <Database size={18}/> Integração Webhook (Google Apps Script)
         </label>
         <p className="opacity-80" style={{ fontSize: '0.9em' }}>
-          Insira a URL gerada pelo seu Apps Script (doGet) para leitura em tempo real.
+          O sistema já está conectado à base de dados oficial. Qualquer pessoa pode clicar em "Sincronizar" para puxar os dados mais recentes.
         </p>
         <div className="flex flex-col md:flex-row gap-2">
           <input 
             type="text" 
-            placeholder="https://script.google.com/macros/s/AKfycby.../exec" 
-            className={`flex-1 p-3 border-[3px] ${theme.border} bg-transparent outline-none focus:border-[${COLORS.cyan}]`}
+            placeholder="https://script.google.com/macros/s/..." 
+            className={`flex-1 p-3 border-[3px] ${theme.border} bg-transparent outline-none focus:border-[${COLORS.cyan}] opacity-50`}
             value={webhookUrl}
             onChange={(e) => setWebhookUrl(e.target.value)}
           />
@@ -429,7 +429,7 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
             onClick={fetchFromWebhook}
             className="p-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <RefreshCw size={18} /> Sincronizar
+            <RefreshCw size={18} /> Sincronizar Agora
           </button>
         </div>
         {syncStatus && (
