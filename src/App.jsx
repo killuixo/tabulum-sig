@@ -401,119 +401,146 @@ function DashboardView({ data, theme, thick, med }) {
 }
 
 function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUrl, setWebhookUrl, fetchFromWebhook, exportCSV, importCSV, syncStatus, theme, thick, med }) {
+  // Estado para controlar qual menu está aberto (Aparência começa aberto)
+  const [openSection, setOpenSection] = useState('aparencia');
+
+  // Componente interno para padronizar os botões do Acordeão
+  const AccordionBtn = ({ section, title, icon, isDiscreet }) => (
+    <button 
+      onClick={() => setOpenSection(openSection === section ? null : section)}
+      className={`w-full p-4 flex justify-between items-center text-sm font-bold uppercase tracking-widest transition-colors ${openSection === section ? `border-b-[4px] ${theme.border}` : ''} ${isDiscreet ? 'opacity-60 hover:opacity-100 bg-gray-200 dark:bg-gray-900 border-none' : ''}`}
+    >
+      <span className="flex items-center gap-2">{icon} {title}</span>
+      <span className="text-xl font-mono leading-none">{openSection === section ? '−' : '+'}</span>
+    </button>
+  );
+
   return (
-    <div className={`max-w-3xl mx-auto p-6 flex flex-col gap-8 ${thick} ${theme.cardBg}`}>
+    <div className="max-w-3xl mx-auto p-4 flex flex-col gap-6 w-full">
       <div>
         <h2 className="font-bold uppercase text-xl border-b-[4px] border-current pb-2 flex items-center gap-2">
-          <Settings size={24} /> Ajustes e Gestão Documental
+          <Settings size={24} /> Ajustes do Sistema
         </h2>
       </div>
 
-      {/* INTEGRAÇÃO WEBHOOK */}
-      <div className="flex flex-col gap-3">
-        <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
-          <Database size={18}/> Integração Webhook (Google Apps Script)
-        </label>
-        <p className="opacity-80" style={{ fontSize: '0.9em' }}>
-          O sistema já está conectado à base de dados oficial. Qualquer pessoa pode clicar em "Sincronizar" para puxar os dados mais recentes.
-        </p>
-        <div className="flex flex-col md:flex-row gap-2">
-          <input 
-            type="text" 
-            placeholder="https://script.google.com/macros/s/..." 
-            className={`flex-1 p-3 border-[3px] ${theme.border} bg-transparent outline-none focus:border-[${COLORS.cyan}] opacity-50`}
-            value={webhookUrl}
-            onChange={(e) => setWebhookUrl(e.target.value)}
-          />
-          <button 
-            onClick={fetchFromWebhook}
-            className="p-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
-          >
-            <RefreshCw size={18} /> Sincronizar Agora
-          </button>
-        </div>
-        {syncStatus && (
-          <p className="font-bold mt-1" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : COLORS.cyan }}>
-            {syncStatus}
-          </p>
+      {/* BLOCO 1: APARÊNCIA E LEITURA */}
+      <div className={`${thick} ${theme.cardBg}`}>
+        <AccordionBtn section="aparencia" title="Aparência e Leitura" icon={<Sun size={18}/>} />
+        
+        {openSection === 'aparencia' && (
+          <div className="p-6 flex flex-col gap-8 animate-in fade-in duration-300">
+            {/* TEMA VISUAL */}
+            <div className="flex flex-col gap-3">
+              <label className="font-bold uppercase tracking-wider opacity-80">Modo de Exibição</label>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setIsDark(false)}
+                  className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-2 uppercase font-bold transition-transform hover:-translate-y-1 ${!isDark ? 'bg-black text-white' : 'bg-white text-black'}`}
+                >
+                  <Sun size={20} /> Claro
+                </button>
+                <button 
+                  onClick={() => setIsDark(true)}
+                  className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-2 uppercase font-bold transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'}`}
+                >
+                  <Moon size={20} /> Escuro
+                </button>
+              </div>
+            </div>
+
+            {/* TAMANHO DA FONTE */}
+            <div className="flex flex-col gap-3">
+              <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
+                <Type size={18}/> Tamanho da Fonte
+              </label>
+              <div className={`flex items-center justify-between p-2 border-[3px] ${theme.border}`}>
+                {[1, 2, 3, 4, 5].map(level => (
+                  <button
+                    key={level}
+                    onClick={() => setFontSizeLevel(level)}
+                    className={`w-12 h-12 flex items-center justify-center font-bold border-[2px] border-current transition-colors
+                      ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
-      <hr className={`border-[2px] ${theme.border}`} />
-
-      {/* BACKUP E RECUPERAÇÃO (CSV) */}
-      <div className="flex flex-col gap-3">
-        <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
-          <Save size={18}/> Backup e Recuperação Local (CSV)
-        </label>
-        <p className="opacity-80" style={{ fontSize: '0.9em' }}>
-          Baixe os dados atuais para preservação ou carregue um arquivo CSV de backup para visualização imediata no Kanban.
-        </p>
-        <div className="flex flex-col md:flex-row gap-4 mt-2">
-          {/* Botão Exportar */}
-          <button 
-            onClick={exportCSV}
-            className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-bold hover:bg-[${COLORS.mustard}] hover:text-black transition-colors`}
-            style={{ backgroundColor: COLORS.cyan, color: 'black' }}
-          >
-            <Download size={20} /> Baixar CSV (Backup)
-          </button>
-          
-          {/* Botão Importar */}
-          <div className="flex-1 relative">
-            <input 
-              type="file" 
-              accept=".csv"
-              onChange={importCSV}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              title="Carregar Backup CSV"
-            />
-            <div className={`p-4 ${med} flex items-center justify-center gap-2 uppercase font-bold pointer-events-none`}
-                 style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
-              <Upload size={20} /> Restaurar CSV
+      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
+      <div className={`${thick} ${theme.cardBg}`}>
+        <AccordionBtn section="backup" title="Backup Local" icon={<Save size={18}/>} />
+        
+        {openSection === 'backup' && (
+          <div className="p-6 flex flex-col gap-4 animate-in fade-in duration-300">
+            <p className="opacity-80" style={{ fontSize: '0.9em' }}>
+              Baixe os dados atuais da sua tela ou carregue um arquivo CSV de backup antigo. 
+              Isso não altera a planilha oficial do Google Drive.
+            </p>
+            <div className="flex flex-col md:flex-row gap-4 mt-2">
+              <button 
+                onClick={exportCSV}
+                className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-bold hover:opacity-80 transition-opacity`}
+                style={{ backgroundColor: COLORS.cyan, color: 'black' }}
+              >
+                <Download size={20} /> Baixar CSV
+              </button>
+              
+              <div className="flex-1 relative">
+                <input 
+                  type="file" 
+                  accept=".csv"
+                  onChange={importCSV}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  title="Carregar Backup CSV"
+                />
+                <div className={`p-4 ${med} flex items-center justify-center gap-2 uppercase font-bold pointer-events-none`}
+                     style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
+                  <Upload size={20} /> Restaurar CSV
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
-      <hr className={`border-[2px] ${theme.border}`} />
-
-      {/* TEMA VISUAL */}
-      <div className="flex flex-col gap-3">
-        <label className="font-bold uppercase tracking-wider opacity-80">Modo de Exibição</label>
-        <div className="flex gap-4">
-          <button 
-            onClick={() => setIsDark(false)}
-            className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-2 uppercase font-bold transition-transform hover:-translate-y-1 ${!isDark ? 'bg-black text-white' : 'bg-white text-black'}`}
-          >
-            <Sun size={20} /> Claro
-          </button>
-          <button 
-            onClick={() => setIsDark(true)}
-            className={`flex-1 p-4 border-[3px] border-current flex items-center justify-center gap-2 uppercase font-bold transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'}`}
-          >
-            <Moon size={20} /> Escuro
-          </button>
-        </div>
-      </div>
-
-      {/* TAMANHO DA FONTE */}
-      <div className="flex flex-col gap-3">
-        <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
-          <Type size={18}/> Tamanho da Fonte
-        </label>
-        <div className={`flex items-center justify-between p-2 border-[3px] ${theme.border}`}>
-          {[1, 2, 3, 4, 5].map(level => (
-            <button
-              key={level}
-              onClick={() => setFontSizeLevel(level)}
-              className={`w-12 h-12 flex items-center justify-center font-bold border-[2px] border-current transition-colors
-                ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}
-            >
-              {level}
-            </button>
-          ))}
-        </div>
+      {/* BLOCO 3: AVANÇADO (Discreto) */}
+      <div className={`border-[3px] ${theme.border} bg-transparent mt-4 opacity-80 hover:opacity-100 transition-opacity`}>
+        <AccordionBtn section="avancado" title="Sistema (Avançado)" icon={<Database size={18}/>} isDiscreet={true} />
+        
+        {openSection === 'avancado' && (
+          <div className="p-6 flex flex-col gap-4 bg-gray-200 dark:bg-gray-900 animate-in fade-in duration-300">
+            <label className="font-bold uppercase tracking-wider flex items-center gap-2 text-rose-600 dark:text-rose-400">
+              <AlertCircle size={18}/> Atenção: Área Restrita
+            </label>
+            <p style={{ fontSize: '0.85em' }}>
+              O sistema sincroniza automaticamente ao ser aberto. Altere a URL abaixo apenas em caso de troca do servidor base (Apps Script).
+            </p>
+            <div className="flex flex-col md:flex-row gap-2">
+              <input 
+                type="text" 
+                placeholder="https://script.google.com/macros/s/..." 
+                className={`flex-1 p-3 border-[2px] ${theme.border} bg-transparent outline-none font-mono text-xs opacity-60 focus:opacity-100`}
+                value={webhookUrl}
+                onChange={(e) => setWebhookUrl(e.target.value)}
+              />
+              <button 
+                onClick={fetchFromWebhook}
+                className="p-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase border-[2px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
+              >
+                <RefreshCw size={18} /> Forçar Sync
+              </button>
+            </div>
+            {syncStatus && (
+              <p className="font-bold mt-1 text-sm" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : COLORS.cyan }}>
+                {syncStatus}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
     </div>
