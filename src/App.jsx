@@ -1,21 +1,3 @@
-Para resolvermos isso de forma definitiva e colocarmos o seu aplicativo no ar imediatamente, **eu consolidei absolutamente tudo em um único documento perfeito**. 
-
-Ele já contém:
-1. O Webhook automático e oculto.
-2. A tela de Ficha Institucional.
-3. A tela do Articulador.
-4. Os menus que recolhem (acordeões) nas configurações.
-5. Todos os ícones embutidos.
-
-### Como corrigir agora no StackBlitz:
-1. Vá no seu StackBlitz e abra o arquivo `src/App.jsx`.
-2. Selecione **TUDO** (aperte `Ctrl + A` ou `Cmd + A` no teclado) e apague. Deixe o arquivo totalmente em branco.
-3. Copie o código inteiro abaixo e cole lá.
-4. O StackBlitz vai salvar automaticamente, o GitHub vai receber a atualização e a Vercel vai reconstruir sem erros!
-
-Aqui está o código mestre completo:
-
-```react:Tabulum:App.jsx
 import React, { useState, useEffect } from 'react';
 
 // ==========================================
