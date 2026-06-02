@@ -290,11 +290,14 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
           
           <div className="p-3 flex flex-col gap-3 overflow-y-auto">
             {getColData(col.id).map((item, i) => (
-              <div key={i} className={`p-3 ${med} hover:-translate-y-1 transition-transform ${theme.bg}`}>
+              <div 
+                key={i} 
+                className={`p-3 ${med} hover:-translate-y-1 transition-transform cursor-pointer ${theme.bg}`}
+                onClick={() => onEntityClick(item)}
+              >
                 <h3 
-                  className="font-bold mb-2 uppercase cursor-pointer hover:underline decoration-2 underline-offset-4" 
-                  style={{ fontSize: '1.1em', textDecorationColor: COLORS.cyan }}
-                  onClick={() => onEntityClick(item)}
+                  className="font-bold mb-2 uppercase" 
+                  style={{ fontSize: '1.1em', color: COLORS.cyan }}
                 >
                   {item.ENTIDADE || 'Sem Nome'}
                 </h3>
@@ -303,9 +306,12 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                   <div>
                     <span className="block text-[0.8em] uppercase font-bold opacity-70">Articulador</span>
                     <span 
-                      className="cursor-pointer hover:underline decoration-2 underline-offset-2"
+                      className="cursor-pointer hover:underline decoration-2 underline-offset-2 relative z-10"
                       style={{ textDecorationColor: COLORS.mustard }}
-                      onClick={() => onArticulatorClick(item.ARTICULADOR)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Impede que o clique "vaze" para o quadro da entidade
+                        onArticulatorClick(item.ARTICULADOR);
+                      }}
                     >
                       {item.ARTICULADOR || '-'}
                     </span>
