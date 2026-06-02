@@ -22,7 +22,6 @@ const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2
 const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
 const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
 const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
-const ChevronRight = (p) => <Icon {...p} path={<path d="m9 18 6-6-6-6"/>} />;
 const UserIcon = (p) => <Icon {...p} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
 const PlusIcon = (p) => <Icon {...p} path={<><path d="M5 12h14"/><path d="M12 5v14"/></>} />;
 
@@ -43,9 +42,17 @@ export default function App() {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedArticulator, setSelectedArticulator] = useState(null);
 
-  // URL DO WEBHOOK JÁ PRÉ-CONFIGURADA E EMBUTIDA NO CÓDIGO
-  const [webhookUrl, setWebhookUrl] = useState('https://script.google.com/macros/s/AKfycbye_nWzL6sFN31psbTaBL5n9kbbHY_XFK5jUOMFEEHFTaomw3C0MX7OYoSR0YQRH6Ou/exec');
+  // Lê a URL salva no computador ou usa a nova matriz passada pelo Mestre
+  const [webhookUrl, setWebhookUrl] = useState(() => {
+    return localStorage.getItem('tabulum_webhook') || 'https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec';
+  });
+  
   const [syncStatus, setSyncStatus] = useState('');
+
+  // Salva no LocalStorage sempre que o link for alterado
+  useEffect(() => {
+    localStorage.setItem('tabulum_webhook', webhookUrl);
+  }, [webhookUrl]);
 
   const handleEntityClick = (entityData) => {
     setSelectedEntity(entityData);
@@ -58,7 +65,6 @@ export default function App() {
     setView('articulator_details');
   };
 
-  // Ao iniciar, ele vê que a URL existe e já puxa os dados automaticamente
   useEffect(() => {
     if (webhookUrl) {
       fetchFromWebhook();
@@ -111,16 +117,14 @@ export default function App() {
 
   // Enviar novo pedido para a planilha via POST
   const handleSubmitNewEntity = async (newEntity) => {
-    // 1. Atualiza a tela imediatamente (Optimistic UI) para não fazer o usuário esperar
     setData([...data, newEntity]);
     setView('kanban');
 
-    // 2. Envia silenciosamente para o Google Sheets em background
     if (webhookUrl) {
       try {
         await fetch(webhookUrl, {
           method: 'POST',
-          mode: 'no-cors', // Necessário para evitar bloqueios do Google Sheets
+          mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(newEntity)
         });
@@ -775,6 +779,12 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
     setOpenSection(openSection === section ? null : section);
   };
 
+  const handleSyncConfirm = () => {
+    if (window.confirm("Atenção: Você tem certeza que deseja alterar e conectar com este novo endereço do Arquivo Central? O sistema passará a ler e registrar dados na nova planilha.")) {
+      fetchFromWebhook();
+    }
+  };
+
   return (
     <div className={`max-w-3xl mx-auto flex flex-col gap-4 w-full`}>
       <h2 className={`font-black uppercase text-xl border-b-[4px] border-current pb-2 mb-2 flex items-center gap-2 ${thick} p-4 ${theme.cardBg}`}>
@@ -884,23 +894,28 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         {openSection === 'sistema' && (
           <div className={`p-4 border-t-[4px] border-current flex flex-col gap-3 opacity-90`}>
             <p className="opacity-80" style={{ fontSize: '0.9em' }}>
-              URL de integração com o Google Apps Script. <strong>Não altere</strong> a menos que a planilha matriz tenha mudado de servidor.
+              URL de integração com o Google Apps Script. Modifique apenas se o servidor da matriz for alterado permanentemente.
             </p>
-            <div className="flex flex-col md:flex-row gap-2">
+            <div className="flex flex-col gap-2">
               <input 
                 type="text" 
                 placeholder="https://script.google.com/macros/s/..." 
-                className={`flex-1 p-3 border-[3px] border-current bg-transparent outline-none focus:border-[${COLORS.cyan}] opacity-50 cursor-not-allowed`}
+                className={`w-full p-3 border-[3px] border-current bg-transparent outline-none focus:border-[${COLORS.cyan}] opacity-90`}
                 value={webhookUrl}
-                readOnly
+                onChange={(e) => setWebhookUrl(e.target.value)}
               />
               <button 
-                onClick={fetchFromWebhook}
-                className="p-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
+                onClick={handleSyncConfirm}
+                className="w-full p-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
               >
-                <RefreshCw size={18} /> Sincronizar
+                <RefreshCw size={18} /> Salvar Link e Sincronizar
               </button>
             </div>
+            {syncStatus && (
+               <p className="font-bold mt-2 px-2 py-1 bg-black text-white text-center uppercase tracking-widest text-xs" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : COLORS.cyan }}>
+                 {syncStatus}
+               </p>
+            )}
           </div>
         )}
       </div>
