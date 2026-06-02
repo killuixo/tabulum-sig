@@ -9,7 +9,6 @@ const Icon = ({ path, className = "w-6 h-6", onClick, size = 24, style }) => (
 
 const LayoutDashboard = (p) => <Icon {...p} path={<><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></>} />;
 const Kanban = (p) => <Icon {...p} path={<><path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/></>} />;
-
 const Settings = (p) => <Icon {...p} path={<><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></>} />;
 const Sun = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></>} />;
 const Moon = (p) => <Icon {...p} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
@@ -32,6 +31,8 @@ const Folder = (p) => <Icon {...p} path={<><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0
 const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></>} />;
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
+const Users = (p) => <Icon {...p} path={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
+
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
@@ -91,7 +92,7 @@ const getProgressColor = (count) => {
 };
 
 // ==========================================
-// COMPONENTES DE EDIÇÃO INLINE (AGORA COM COR MÁGICA)
+// COMPONENTES DE EDIÇÃO INLINE MÁGICA
 // ==========================================
 function EditableField({ value, onSave, multiline = false, isDark, textClass = "", accentColor, cycleAccent }) {
   const [editing, setEditing] = useState(false);
@@ -113,7 +114,7 @@ function EditableField({ value, onSave, multiline = false, isDark, textClass = "
   }
 
   return (
-    <div className="group relative cursor-pointer flex-1 flex items-start w-full" onTouchStart={startPress} onTouchEnd={endPress} onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress} title="Clique no ícone ou segure para editar">
+    <div className="group relative cursor-pointer flex-1 flex items-center min-h-[24px] w-full" onTouchStart={startPress} onTouchEnd={endPress} onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress} title="Clique no ícone ou segure para editar">
        <span className={textClass}>{value || '-'}</span>
        <button onClick={(e) => {e.stopPropagation(); setEditing(true); if(cycleAccent) cycleAccent();}} className="absolute -right-5 top-0 opacity-0 group-hover:opacity-100 p-1 bg-black text-white dark:bg-white dark:text-black rounded-sm shadow-md transition-opacity">
          <Edit2 size={12} />
@@ -163,6 +164,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
+  // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
@@ -172,6 +174,7 @@ export default function App() {
     return saved !== null ? parseInt(saved) : 2;
   });
 
+  // URLs de Rede (Memória Local vs Matriz Global)
   const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
   const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
   const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
@@ -236,7 +239,10 @@ export default function App() {
         const resEq = await fetch(webhookEquipe);
         const textEq = await resEq.text();
         const jsonEq = JSON.parse(textEq);
-        const formattedEq = jsonEq.map(item => ({ Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' }));
+        const formattedEq = jsonEq.map(item => ({ 
+          ...item,
+          Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
+        }));
         if (formattedEq.length > 0) setEquipe(formattedEq);
       } catch(e) { console.error("Erro Equipe:", e); }
     }
@@ -273,6 +279,28 @@ export default function App() {
           body: JSON.stringify({ action: 'update', ENTIDADE_ORIGINAL: originalName, newData: updatedFields })
         });
       } catch (error) { console.error("Erro ao atualizar", error); }
+    }
+  };
+
+  const handleUpdateEquipe = async (originalName, updatedFields) => {
+    // Atualização otimista local
+    setEquipe(prev => prev.map(p => {
+      if (p.Nome === originalName) {
+        const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : p.Nome;
+        return { ...p, ...updatedFields, Nome: novoNome };
+      }
+      return p;
+    }));
+
+    if (webhookEquipe) {
+      try {
+        await fetch(webhookEquipe, {
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalName, newData: updatedFields })
+        });
+      } catch (error) { console.error("Erro ao atualizar equipe", error); }
+    } else {
+      alert("⚠️ Aviso: O Webhook da Equipe não está configurado na rede. A alteração foi salva apenas localmente.");
     }
   };
 
@@ -392,7 +420,16 @@ export default function App() {
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
             {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
             {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
-            {!isFormOpen && view === 'settings' && <SettingsView isDark={isDark} setIsDark={setIsDark} fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel} webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral} applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent} />}
+            {!isFormOpen && view === 'settings' && (
+              <SettingsView 
+                isDark={isDark} setIsDark={setIsDark} 
+                fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
+                webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
+                applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
+                theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
+                equipe={equipe} onUpdateEquipe={handleUpdateEquipe}
+              />
+            )}
           </>
         )}
       </main>
@@ -1089,7 +1126,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 <ul className="list-disc pl-5 space-y-1">
                   <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
                   <li>A entidade por seu representante legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
-                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condição de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
+                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condition de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
                 </ul>
               </div>
 
@@ -1123,9 +1160,15 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 }
 
 // ==========================================
-// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO)
+// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E EQUIPE)
 // ==========================================
-function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webhookUtilidade, webhookEquipe, emailCentral, applyNetworkSettings, exportCSV, importCSV, theme, thick, med, accentColor, cycleAccent }) {
+function SettingsView({ 
+  isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
+  webhookUtilidade, webhookEquipe, emailCentral, 
+  applyNetworkSettings, exportCSV, importCSV, 
+  theme, thick, med, accentColor, cycleAccent,
+  equipe, onUpdateEquipe
+}) {
   const [openSection, setOpenSection] = useState('aparencia'); 
   const [openNetwork, setOpenNetwork] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
@@ -1150,7 +1193,7 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
   };
 
   return (
-    <div className={`max-w-3xl mx-auto flex flex-col gap-4 w-full p-6 md:p-8 ${thick} ${theme.cardBg}`}>
+    <div className={`max-w-4xl mx-auto flex flex-col gap-4 w-full p-6 md:p-8 ${thick} ${theme.cardBg}`}>
       <h2 className="font-black uppercase tracking-widest text-2xl border-b-[6px] border-current pb-4 flex items-center gap-3">
         <Settings size={28}/> Ajustes do Sistema
       </h2>
@@ -1208,7 +1251,80 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         )}
       </div>
 
-      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
+      {/* BLOCO 2: GESTÃO DE EQUIPE */}
+      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'equipe' ? accentColor : 'currentcolor' }}>
+        <button 
+          onClick={() => { toggleSection('equipe'); cycleAccent(); }}
+          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        >
+          <span className="flex items-center gap-2"><Users size={18} /> Gestão de Equipe (Articuladores)</span>
+          <span className="text-xl leading-none font-mono">{openSection === 'equipe' ? '−' : '+'}</span>
+        </button>
+        
+        {openSection === 'equipe' && (
+          <div className="p-4 border-t-[4px] flex flex-col gap-3" style={{ borderColor: accentColor }}>
+            <p className="opacity-80 font-bold mb-2" style={{ fontSize: '0.9em' }}>
+              Edite as informações dos membros da equipe. As alterações serão salvas diretamente na planilha matriz de Gestão de Equipe. (Clique nos textos para editar)
+            </p>
+            <div className="overflow-x-auto border-[3px] border-current">
+              <table className="w-full text-left border-collapse min-w-[700px]">
+                <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[10px]`}>
+                  <tr>
+                    <th className="p-3 border-r border-current">Nome Assessor (Chave)</th>
+                    <th className="p-3 border-r border-current">Nome Completo</th>
+                    <th className="p-3 border-r border-current">E-mail Principal</th>
+                    <th className="p-3 border-r border-current">E-mail Secundário</th>
+                    <th className="p-3">Coordenação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {equipe.map((membro, i) => (
+                    <tr key={i} className={`border-b-[2px] border-current hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                      <td className="p-3 border-r border-current font-black">
+                         <EditableField 
+                            value={membro['Nome do Assessor'] || membro.Nome} 
+                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'Nome do Assessor': val })} 
+                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} textClass="text-sky-600 dark:text-sky-400"
+                         />
+                      </td>
+                      <td className="p-3 border-r border-current font-bold opacity-90 text-sm">
+                         <EditableField 
+                            value={membro['Nome Completo']} 
+                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'Nome Completo': val })} 
+                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
+                         />
+                      </td>
+                      <td className="p-3 border-r border-current font-bold opacity-90 text-xs">
+                         <EditableField 
+                            value={membro['E-mail do Assessor']} 
+                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'E-mail do Assessor': val })} 
+                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
+                         />
+                      </td>
+                      <td className="p-3 border-r border-current font-bold opacity-90 text-xs">
+                         <EditableField 
+                            value={membro['E-mail outro']} 
+                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'E-mail outro': val })} 
+                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
+                         />
+                      </td>
+                      <td className="p-3 font-bold opacity-90 text-xs uppercase tracking-widest">
+                         <EditableField 
+                            value={membro['Coordenação']} 
+                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'Coordenação': val })} 
+                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
+                         />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('backup'); cycleAccent(); }}
@@ -1250,7 +1366,7 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
         )}
       </div>
 
-      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
+      {/* BLOCO 4: SISTEMA (AVANÇADO) */}
       <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
         <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
