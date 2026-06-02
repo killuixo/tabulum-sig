@@ -182,6 +182,10 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
+  
+  // Novo estado para o detalhe do Membro da Equipe
+  const [activeMembroEquipe, setActiveMembroEquipe] = useState(null);
+  
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
@@ -239,6 +243,7 @@ export default function App() {
         const resEq = await fetch(webhookEquipe);
         const textEq = await resEq.text();
         const jsonEq = JSON.parse(textEq);
+        // IMPORTANTE: Absorve todos os campos da planilha, criando a chave "Nome" primária
         const formattedEq = jsonEq.map(item => ({ 
           ...item,
           Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
@@ -291,6 +296,15 @@ export default function App() {
       }
       return p;
     }));
+    
+    // Atualiza a ficha atual para não quebrar a tela
+    setActiveMembroEquipe(prev => {
+       if(prev && prev.Nome === originalName) {
+         const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : prev.Nome;
+         return { ...prev, ...updatedFields, Nome: novoNome };
+       }
+       return prev;
+    });
 
     if (webhookEquipe) {
       try {
@@ -382,11 +396,13 @@ export default function App() {
         </div>
 
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
-          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
-          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'equipe_list' && !isFormOpen} onClick={() => {setView('equipe_list'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Users />} label="Equipe" isDark={isDark} accentColor={accentColor} />
+          
           <button 
             onClick={() => {setIsFormOpen(true); cycleAccent();}}
-            className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
+            className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
             style={isFormOpen 
               ? { borderColor: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, backgroundColor: isDark ? 'white' : 'black', color: isDark ? 'black' : 'white', transform: 'scale(1.05)', zIndex: 10 } 
               : { borderColor: 'currentColor', backgroundColor: isDark ? 'black' : 'white', color: isDark ? 'white' : 'black' }}
@@ -394,7 +410,7 @@ export default function App() {
           >
             +
           </button>
-          <NavButton active={view === 'settings' && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'settings' && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
         </nav>
       </header>
 
@@ -407,6 +423,7 @@ export default function App() {
         ) : (
           <>
             {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} isDark={isDark} fetchFromWebhooks={fetchFromWebhooks} equipe={equipe} webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} accentColor={accentColor} cycleAccent={cycleAccent} />}
+            
             {!isFormOpen && view === 'entity_details' && activeFicha && (
               <FichaEntidade 
                 item={activeFicha} equipe={equipe} emailCentral={emailCentral}
@@ -417,9 +434,23 @@ export default function App() {
                 theme={themeConfig} thick={bThick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent}
               />
             )}
+            
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
+            
+            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
+            
+            {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
+              <FichaMembroEquipe 
+                membro={activeMembroEquipe} 
+                onClose={() => {setActiveMembroEquipe(null); setView('equipe_list'); cycleAccent();}} 
+                onUpdate={(fields) => handleUpdateEquipe(activeMembroEquipe.Nome, fields)} 
+                theme={themeConfig} thick={bThick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
+              />
+            )}
+
             {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
             {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
+            
             {!isFormOpen && view === 'settings' && (
               <SettingsView 
                 isDark={isDark} setIsDark={setIsDark} 
@@ -427,7 +458,6 @@ export default function App() {
                 webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
                 applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
                 theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
-                equipe={equipe} onUpdateEquipe={handleUpdateEquipe}
               />
             )}
           </>
@@ -590,6 +620,104 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// LISTA COMPLETA DA EQUIPE (NOVO)
+// ==========================================
+function ListaEquipeView({ equipe, onMembroClick, theme, thick, isDark }) {
+  return (
+    <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
+      <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
+        <div className="border-b-[6px] border-current pb-4">
+          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
+          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.8em]">Banco de Dados da Secretaria / RH</p>
+        </div>
+
+        <div className="overflow-x-auto border-[4px] border-current mt-4">
+          <table className="w-full text-left border-collapse min-w-[700px]">
+            <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
+              <tr>
+                <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
+                <th className="p-4 border-r border-current">Nome Completo</th>
+                <th className="p-4 border-r border-current">Coordenação</th>
+                <th className="p-4">E-mail Principal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {equipe.map((membro, i) => (
+                <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
+                  <td className="p-4 border-r border-current font-black text-sky-600 dark:text-sky-400 group-hover:underline decoration-2">
+                     {membro.Nome}
+                  </td>
+                  <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
+                     {membro['Nome Completo'] || '-'}
+                  </td>
+                  <td className="p-4 border-r border-current font-bold opacity-90 text-xs uppercase tracking-widest">
+                     {membro['Coordenação'] || '-'}
+                  </td>
+                  <td className="p-4 font-bold opacity-90 text-xs">
+                     {membro['E-mail Principal'] || membro['E-mail do Assessor'] || '-'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// FICHA COMPLETA DO MEMBRO DA EQUIPE (NOVO)
+// ==========================================
+function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent }) {
+  // Pega todas as chaves dinamicamente (excluindo a chave 'Nome' que usamos como índice interno principal se for duplicada)
+  const keys = Object.keys(membro).filter(k => k !== 'Nome');
+
+  return (
+    <div className={`max-w-4xl mx-auto w-full p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
+      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
+      
+      <div className="pr-10 border-b-[6px] border-current pb-4">
+        <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
+        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words text-sky-600 dark:text-sky-400">
+          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ 'Nome do Assessor': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} />
+        </h2>
+        <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">Clique no lápis (ou segure no celular) para editar qualquer campo. As alterações são sincronizadas com a planilha matriz.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {keys.map((key, i) => {
+          const val = membro[key];
+          // Chaves que merecem mais espaço na tela
+          const isLarge = key.toLowerCase().includes('endereço') || key.toLowerCase().includes('observação');
+
+          return (
+            <div key={i} className={`p-4 border-[2px] border-current flex flex-col items-start w-full ${isLarge ? 'md:col-span-2' : ''} ${theme.bg}`}>
+              <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">{key}</span>
+              <EditableField 
+                value={val} 
+                onSave={(newVal) => onUpdate({ [key]: newVal })} 
+                isDark={isDark} 
+                multiline={isLarge}
+                textClass={`font-bold break-words max-w-full ${isLarge ? 'whitespace-pre-wrap leading-relaxed' : ''}`} 
+                accentColor={accentColor} 
+                cycleAccent={cycleAccent} 
+              />
+            </div>
+          );
+        })}
+      </div>
+      
+      <div className="mt-4 border-t-[4px] border-current pt-4">
+        <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
+          Entendido, Voltar.
+        </button>
       </div>
     </div>
   );
@@ -1126,7 +1254,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 <ul className="list-disc pl-5 space-y-1">
                   <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
                   <li>A entidade por seu representante legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
-                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condition de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
+                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condição de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
                 </ul>
               </div>
 
@@ -1251,80 +1379,7 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 2: GESTÃO DE EQUIPE */}
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'equipe' ? accentColor : 'currentcolor' }}>
-        <button 
-          onClick={() => { toggleSection('equipe'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Users size={18} /> Gestão de Equipe (Articuladores)</span>
-          <span className="text-xl leading-none font-mono">{openSection === 'equipe' ? '−' : '+'}</span>
-        </button>
-        
-        {openSection === 'equipe' && (
-          <div className="p-4 border-t-[4px] flex flex-col gap-3" style={{ borderColor: accentColor }}>
-            <p className="opacity-80 font-bold mb-2" style={{ fontSize: '0.9em' }}>
-              Edite as informações dos membros da equipe. As alterações serão salvas diretamente na planilha matriz de Gestão de Equipe. (Clique nos textos para editar)
-            </p>
-            <div className="overflow-x-auto border-[3px] border-current">
-              <table className="w-full text-left border-collapse min-w-[700px]">
-                <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[10px]`}>
-                  <tr>
-                    <th className="p-3 border-r border-current">Nome Assessor (Chave)</th>
-                    <th className="p-3 border-r border-current">Nome Completo</th>
-                    <th className="p-3 border-r border-current">E-mail Principal</th>
-                    <th className="p-3 border-r border-current">E-mail Secundário</th>
-                    <th className="p-3">Coordenação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {equipe.map((membro, i) => (
-                    <tr key={i} className={`border-b-[2px] border-current hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
-                      <td className="p-3 border-r border-current font-black">
-                         <EditableField 
-                            value={membro['Nome do Assessor'] || membro.Nome} 
-                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'Nome do Assessor': val })} 
-                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} textClass="text-sky-600 dark:text-sky-400"
-                         />
-                      </td>
-                      <td className="p-3 border-r border-current font-bold opacity-90 text-sm">
-                         <EditableField 
-                            value={membro['Nome Completo']} 
-                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'Nome Completo': val })} 
-                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
-                         />
-                      </td>
-                      <td className="p-3 border-r border-current font-bold opacity-90 text-xs">
-                         <EditableField 
-                            value={membro['E-mail do Assessor']} 
-                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'E-mail do Assessor': val })} 
-                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
-                         />
-                      </td>
-                      <td className="p-3 border-r border-current font-bold opacity-90 text-xs">
-                         <EditableField 
-                            value={membro['E-mail outro']} 
-                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'E-mail outro': val })} 
-                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
-                         />
-                      </td>
-                      <td className="p-3 font-bold opacity-90 text-xs uppercase tracking-widest">
-                         <EditableField 
-                            value={membro['Coordenação']} 
-                            onSave={(val) => onUpdateEquipe(membro.Nome, { 'Coordenação': val })} 
-                            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
-                         />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
+      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('backup'); cycleAccent(); }}
@@ -1366,7 +1421,7 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 4: SISTEMA (AVANÇADO) */}
+      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
       <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
         <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
