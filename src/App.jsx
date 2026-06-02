@@ -1066,39 +1066,39 @@ function SettingsView({ isDark, setIsDark, fontSizeLevel, setFontSizeLevel, webh
       </div>
 
       {/* ACORDEÃO 2: SISTEMA E REDE */}
-      <div className={`border-[3px] border-current ${theme.bg}`}>
-        <button onClick={() => setOpenNetwork(!openNetwork)} className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-          <h3 className="font-black uppercase tracking-widest text-[14px] flex items-center gap-2">
-            <Database size={18} /> Sistema e Rede (Avançado)
+      <div className="mt-8 pt-4 border-t-[2px] border-dashed border-current opacity-40 hover:opacity-100 transition-opacity duration-300">
+        <button onClick={() => setOpenNetwork(!openNetwork)} className="w-full py-2 flex items-center justify-between text-left">
+          <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2">
+            <Database size={14} /> Configurações de Rede (Avançado)
           </h3>
-          <span className="text-xl leading-none font-mono">{openNetwork ? '−' : '+'}</span>
+          <span className="text-sm leading-none font-mono">{openNetwork ? '−' : '+'}</span>
         </button>
 
         {openNetwork && (
-          <div className="p-6 border-t-[3px] border-current flex flex-col gap-6">
-            <div className="p-4 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
-              <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest">
-                ⚠️ <b>O Paradoxo do Arquivo:</b> As alterações feitas nestas caixas sobrescrevem o código original e ficam salvas <b>apenas no seu navegador atual</b>. Para alterar a configuração matriz que aparece <b>igualmente para toda a equipe</b> de forma automática, o link deve ser substituído no código-fonte principal do GitHub.
+          <div className="mt-4 p-5 flex flex-col gap-6 bg-black/5 dark:bg-white/5 border-[2px] border-current">
+            <div className="p-3 border-l-[4px] border-red-500 text-black dark:text-gray-200">
+              <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest text-red-600 dark:text-red-400">
+                ⚠️ <b>Atenção:</b> Alterações aqui afetam apenas o seu navegador. Cuidado ao editar estes links, pois podem desconectar você do Banco de Dados Central.
               </p>
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Utilidade Pública (Obrigatório)</label>
-              <input type="text" value={webhookUtilidade} onChange={(e) => setWebhookUtilidade(e.target.value)} className={`w-full p-3 border-[3px] border-current outline-none font-mono text-[10px] ${theme.inputBg}`} />
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Utilidade Pública</label>
+              <input type="text" value={webhookUtilidade} onChange={(e) => setWebhookUtilidade(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
-              <input type="text" value={webhookEquipe} onChange={(e) => setWebhookEquipe(e.target.value)} placeholder="Cole aqui caso crie um script para a equipe..." className={`w-full p-3 border-[3px] border-current outline-none font-mono text-[10px] ${theme.inputBg}`} />
+              <input type="text" value={webhookEquipe} onChange={(e) => setWebhookEquipe(e.target.value)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">E-mail do Arquivo Central</label>
-              <input type="text" value={emailCentral} onChange={(e) => setEmailCentral(e.target.value)} className={`w-full p-3 border-[3px] border-current outline-none font-mono text-[10px] ${theme.inputBg}`} />
+              <input type="text" value={emailCentral} onChange={(e) => setEmailCentral(e.target.value)} className="w-full p-3 border-[2px] border-current outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-sky-300 dark:border-gray-600 focus:border-sky-500 transition-colors" />
             </div>
 
-            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[11px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
-              <RefreshCw size={16} /> Salvar Localmente e Sincronizar
+            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-red-800 hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
+              <RefreshCw size={14} /> Salvar Localmente e Sincronizar
             </button>
             {savedMessage && <p className="font-black text-center uppercase tracking-widest text-[10px] text-sky-600 dark:text-sky-400">{savedMessage}</p>}
           </div>
