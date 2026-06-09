@@ -218,9 +218,13 @@ export default function App() {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
     
+    // QUEBRADOR DE CACHE: Garante que o navegador pegue a versão mais nova da planilha sempre
+    const noCache = `t=${new Date().getTime()}`;
+    
     if (currentUrlUtilidade) {
       try {
-        const response = await fetch(currentUrlUtilidade);
+        const urlUtilidade = currentUrlUtilidade + (currentUrlUtilidade.includes('?') ? '&' : '?') + noCache;
+        const response = await fetch(urlUtilidade);
         const text = await response.text();
         try {
           const jsonData = JSON.parse(text);
@@ -243,7 +247,8 @@ export default function App() {
 
     if (currentUrlEquipe) {
       try {
-        const resEq = await fetch(currentUrlEquipe);
+        const urlEquipe = currentUrlEquipe + (currentUrlEquipe.includes('?') ? '&' : '?') + noCache;
+        const resEq = await fetch(urlEquipe);
         const textEq = await resEq.text();
         
         // Bloqueio contra erros de permissão do Google Script
@@ -549,8 +554,8 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                       </div>
 
                       {/* LINK DE TRAMITAÇÃO KANBAN */}
-                      {(item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']) && (
-                        <a href={item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: col.color }} onClick={e => e.stopPropagation()}>
+                      {(item['LINK']) && (
+                        <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: col.color }} onClick={e => e.stopPropagation()}>
                           <ExternalLink size={14} /> Acompanhar tramitação
                         </a>
                       )}
@@ -884,9 +889,9 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               <div className="col-span-2 mt-2 flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Estágio:</span> <EditableSelect value={item['ESTÁGIO ATUAL']} options={['Gabinete', 'Protocolo', 'CCJ', 'Plenário', 'Sancionado']} onSave={(val) => onUpdate({ 'ESTÁGIO ATUAL': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
               <div className="col-span-2 mt-2 flex flex-col items-start">
                 <span className="opacity-70 text-[0.8em]">Acompanhar Tramitação (Link):</span>
-                <EditableField value={item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']} onSave={(val) => onUpdate({ 'Acompanhar tramitação': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-sky-500/50 hover:decoration-sky-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} />
-                {(item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']) && (
-                   <a href={item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-sky-600 dark:text-sky-400">
+                <EditableField value={item['LINK']} onSave={(val) => onUpdate({ 'LINK': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-sky-500/50 hover:decoration-sky-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} />
+                {(item['LINK']) && (
+                   <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-sky-600 dark:text-sky-400">
                      <ExternalLink size={12}/> Abrir Link do Processo
                    </a>
                 )}
@@ -1151,7 +1156,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 // FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'Acompanhar tramitação': '' });
+  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
@@ -1204,7 +1209,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
         "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
         "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
         "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
-        "Acompanhar tramitação": formData['Acompanhar tramitação']
+        "LINK": formData['LINK']
       };
 
       await fetch(webhookUtilidade, {
@@ -1288,7 +1293,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Acompanhar tramitação (Link do Processo)</label>
-              <input type="url" value={formData['Acompanhar tramitação']} onChange={e => setFormData({...formData, 'Acompanhar tramitação': e.target.value})} onFocus={() => handleFocus('LINK')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'LINK' ? accentColor : 'currentcolor' }} placeholder="https://..." />
+              <input type="url" value={formData['LINK']} onChange={e => setFormData({...formData, 'LINK': e.target.value})} onFocus={() => handleFocus('LINK')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'LINK' ? accentColor : 'currentcolor' }} placeholder="https://..." />
             </div>
 
             <div className="flex flex-col gap-1">
