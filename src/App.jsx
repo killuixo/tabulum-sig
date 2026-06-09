@@ -844,6 +844,11 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
             textClass="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current opacity-70"
             accentColor={accentColor} cycleAccent={cycleAccent}
           />
+          {(item['LINK']) && (
+             <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 font-black uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current transition-colors text-sky-600 dark:text-sky-400 hover:bg-sky-600 hover:text-white hover:border-sky-600 dark:hover:bg-sky-400 dark:hover:text-black`} title="Acompanhar Tramitação">
+               <ExternalLink size={14}/> Processo ALESC
+             </a>
+          )}
         </div>
       </div>
 
