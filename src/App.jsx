@@ -457,17 +457,21 @@ export default function App() {
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} ${fontSizes[fontSizeLevel]} transition-colors duration-300 flex flex-col`}>
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
-          <div>
+          <div 
+            onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
+            className="cursor-pointer hover:opacity-70 transition-opacity"
+            title="Ir para o Kanban"
+          >
             <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
             <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-cyan-600 dark:text-cyan-400">Sist. Integrado de Gestão • Dep. Marquito</p>
           </div>
           <div className="hidden md:flex gap-2 items-center">
             <button 
               onClick={() => isUnlocked ? setIsUnlocked(false) : requireAuth()}
-              className={`flex items-center justify-center font-black w-10 h-10 border-[3px] transition-all duration-300 hover:-translate-y-1 ${isUnlocked ? 'bg-sky-500 text-white border-sky-600' : (isDark ? 'bg-gray-800 text-gray-400 border-gray-600' : 'bg-gray-200 text-gray-500 border-gray-400')}`}
+              className={`flex items-center justify-center p-2 transition-all duration-300 hover:scale-110 opacity-50 hover:opacity-100 ${isUnlocked ? 'text-sky-500' : 'text-current'}`}
               title={isUnlocked ? "Sessão Desbloqueada. Clique para Bloquear Edição" : "Sessão Bloqueada. Clique para Desbloquear Edição"}
             >
-              {isUnlocked ? <Unlock size={18} /> : <Lock size={18} />}
+              {isUnlocked ? <Unlock size={20} /> : <Lock size={20} />}
             </button>
             <div className="w-8 h-8 ml-2" style={{ backgroundColor: COLORS.cyan, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
             <div className="w-8 h-8" style={{ backgroundColor: COLORS.mustard, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
@@ -1021,7 +1025,20 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
             </div>
           </div>
           
-          <div className="flex flex-col mt-2">
+          {/* CAIXA DO GOOGLE DRIVE */}
+          <div className={`p-4 border-[4px] transition-colors duration-500 mt-4`} style={{ borderColor: isDark ? '#22c55e' : '#16a34a' }}>
+            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: isDark ? '#22c55e' : '#16a34a', color: isDark ? '#22c55e' : '#16a34a' }}>Documentos no Drive</span>
+            <div className="flex flex-col items-start">
+              <EditableField value={item['V DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'V DOCUMENTOS NO DRIVE': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-green-500/50 hover:decoration-green-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+              {(item['V DOCUMENTOS NO DRIVE']) && (
+                 <a href={item['V DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-green-600 dark:text-green-400">
+                   <ExternalLink size={12}/> Abrir Pasta no Drive
+                 </a>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex flex-col mt-4">
             <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1">Checklist de Documentos (Toque p/ Marcar)</span>
             {DOCS_KEYS.map((key, idx) => {
               const hasDoc = String(item[key] || '').toUpperCase() === 'TRUE';
@@ -1279,7 +1296,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 // FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '' });
+  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'V DOCUMENTOS NO DRIVE': '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
@@ -1333,7 +1350,8 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
           "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
           "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
-          "LINK": formData['LINK']
+          "LINK": formData['LINK'],
+          "V DOCUMENTOS NO DRIVE": formData['V DOCUMENTOS NO DRIVE']
         };
 
         await fetch(webhookUtilidade, {
@@ -1419,6 +1437,11 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Acompanhar tramitação (Link do Processo)</label>
               <input type="url" value={formData['LINK']} onChange={e => setFormData({...formData, 'LINK': e.target.value})} onFocus={() => handleFocus('LINK')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'LINK' ? accentColor : 'currentcolor' }} placeholder="https://..." />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="font-black uppercase tracking-widest text-[10px]">Documentos no Drive (Link da Pasta)</label>
+              <input type="url" value={formData['V DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'V DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'currentcolor' }} placeholder="https://drive.google.com/..." />
             </div>
 
             <div className="flex flex-col gap-1">
