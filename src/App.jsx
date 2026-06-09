@@ -84,18 +84,6 @@ const DOCS_PREFIX_MAP = {
   '8 ESTATUTO': '007-ESTATUTO', '9 RELATÓRIO DE ATIVIDADES': '008-RELATORIO_ATIVIDADES'
 };
 
-const DEFAULT_EQUIPE = [
-  { Nome: 'Alexandre' }, { Nome: 'André' }, { Nome: 'Arthur' }, { Nome: 'Bia' }, { Nome: 'Cadu' }, 
-  { Nome: 'Caio' }, { Nome: 'Carla' }, { Nome: 'Carol Figueredo' }, { Nome: 'Carol Morgan' }, 
-  { Nome: 'Cláudio' }, { Nome: 'Edina' }, { Nome: 'Fernando' }, { Nome: 'Gabriel' }, { Nome: 'Gelso' }, 
-  { Nome: 'Gislaine' }, { Nome: 'Guilherme' }, { Nome: 'Guito' }, { Nome: 'Guto' }, { Nome: 'Isabel' }, 
-  { Nome: 'Jekupe' }, { Nome: 'Kerexu' }, { Nome: 'Lais' }, { Nome: 'Lea' }, { Nome: 'Leon' }, 
-  { Nome: 'Lê' }, { Nome: 'Liandra' }, { Nome: 'Linete' }, { Nome: 'Lui' }, { Nome: 'Luis BL' }, 
-  { Nome: 'Maira' }, { Nome: 'Manu' }, { Nome: 'Marquinhos' }, { Nome: 'Marquito' }, { Nome: 'Mayne' }, 
-  { Nome: 'Mexiana' }, { Nome: 'Mirê' }, { Nome: 'Odara' }, { Nome: 'Paty' }, { Nome: 'Pedro Guedes' }, 
-  { Nome: 'Tânia' }, { Nome: 'Toninho' }, { Nome: 'Victor Klauck' }, { Nome: 'Vina' }, { Nome: 'Xalinska' }
-];
-
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
   if (s.includes('aguardando')) return COLORS.crimson;
@@ -184,7 +172,7 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
 // ==========================================
 export default function App() {
   const [data, setData] = useState([]);
-  const [equipe, setEquipe] = useState(DEFAULT_EQUIPE);
+  const [equipe, setEquipe] = useState([]); // Lista falsa foi removida para garantir leitura real do BD
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
@@ -254,6 +242,7 @@ export default function App() {
               let cleanKey = key.trim();
               let val = item[key];
               if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { val = new Date(val).toLocaleDateString('pt-BR'); }
+              else if (typeof val === 'string') { val = val.trim(); }
               newItem[cleanKey] = val;
             }
             return newItem;
@@ -279,9 +268,11 @@ export default function App() {
             const jsonEq = JSON.parse(textEq);
             const formattedEq = jsonEq.map(item => {
               let cleanItem = {};
-              // Limpa todos os cabeçalhos para evitar falhas por espaços ocultos da planilha
+              // Limpa todos os cabeçalhos e valores para evitar falhas por espaços ocultos da planilha
               for (let key in item) {
-                cleanItem[key.trim()] = item[key];
+                let val = item[key];
+                if (typeof val === 'string') val = val.trim();
+                cleanItem[key.trim()] = val;
               }
               return { 
                 ...cleanItem,
@@ -294,7 +285,9 @@ export default function App() {
             const formattedEq = parsedEq.map(item => {
               let cleanItem = {};
               for (let key in item) {
-                cleanItem[key.trim()] = item[key];
+                let val = item[key];
+                if (typeof val === 'string') val = val.trim();
+                cleanItem[key.trim()] = val;
               }
               return { 
                 ...cleanItem,
@@ -529,7 +522,8 @@ export default function App() {
             
             {!isFormOpen && view === 'gestao_equipe' && (
               <GestaoEquipeView 
-                equipe={equipe} 
+                equipe={equipe}
+                webhookEquipe={webhookEquipe}
                 onAdd={handleAddEquipe} 
                 onUpdate={handleUpdateEquipe} 
                 onDelete={handleDeleteEquipe} 
@@ -714,7 +708,7 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 // ==========================================
 // NOVO SISTEMA INTEGRADO DE GESTÃO DE EQUIPE
 // ==========================================
-function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isDark, accentColor, cycleAccent }) {
+function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, theme, thick, isDark, accentColor, cycleAccent }) {
   const [viewMode, setViewMode] = useState('grid');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({});
@@ -789,11 +783,18 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
         </div>
       </header>
 
+      {/* AVISO DE REDE DESCONECTADA */}
+      {!webhookEquipe && (
+        <div className="mb-2 p-4 border-[4px] border-[#DC143C] bg-[#DC143C]/10 text-black dark:text-white font-bold text-sm">
+          ⚠️ Aviso: O sistema não está conectado ao Banco de Dados da Equipe. Vá na aba "Ajustes" e insira a URL (Google App Script) no campo "Webhook Equipe".
+        </div>
+      )}
+
       {/* EXIBIÇÃO DOS MEMBROS */}
       {equipe.length === 0 ? (
         <div className={`p-12 text-center border-[4px] border-current border-dashed ${theme.cardBg}`}>
           <h2 className="text-2xl font-black uppercase tracking-widest mb-4">Nenhum articulador cadastrado</h2>
-          <p className="opacity-70">Encontre o botão escondido no quadrado vermelho para adicionar membros.</p>
+          <p className="opacity-70">Certifique-se de que o Webhook está conectado e que a planilha possui dados.</p>
         </div>
       ) : (
         <>
