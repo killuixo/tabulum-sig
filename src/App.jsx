@@ -67,9 +67,22 @@ const safeSetStorage = (key, val) => {
   }
 };
 
-const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
-const DEFAULT_WEBHOOK_EQUIPE = ""; 
-const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
+// Funções Seguras para apanhar Variáveis de Ambiente (Vite/Create React App/Vercel)
+const getEnv = (key) => {
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env[key]) return process.env[key];
+  } catch (e) {}
+  try {
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) return import.meta.env[key];
+  } catch (e) {}
+  return '';
+};
+
+// SEM DADOS SENSÍVEIS: Puxa do Vercel (Environment Variables) ou inicia vazio para configuração manual nos Ajustes
+const DEFAULT_WEBHOOK_UTILIDADE = getEnv('VITE_WH_UTILIDADE') || getEnv('REACT_APP_WH_UTILIDADE') || "";
+const DEFAULT_WEBHOOK_EQUIPE = getEnv('VITE_WH_EQUIPE') || getEnv('REACT_APP_WH_EQUIPE') || ""; 
+const DEFAULT_EMAIL_CENTRAL = getEnv('VITE_EMAIL_CENTRAL') || getEnv('REACT_APP_EMAIL_CENTRAL') || ""; 
 
 const DOCS_KEYS = [
   '1 ATA DE FUNDAÇÃO', '2 ATA DE ELEIÇÃO/POSSE', '3 CNPJ', 
@@ -187,15 +200,26 @@ export default function App() {
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  const [webhookUtilidade, setWebhookUtilidade] = useState(() => safeGetStorage('tabulum_wh_utilidade', DEFAULT_WEBHOOK_UTILIDADE));
-  const [webhookEquipe, setWebhookEquipe] = useState(() => safeGetStorage('tabulum_wh_equipe', DEFAULT_WEBHOOK_EQUIPE));
-  const [emailCentral, setEmailCentral] = useState(() => safeGetStorage('tabulum_email', DEFAULT_EMAIL_CENTRAL));
+  // TRAVA DE SEGURANÇA: Se o navegador tiver salvo um vazio antes, ele puxa o Default que pode vir das Variáveis de Ambiente
+  const [webhookUtilidade, setWebhookUtilidade] = useState(() => {
+    const saved = safeGetStorage('tabulum_wh_utilidade', null);
+    return (saved && saved.trim() !== "") ? saved : DEFAULT_WEBHOOK_UTILIDADE;
+  });
+  const [webhookEquipe, setWebhookEquipe] = useState(() => {
+    const saved = safeGetStorage('tabulum_wh_equipe', null);
+    return (saved && saved.trim() !== "") ? saved : DEFAULT_WEBHOOK_EQUIPE;
+  });
+  const [emailCentral, setEmailCentral] = useState(() => {
+    const saved = safeGetStorage('tabulum_email', null);
+    return (saved && saved.trim() !== "") ? saved : DEFAULT_EMAIL_CENTRAL;
+  });
 
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
+  // MOTOR CÍCLICO MONDRIAN
   const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson];
   const [accentIndex, setAccentIndex] = useState(0);
   const accentColor = accentColors[accentIndex];
@@ -256,12 +280,25 @@ export default function App() {
         } else {
           let parsedEq = [];
           try {
-            parsedEq = JSON.parse(textEq); // Leitura direta do JSON do Google Script
+            parsedEq = JSON.parse(textEq); 
           } catch(e) {
-            parsedEq = parseCSV(textEq); // Fallback para CSV
+            parsedEq = parseCSV(textEq); 
           }
           if (Array.isArray(parsedEq) && parsedEq.length > 0) {
-             setEquipe(parsedEq);
+             // Limpeza final para a UI
+             const limpoEq = parsedEq.map(item => {
+               let cleanItem = {};
+               for (let key in item) {
+                 let val = item[key];
+                 if (typeof val === 'string') val = val.trim();
+                 cleanItem[key.trim()] = val;
+               }
+               return { 
+                 ...cleanItem,
+                 Nome: cleanItem['Nome do Assessor'] || cleanItem['Nome'] || 'Desconhecido' 
+               };
+             });
+             setEquipe(limpoEq);
           }
         }
       } catch(e) { console.error("Erro Equipe:", e); }
@@ -280,14 +317,14 @@ export default function App() {
   const deleteItem = async (entidadeName) => {
     if (!webhookUtilidade) return;
     if (window.confirm(`Arquivista, confirma a exclusão definitiva do processo de: ${entidadeName}?`)) {
-      setSyncStatus('Apagando registro no banco de dados...');
+      setSyncStatus('Apagando registo no banco de dados...');
       try {
         await fetch(webhookUtilidade, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'delete', ENTIDADE: entidadeName })
         });
         setData(prevData => prevData.filter(d => d.ENTIDADE !== entidadeName));
-        setActiveFicha(null); setView('kanban'); setSyncStatus('Registro apagado.');
+        setActiveFicha(null); setView('kanban'); setSyncStatus('Registo apagado.');
       } catch (error) { console.error(error); } finally { setTimeout(() => setSyncStatus(''), 3000); }
     }
   };
@@ -314,12 +351,11 @@ export default function App() {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'add', newData: newData })
         });
-      } catch (error) { console.error("Erro ao adicionar na equipe", error); }
+      } catch (error) { console.error("Erro ao adicionar na equipa", error); }
     }
   };
 
   const handleUpdateEquipe = async (originalPrimaryKey, updatedFields) => {
-    // Identifica o nome da primeira coluna para ser usada como Chave de atualização
     const primaryKeyName = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
     
     // Atualiza otimisticamente a memória local
@@ -331,32 +367,63 @@ export default function App() {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalPrimaryKey, newData: updatedFields })
         });
-      } catch (error) { console.error("Erro ao atualizar equipe", error); }
+      } catch (error) { console.error("Erro ao atualizar equipa", error); }
     }
   };
 
   const handleDeleteEquipe = async (originalPrimaryKey) => {
     const primaryKeyName = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
-    if (!window.confirm(`Tem certeza que deseja remover este membro da equipe?`)) return false;
+    if (!window.confirm(`Tem a certeza que deseja remover este membro da equipa?`)) return false;
     
     setEquipe(prev => prev.filter(item => item[primaryKeyName] !== originalPrimaryKey));
     
     if (webhookEquipe) {
       try {
-        // Atenção: O seu App Script (doPost) atualmente não tem o branch 'delete', 
-        // mas enviaremos a requisição caso você adicione futuramente.
         await fetch(webhookEquipe, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'delete', NOME_ORIGINAL: originalPrimaryKey }) 
         });
-      } catch (error) { console.error("Erro ao deletar equipe", error); }
+      } catch (error) { console.error("Erro ao deletar da equipa", error); }
     }
-    return true; // Confirma deleção para a interface
+    return true; 
   };
 
   // Funções Auxiliares (Backup)
-  const exportCSV = () => { /* ... (Mantido igual) ... */ };
-  const importCSV = (e) => { /* ... (Mantido igual) ... */ };
+  const exportCSV = () => {
+    if (data.length === 0) { alert("Nenhum dado para exportar."); return; }
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+    csvRows.push(headers.join(','));
+    for (const row of data) {
+      const values = headers.map(header => {
+        const val = row[header] === null || row[header] === undefined ? '' : String(row[header]);
+        let escaped = val.replace(/"/g, '""');
+        if (escaped.search(/("|,|\n)/g) >= 0) escaped = `"${escaped}"`;
+        return escaped;
+      });
+      csvRows.push(values.join(','));
+    }
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a'); link.href = url; link.download = `Tabulum_Backup_${new Date().toISOString().slice(0,10)}.csv`;
+    link.style.display = 'none'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  };
+
+  const importCSV = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      setData(parseCSV(evt.target.result));
+      setLoading(false); setSyncStatus('Backup carregado na ecrã atual!');
+      setTimeout(() => setSyncStatus(''), 5000);
+    };
+    reader.onerror = () => { setLoading(false); setSyncStatus('Erro ao ler ficheiro.'); };
+    reader.readAsText(file); e.target.value = '';
+  };
+
   const parseCSV = (str) => {
     const lines = str.split(/\r?\n/).filter(line => line.trim() !== '');
     if (lines.length < 2) return [];
@@ -644,16 +711,16 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, theme, thick, isDark, accentColor, cycleAccent }) {
   const [viewMode, setViewMode] = useState('grid');
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
-  const [activeMembro, setActiveMembro] = useState(null); // Abre a "FichaMembro"
+  const [activeMembro, setActiveMembro] = useState(null); 
 
   const [formData, setFormData] = useState({});
 
   // Dinâmico: Lê as colunas EXATAMENTE como vieram do Google Sheets. A 1ª é sempre a Chave.
   const dynamicColumns = equipe.length > 0 
-    ? Object.keys(equipe[0])
-    : [ "Nome do Assessor", "E-mail", "Telefone", "Coordenação" ]; // fallback simples
+    ? Object.keys(equipe[0]).filter(k => k !== 'Nome') 
+    : [ "Nome do Assessor", "E-mail", "Telefone", "Coordenação" ]; 
 
-  const primaryKeyName = dynamicColumns[0];
+  const primaryKeyName = dynamicColumns[0] || 'Nome do Assessor';
 
   const openNewForm = () => {
     const emptyForm = dynamicColumns.reduce((acc, col) => ({ ...acc, [col]: '' }), {});
@@ -705,7 +772,7 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
       {/* AVISO DE REDE DESCONECTADA */}
       {!webhookEquipe && (
         <div className="mb-2 p-4 border-[4px] border-[#DC143C] bg-[#DC143C]/10 text-black dark:text-white font-bold text-sm">
-          ⚠️ Aviso: O sistema não está conectado ao Banco de Dados da Equipe. Vá na aba "Ajustes" e insira a URL (Google App Script) no campo "Webhook Equipe".
+          ⚠️ Aviso: O sistema não está conectado ao Banco de Dados da Equipa. Vá na aba "Ajustes" e insira a URL (Google App Script) no campo "Webhook Equipe".
         </div>
       )}
 
@@ -717,7 +784,7 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
           onClose={() => setActiveMembro(null)}
           onUpdate={(fields) => {
             onUpdate(activeMembro[primaryKeyName], fields);
-            setActiveMembro(prev => ({ ...prev, ...fields })); // Atualiza a ficha imediatamente (Optimistic UI)
+            setActiveMembro(prev => ({ ...prev, ...fields })); 
           }}
           onDelete={() => {
             if (onDelete(activeMembro[primaryKeyName])) setActiveMembro(null);
@@ -730,7 +797,7 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
       {!activeMembro && equipe.length === 0 ? (
         <div className={`p-12 text-center border-[4px] border-current border-dashed ${theme.cardBg}`}>
           <h2 className="text-2xl font-black uppercase tracking-widest mb-4">Nenhum articulador cadastrado</h2>
-          <p className="opacity-70">Certifique-se de que o Webhook está conectado e que a planilha possui dados.</p>
+          <p className="opacity-70">Certifique-se de que o Webhook está conectado e que a folha de cálculo possui dados.</p>
         </div>
       ) : (
         !activeMembro && (
@@ -870,7 +937,7 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
 
               <div className="p-8 border-b-[4px] border-current">
                 <h2 className="text-3xl font-black uppercase tracking-tighter">Novo Articulador</h2>
-                <p className="text-sm font-bold uppercase tracking-widest opacity-60 mt-2">Preencha os dados da equipe</p>
+                <p className="text-sm font-bold uppercase tracking-widest opacity-60 mt-2">Preencha os dados da equipa</p>
               </div>
 
               <form onSubmit={handleSaveNovo} className="p-8 flex flex-col gap-6">
@@ -954,9 +1021,9 @@ function FichaMembro({ member, primaryKeyName, onClose, onDelete, onUpdate, them
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Renderiza TODAS as colunas que estão na planilha do usuário */}
+        {/* Renderiza TODAS as colunas que estão na folha de cálculo do utilizador */}
         {Object.keys(member).map(key => {
-          if (key === primaryKeyName) return null; // Já está no título
+          if (key === primaryKeyName || key === 'Nome') return null; 
           
           return (
             <div key={key} className={`p-4 border-[2px] border-current flex flex-col items-start w-full ${theme.bg}`}>
@@ -1019,7 +1086,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const docsCount = DOCS_KEYS.filter(k => String(item[k] || '').toUpperCase() === 'TRUE').length;
   const checkGlobalColor = getProgressColor(docsCount);
   
-  // Extrai apenas a chave primária da equipe para o Select
+  // Extrai apenas a chave primária da equipa para o Select
   const pkEquipe = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
   const equipeOptions = equipe.map(e => e[pkEquipe]);
 
@@ -1130,7 +1197,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           <div className="p-6 pt-0 border-t-[4px] border-current mt-2">
             <div className="mb-6 mt-4 p-4 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
               <p className="text-[12px] font-bold leading-relaxed">
-                ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do arquivo</u> (ex: 001-ATA.pdf). 
+                ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do ficheiro</u> (ex: 001-ATA.pdf). 
                 É estritamente necessário que o Assessor verifique manualmente o conteúdo do documento para garantir que atenda às exigências legais.
                 <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-[#00b7eb] text-sm">Consulte o Manual de Requisitos aqui.</button>
               </p>
@@ -1146,7 +1213,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                   <div key={idx} className={`flex flex-col md:flex-row md:items-center justify-between p-3 border-[3px] border-current transition-colors ${stagedFile ? (isDark ? 'bg-sky-900' : 'bg-sky-200') : 'bg-transparent'}`}>
                     <div className="flex-1 pr-4 mb-2 md:mb-0">
                       <span className="font-black uppercase tracking-widest text-[0.75em] opacity-70 block mb-1">{key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO/NÃO REMUNERADA' : key}</span>
-                      {stagedFile ? <span className="font-mono text-[0.8em] font-bold truncate block">{previewName}</span> : <span className="font-bold text-[0.8em] italic opacity-50">Nenhum arquivo anexado.</span>}
+                      {stagedFile ? <span className="font-mono text-[0.8em] font-bold truncate block">{previewName}</span> : <span className="font-bold text-[0.8em] italic opacity-50">Nenhum ficheiro anexado.</span>}
                     </div>
                     <div className="flex gap-2 flex-shrink-0">
                       {!stagedFile ? (
@@ -1173,7 +1240,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
       <div className="flex justify-end mt-4 border-t-[4px] border-current pt-4">
         <button onClick={onDelete} className="flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 hover:bg-rose-600 hover:text-white transition-all hover:border-rose-600">
-          <Trash2 size={16} /> Apagar Registro Definitivamente
+          <Trash2 size={16} /> Apagar Registo Definitivamente
         </button>
       </div>
       
@@ -1243,7 +1310,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
                   <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
-                  <li>Devem constar o número do registro no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
+                  <li>Devem constar o número do registo no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
                 </ul>
               </div>
 
@@ -1267,7 +1334,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               <div className="p-3 border-[2px] border-current">
                 <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">008 Estatuto da entidade</h4>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Necessita <b>registro de cartório</b>.</li>
+                  <li>Necessita <b>registo de cartório</b>.</li>
                   <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
                 </ul>
               </div>
@@ -1422,10 +1489,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
       <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
         <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.3)] border-[3px]`} style={{ borderColor: accentColor }}>
           <CheckCircle2 className="w-20 h-20 mx-auto" style={{ color: accentColor }} />
-          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
+          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registado!</h2>
           <p className="font-bold opacity-80 leading-relaxed text-sm">
             Os dados da entidade foram inseridos com sucesso.<br/>
-            Para enviar anexos, acesse a Ficha Institucional.
+            Para enviar anexos, aceda à Ficha Institucional.
           </p>
           <button onClick={onClose} className="mt-4 p-4 border-[4px] border-current font-black uppercase tracking-widest hover:-translate-y-1 transition-transform">
             Concluir e Voltar
@@ -1491,7 +1558,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           </div>
 
           <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
-            {sending ? 'Salvando...' : 'Salvar Ficha Oficial'}
+            {sending ? 'A guardar...' : 'Salvar Ficha Oficial'}
           </button>
 
           <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: isPadronizadorOpen ? accentColor : 'currentcolor' }}>
@@ -1506,7 +1573,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
                  <div className="mb-4 p-3 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
                    <p className="text-[10px] font-bold leading-relaxed">
-                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
+                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o ficheiro para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
                      <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-[#00b7eb]">Verifique os requisitos no Manual aqui.</button>
                    </p>
                  </div>
@@ -1579,7 +1646,7 @@ function SettingsView({
   };
 
   const handleSaveNetwork = () => {
-    if(window.confirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?")) {
+    if(window.confirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem a certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?")) {
         applyNetworkSettings(draftUtilidade, draftEquipe, draftEmail);
         setSavedMessage('Configuração sobreposta localmente com sucesso!');
         setTimeout(() => setSavedMessage(''), 4000);
@@ -1658,7 +1725,7 @@ function SettingsView({
         {openSection === 'backup' && (
           <div className="p-4 border-t-[4px] flex flex-col gap-3" style={{ borderColor: accentColor }}>
             <p className="opacity-80 font-bold" style={{ fontSize: '0.9em' }}>
-              Baixe os dados atuais para preservação ou carregue um arquivo CSV de backup para visualização imediata no Kanban.
+              Baixe os dados atuais para preservação ou carregue um ficheiro CSV de backup para visualização imediata no Kanban.
             </p>
             <div className="flex flex-col md:flex-row gap-4 mt-2">
               <button 
@@ -1708,8 +1775,8 @@ function SettingsView({
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe</label>
-              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="URL do script da equipe..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipa</label>
+              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="URL do script da equipa..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
             </div>
 
             <div className="flex flex-col gap-2">
