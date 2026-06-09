@@ -172,7 +172,7 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
 // ==========================================
 export default function App() {
   const [data, setData] = useState([]);
-  const [equipe, setEquipe] = useState([]); // Lista falsa foi removida para garantir leitura real do BD
+  const [equipe, setEquipe] = useState([]); // Lista 100% vazia, depende do banco
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
@@ -199,7 +199,7 @@ export default function App() {
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
+  // MOTOR CÍCLICO MONDRIAN
   const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson];
   const [accentIndex, setAccentIndex] = useState(0);
   const accentColor = accentColors[accentIndex];
@@ -268,7 +268,7 @@ export default function App() {
             const jsonEq = JSON.parse(textEq);
             const formattedEq = jsonEq.map(item => {
               let cleanItem = {};
-              // Limpa todos os cabeçalhos e valores para evitar falhas por espaços ocultos da planilha
+              // Limpeza robusta: removemos espaços extras dos cabeçalhos para evitar desencontros
               for (let key in item) {
                 let val = item[key];
                 if (typeof val === 'string') val = val.trim();
@@ -341,13 +341,13 @@ export default function App() {
   };
 
   const handleAddEquipe = async (newData) => {
-    const nome = newData['Nome do Assessor'];
+    const nome = newData['Nome do Assessor'] || newData['Nome'] || 'Novo Membro';
     setEquipe(prev => [...prev, { ...newData, Nome: nome }]);
     if (webhookEquipe) {
       try {
         await fetch(webhookEquipe, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'add', ...newData })
+          body: JSON.stringify({ action: 'add', newData: newData })
         });
       } catch (error) { console.error("Erro ao adicionar na equipe", error); }
     } else {
@@ -384,7 +384,7 @@ export default function App() {
       try {
         await fetch(webhookEquipe, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'delete', ENTIDADE: nomeAssessor }) 
+          body: JSON.stringify({ action: 'delete', NOME_ORIGINAL: nomeAssessor }) 
         });
       } catch (error) { console.error("Erro ao deletar equipe", error); }
     }
@@ -714,12 +714,13 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
   const [formData, setFormData] = useState({});
   const [originalEntity, setOriginalEntity] = useState(null);
 
-  const COLUMNS = [
-    "Nome do Assessor", "E-mail do Assessor", "E-mail outro", "Nome Completo", "Foto do Assessor", "Coordenação"
-  ];
+  // A MÁGICA DINÂMICA: Lê os cabeçalhos exatamente como estão na planilha!
+  const dynamicColumns = equipe.length > 0 
+    ? Object.keys(equipe[0]).filter(k => k !== 'Nome') 
+    : [ "Nome do Assessor", "E-mail do Assessor", "E-mail outro", "Nome Completo", "Foto do Assessor", "Coordenação" ];
 
   const openNewForm = () => {
-    const emptyForm = COLUMNS.reduce((acc, col) => ({ ...acc, [col]: '' }), {});
+    const emptyForm = dynamicColumns.reduce((acc, col) => ({ ...acc, [col]: '' }), {});
     setFormData(emptyForm);
     setOriginalEntity(null);
     setIsFormOpen(true);
@@ -810,8 +811,8 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="flex justify-between items-start mb-6">
                         <div className={`w-16 h-16 border-[4px] border-current flex items-center justify-center overflow-hidden shrink-0 ${theme.bg}`}>
-                          {member["Foto do Assessor"] ? (
-                            <img src={member["Foto do Assessor"]} alt="Foto" className="w-full h-full object-cover" />
+                          {member["Foto do Assessor"] || member["Foto"] ? (
+                            <img src={member["Foto do Assessor"] || member["Foto"]} alt="Foto" className="w-full h-full object-cover" />
                           ) : (
                             <UserIcon size={32} className="opacity-30" />
                           )}
@@ -831,32 +832,20 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
                         {member.Nome || "Sem Nome"}
                       </h3>
                       
-                      {member["Coordenação"] && (
-                        <div className="inline-block border-[3px] border-current text-black px-2 py-1 text-[10px] font-black uppercase tracking-widest mb-4 self-start bg-[#FFDB58]">
-                          {member["Coordenação"]}
-                        </div>
-                      )}
-
+                      {/* RENDERIZAÇÃO DINÂMICA DAS INFORMAÇÕES EXTRAS */}
                       <div className="space-y-3 mt-auto pt-4 border-t-[3px] border-dashed border-gray-500 opacity-90">
-                        {member["Nome Completo"] && (
-                          <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Nome Completo</p>
-                            <p className="text-sm font-bold truncate" title={member["Nome Completo"]}>{member["Nome Completo"]}</p>
-                          </div>
-                        )}
-                        {member["E-mail do Assessor"] && (
-                          <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">E-mail Principal</p>
-                            <p className="text-sm truncate" title={member["E-mail do Assessor"]}>{member["E-mail do Assessor"]}</p>
-                          </div>
-                        )}
-                        {member["E-mail outro"] && (
-                          <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">E-mail Secundário</p>
-                            <p className="text-sm truncate" title={member["E-mail outro"]}>{member["E-mail outro"]}</p>
-                          </div>
-                        )}
+                        {Object.entries(member).map(([key, val]) => {
+                          // Esconde chaves internas, chaves vazias e a foto.
+                          if (!val || ['Nome', 'Nome do Assessor', 'Foto do Assessor', 'Foto'].includes(key)) return null;
+                          return (
+                            <div key={key}>
+                              <p className="text-[10px] font-black uppercase tracking-widest opacity-50">{key}</p>
+                              <p className="text-sm font-bold truncate" title={val}>{val}</p>
+                            </div>
+                          );
+                        })}
                       </div>
+
                     </div>
                   </div>
                 );
@@ -869,6 +858,11 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
             <div className="flex flex-col gap-3">
               {equipe.map((member, index) => {
                 const accent = getRandomAccentColor();
+                
+                // Busca o primeiro campo que contenha "mail" para exibir em destaque na lista
+                const emailField = Object.entries(member).find(([k, v]) => v && k.toLowerCase().includes('mail'));
+                const emailValue = emailField ? emailField[1] : '-';
+
                 return (
                   <div 
                     key={index} 
@@ -877,8 +871,8 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
                     <div className="absolute left-0 top-0 bottom-0 w-3 border-r-[4px] border-current" style={{ backgroundColor: accent }}></div>
                     
                     <div className={`w-12 h-12 shrink-0 border-[3px] border-current flex items-center justify-center overflow-hidden ${theme.bg}`}>
-                      {member["Foto do Assessor"] ? (
-                        <img src={member["Foto do Assessor"]} alt="Foto" className="w-full h-full object-cover" />
+                      {member["Foto do Assessor"] || member["Foto"] ? (
+                        <img src={member["Foto do Assessor"] || member["Foto"]} alt="Foto" className="w-full h-full object-cover" />
                       ) : (
                         <UserIcon size={24} className="opacity-30" />
                       )}
@@ -895,8 +889,8 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
                       )}
                     </div>
 
-                    <div className="hidden lg:block w-64 shrink-0 text-sm opacity-80 truncate" title={member["E-mail do Assessor"] || member["E-mail outro"]}>
-                      {member["E-mail do Assessor"] || member["E-mail outro"] || '-'}
+                    <div className="hidden lg:block w-64 shrink-0 text-sm opacity-80 truncate" title={emailValue}>
+                      {emailValue}
                     </div>
 
                     <div className="w-32 shrink-0">
@@ -923,7 +917,7 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
         </>
       )}
 
-      {/* MODAL DE FORMULÁRIO MONDRIAN DA EQUIPE */}
+      {/* MODAL DE FORMULÁRIO MONDRIAN DA EQUIPE (Totalmente Dinâmico) */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row border-[6px] border-current shadow-[10px_10px_0px_rgba(0,0,0,0.5)] ${theme.cardBg}`}>
@@ -951,29 +945,31 @@ function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, th
 
               <form onSubmit={handleSave} className="p-8 flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* O campo principal (Chave) é sempre o primeiro */}
                   <div className="md:col-span-2">
                     <label className="block text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2">
-                      Nome do Articulador <span style={{ color: COLORS.crimson }}>*</span>
+                      {dynamicColumns[0] || 'Nome do Assessor'} <span style={{ color: COLORS.crimson }}>*</span>
                       <span className="text-[9px] font-normal opacity-60">(Usado como identificador de Chave)</span>
                     </label>
                     <input 
                       type="text" 
                       required
-                      value={formData["Nome do Assessor"] || ''}
-                      onChange={(e) => setFormData(prev => ({ ...prev, "Nome do Assessor": e.target.value }))}
-                      className={`w-full p-4 text-lg font-bold border-[4px] border-current outline-none transition-colors focus:border-[#FFDB58] ${theme.inputBg}`}
+                      value={formData[dynamicColumns[0]] || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, [dynamicColumns[0]]: e.target.value }))}
+                      className={`w-full p-4 text-lg font-bold border-[4px] border-current outline-none transition-colors focus:border-sky-500 ${theme.inputBg}`}
                       placeholder="Ex: Marquito"
                     />
                   </div>
 
-                  {COLUMNS.filter(c => c !== "Nome do Assessor").map((col) => (
-                    <div key={col} className={col === "Nome Completo" ? "md:col-span-2" : ""}>
+                  {/* Gera os outros campos automaticamente com base no Google Sheets */}
+                  {dynamicColumns.slice(1).map((col) => (
+                    <div key={col} className={col.toLowerCase().includes("nome") ? "md:col-span-2" : ""}>
                       <label className="block text-xs font-black uppercase tracking-widest mb-2">{col}</label>
                       <input 
                         type="text" 
                         value={formData[col] || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, [col]: e.target.value }))}
-                        className={`w-full p-3 font-bold border-[4px] border-current outline-none transition-colors focus:border-[#FFDB58] ${theme.inputBg}`}
+                        className={`w-full p-3 font-bold border-[4px] border-current outline-none transition-colors focus:border-sky-500 ${theme.inputBg}`}
                         placeholder={`Inserir ${col.toLowerCase()}...`}
                       />
                     </div>
