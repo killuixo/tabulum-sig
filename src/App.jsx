@@ -38,15 +38,33 @@ const XIcon = (p) => <Icon {...p} path={<><line x1="18" y1="6" x2="6" y2="18"/><
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
-  mustard: '#FFDB58', // Amarelo Mostarda (Ciclo 1)
-  cyan: '#00b7eb', // Ciano confortável (Ciclo 2)
-  crimson: '#DC143C', // Carmesim (Ciclo 3)
+  mustard: '#FFDB58', 
+  cyan: '#00b7eb', 
+  crimson: '#DC143C', 
   white: '#FFFFFF', black: '#000000', darkBg: '#0f0f0f', darkCard: '#1a1a1a'
 };
 
 const getRandomAccentColor = () => {
   const accents = [COLORS.crimson, COLORS.cyan, COLORS.mustard];
   return accents[Math.floor(Math.random() * accents.length)];
+};
+
+// Funções Seguras para LocalStorage (Evita Crash em Iframes Restritos)
+const safeGetStorage = (key, defaultVal) => {
+  try {
+    const val = window.localStorage.getItem(key);
+    return val !== null ? val : defaultVal;
+  } catch (e) {
+    return defaultVal;
+  }
+};
+
+const safeSetStorage = (key, val) => {
+  try {
+    window.localStorage.setItem(key, val);
+  } catch (e) {
+    // Ignora silenciosamente se o navegador bloquear
+  }
 };
 
 const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
@@ -78,7 +96,6 @@ const DEFAULT_EQUIPE = [
   { Nome: 'Tânia' }, { Nome: 'Toninho' }, { Nome: 'Victor Klauck' }, { Nome: 'Vina' }, { Nome: 'Xalinska' }
 ];
 
-// Helper para obter cores de Status Kanban
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
   if (s.includes('aguardando')) return COLORS.crimson;
@@ -171,20 +188,23 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
-  // Ajustes Locais (Navegador)
+  // Ajustes Locais Seguros
   const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('tabulum_dark');
-    return saved !== null ? JSON.parse(saved) : true;
+    const saved = safeGetStorage('tabulum_dark', null);
+    if (saved !== null) {
+      try { return JSON.parse(saved); } catch(e) { return true; }
+    }
+    return true;
   });
+  
   const [fontSizeLevel, setFontSizeLevel] = useState(() => {
-    const saved = localStorage.getItem('tabulum_font');
+    const saved = safeGetStorage('tabulum_font', null);
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  // URLs de Rede (Memória Local vs Matriz Global)
-  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
-  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
-  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
+  const [webhookUtilidade, setWebhookUtilidade] = useState(() => safeGetStorage('tabulum_wh_utilidade', DEFAULT_WEBHOOK_UTILIDADE));
+  const [webhookEquipe, setWebhookEquipe] = useState(() => safeGetStorage('tabulum_wh_equipe', DEFAULT_WEBHOOK_EQUIPE));
+  const [emailCentral, setEmailCentral] = useState(() => safeGetStorage('tabulum_email', DEFAULT_EMAIL_CENTRAL));
 
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
@@ -208,11 +228,11 @@ export default function App() {
     setView('articulator_details');
   };
 
-  useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
-  useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
-  useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
-  useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
-  useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
+  useEffect(() => { safeSetStorage('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
+  useEffect(() => { safeSetStorage('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
+  useEffect(() => { safeSetStorage('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
+  useEffect(() => { safeSetStorage('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
+  useEffect(() => { safeSetStorage('tabulum_email', emailCentral); }, [emailCentral]);
 
   useEffect(() => { 
     fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
@@ -313,7 +333,6 @@ export default function App() {
     }
   };
 
-  // Funções de Gestão de Equipe (Adicionar, Atualizar, Deletar)
   const handleAddEquipe = async (newData) => {
     const nome = newData['Nome do Assessor'];
     setEquipe(prev => [...prev, { ...newData, Nome: nome }]);
@@ -432,7 +451,7 @@ export default function App() {
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div>
             <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-cyan-600 dark:text-cyan-400">Sist. Integrado de Gestão • Dep. Marquito</p>
+            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-[#00b7eb] dark:text-[#00b7eb]">Sist. Integrado de Gestão • Dep. Marquito</p>
           </div>
           <div className="hidden md:flex gap-2">
             <div className="w-8 h-8" style={{ backgroundColor: COLORS.cyan, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
@@ -699,7 +718,6 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
   };
 
   const openEditForm = (member) => {
-    // Carrega dados pro form, priorizando a chave normalizada se faltar algo
     const safeMember = { ...member };
     if (!safeMember["Nome do Assessor"]) safeMember["Nome do Assessor"] = member.Nome;
     setFormData(safeMember);
@@ -727,22 +745,19 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
     <div className={`w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200 h-full`}>
       {/* HEADER MONDRIAN DA EQUIPE */}
       <header className={`border-b-[4px] border-current p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden ${theme.cardBg}`}>
-        {/* Elemento Decorativo Mondrian no Header */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-mustard border-l-[4px] border-b-[4px] border-current translate-x-16 -translate-y-16 rotate-12 z-0 hidden md:block pointer-events-none"></div>
-        <div className="absolute top-0 left-1/2 w-16 h-32 bg-cyan border-[4px] border-current -translate-y-16 z-0 hidden lg:block pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 border-l-[4px] border-b-[4px] border-current translate-x-16 -translate-y-16 rotate-12 z-0 hidden md:block pointer-events-none bg-[#FFDB58]"></div>
+        <div className="absolute top-0 left-1/2 w-16 h-32 border-[4px] border-current -translate-y-16 z-0 hidden lg:block pointer-events-none bg-[#00b7eb]"></div>
 
         <div className="relative z-10 flex flex-col">
           <div className="mb-1 md:mb-2">
-            <h2 className="font-black tracking-widest text-sm uppercase opacity-70 text-sky-600 dark:text-sky-400">Banco de Dados da Secretaria / RH</h2>
+            <h2 className="font-black tracking-widest text-sm uppercase opacity-70 text-[#00b7eb] dark:text-[#00b7eb]">Banco de Dados da Secretaria / RH</h2>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
             <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Gestão de Equipe</h1>
-            {/* Botão Vermelho Disfarçado (Easter Egg Mondrian) */}
             <button 
               onClick={openNewForm}
               title="Novo Articulador"
-              className="w-8 h-8 md:w-10 md:h-10 shrink-0 border-[3px] md:border-[4px] border-current cursor-pointer hover:bg-black transition-all duration-300 flex items-center justify-center group"
-              style={{ backgroundColor: COLORS.crimson }}
+              className="w-8 h-8 md:w-10 md:h-10 shrink-0 border-[3px] md:border-[4px] border-current cursor-pointer hover:bg-black transition-all duration-300 flex items-center justify-center group bg-[#DC143C]"
             >
               <span className="text-white font-black text-2xl md:text-3xl leading-none pb-1 group-hover:rotate-90 transition-transform duration-300">+</span>
             </button>
@@ -750,7 +765,6 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
         </div>
 
         <div className="flex gap-4 relative z-10 w-full md:w-auto">
-          {/* Alternador Grade / Lista */}
           <button 
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             className={`p-3 border-[4px] border-current transition-colors ${isDark ? 'bg-[#1a1a1a] hover:bg-white hover:text-black' : 'bg-white hover:bg-black hover:text-white'}`}
@@ -789,10 +803,10 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                         </div>
                         
                         <div className="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => openEditForm(member)} className={`p-2 border-[3px] border-current transition-colors hover:text-black hover:bg-cyan`}>
+                          <button onClick={() => openEditForm(member)} className={`p-2 border-[3px] border-current transition-colors hover:text-black hover:bg-[#00b7eb]`}>
                             <Edit2 size={16} />
                           </button>
-                          <button onClick={() => onDelete(member.Nome)} className={`p-2 border-[3px] border-current transition-colors hover:bg-crimson hover:text-white`}>
+                          <button onClick={() => onDelete(member.Nome)} className={`p-2 border-[3px] border-current transition-colors hover:bg-[#DC143C] hover:text-white`}>
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -803,7 +817,7 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                       </h3>
                       
                       {member["Coordenação"] && (
-                        <div className="inline-block border-[3px] border-current text-black px-2 py-1 text-[10px] font-black uppercase tracking-widest mb-4 self-start" style={{ backgroundColor: COLORS.mustard }}>
+                        <div className="inline-block border-[3px] border-current text-black px-2 py-1 text-[10px] font-black uppercase tracking-widest mb-4 self-start bg-[#FFDB58]">
                           {member["Coordenação"]}
                         </div>
                       )}
@@ -866,17 +880,17 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
 
                     <div className="w-32 shrink-0">
                       {member["Coordenação"] && (
-                        <span className="inline-block border-[2px] border-current text-black px-2 py-1 text-[9px] font-black uppercase tracking-widest truncate max-w-full" style={{ backgroundColor: COLORS.mustard }} title={member["Coordenação"]}>
+                        <span className="inline-block border-[2px] border-current text-black px-2 py-1 text-[9px] font-black uppercase tracking-widest truncate max-w-full bg-[#FFDB58]" title={member["Coordenação"]}>
                           {member["Coordenação"]}
                         </span>
                       )}
                     </div>
 
                     <div className="flex gap-2 w-full md:w-auto justify-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity mt-2 md:mt-0">
-                      <button onClick={() => openEditForm(member)} className="p-2 border-[3px] border-current transition-colors hover:bg-cyan hover:text-black">
+                      <button onClick={() => openEditForm(member)} className="p-2 border-[3px] border-current transition-colors hover:bg-[#00b7eb] hover:text-black">
                         <Edit2 size={16} />
                       </button>
-                      <button onClick={() => onDelete(member.Nome)} className="p-2 border-[3px] border-current transition-colors hover:bg-crimson hover:text-white">
+                      <button onClick={() => onDelete(member.Nome)} className="p-2 border-[3px] border-current transition-colors hover:bg-[#DC143C] hover:text-white">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -894,15 +908,15 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
           <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row border-[6px] border-current shadow-[10px_10px_0px_rgba(0,0,0,0.5)] ${theme.cardBg}`}>
             
             <div className="hidden md:flex w-24 flex-col border-r-[4px] border-current">
-              <div className="flex-1 border-b-[4px] border-current" style={{ backgroundColor: COLORS.crimson }}></div>
-              <div className="h-32 border-b-[4px] border-current" style={{ backgroundColor: COLORS.mustard }}></div>
-              <div className="h-48" style={{ backgroundColor: COLORS.cyan }}></div>
+              <div className="flex-1 border-b-[4px] border-current bg-[#DC143C]"></div>
+              <div className="h-32 border-b-[4px] border-current bg-[#FFDB58]"></div>
+              <div className="h-48 bg-[#00b7eb]"></div>
             </div>
 
             <div className="flex-1 flex flex-col relative">
               <button 
                 onClick={closeForm}
-                className={`absolute top-4 right-4 p-2 border-[4px] border-current transition-colors z-10 ${theme.bg} hover:bg-crimson hover:text-white`}
+                className={`absolute top-4 right-4 p-2 border-[4px] border-current transition-colors z-10 ${theme.bg} hover:bg-[#DC143C] hover:text-white`}
               >
                 <XIcon size={20} />
               </button>
@@ -926,8 +940,7 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                       required
                       value={formData["Nome do Assessor"] || ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, "Nome do Assessor": e.target.value }))}
-                      className={`w-full p-4 text-lg font-bold border-[4px] border-current outline-none transition-colors ${theme.inputBg}`}
-                      style={{ focusBorderColor: COLORS.mustard }}
+                      className={`w-full p-4 text-lg font-bold border-[4px] border-current outline-none transition-colors focus:border-[#FFDB58] ${theme.inputBg}`}
                       placeholder="Ex: Marquito"
                     />
                   </div>
@@ -939,7 +952,7 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                         type="text" 
                         value={formData[col] || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, [col]: e.target.value }))}
-                        className={`w-full p-3 font-bold border-[4px] border-current outline-none transition-colors ${theme.inputBg}`}
+                        className={`w-full p-3 font-bold border-[4px] border-current outline-none transition-colors focus:border-[#FFDB58] ${theme.inputBg}`}
                         placeholder={`Inserir ${col.toLowerCase()}...`}
                       />
                     </div>
@@ -956,8 +969,7 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                   </button>
                   <button 
                     type="submit" 
-                    className={`px-8 py-4 font-black uppercase tracking-widest border-[4px] border-current text-black hover:-translate-y-1 transition-transform flex items-center gap-3`}
-                    style={{ backgroundColor: COLORS.cyan }}
+                    className={`px-8 py-4 font-black uppercase tracking-widest border-[4px] border-current text-black hover:-translate-y-1 transition-transform flex items-center gap-3 bg-[#00b7eb]`}
                   >
                     <SaveIcon size={20} /> Salvar Articulador
                   </button>
@@ -1094,7 +1106,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               );
             })}
             
-            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-sky-600 hover:text-white' : 'bg-black text-white hover:bg-sky-600'}`}>
+            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-[#00b7eb] hover:text-white' : 'bg-black text-white hover:bg-[#00b7eb]'}`}>
               <Mail size={18} /> Enviar Malote por E-mail
             </a>
           </div>
@@ -1112,11 +1124,11 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         
         {isPadronizadorOpen && (
           <div className="p-6 pt-0 border-t-[4px] border-current mt-2">
-            <div className="mb-6 mt-4 p-4 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+            <div className="mb-6 mt-4 p-4 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
               <p className="text-[12px] font-bold leading-relaxed">
                 ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do arquivo</u> (ex: 001-ATA.pdf). 
                 É estritamente necessário que o Assessor verifique manualmente o conteúdo do documento para garantir que atenda às exigências legais.
-                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-sky-600 text-sm">Consulte o Manual de Requisitos aqui.</button>
+                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-[#00b7eb] text-sm">Consulte o Manual de Requisitos aqui.</button>
               </p>
             </div>
 
@@ -1179,13 +1191,13 @@ function ManualModal({ onClose, theme, thick, isDark }) {
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
             <BookOpen size={32} /> Manual de Requisitos
           </h2>
-          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-sky-600 dark:text-sky-400">Pedido de Utilidade Pública Estadual</p>
+          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-[#00b7eb] dark:text-[#00b7eb]">Pedido de Utilidade Pública Estadual</p>
         </div>
 
         <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
           <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
-            <p className="mt-3 text-rose-600 dark:text-rose-400">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
+            <p className="mt-3 text-[#DC143C] dark:text-[#DC143C]">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
             <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
           </section>
 
@@ -1194,17 +1206,17 @@ function ManualModal({ onClose, theme, thick, isDark }) {
             
             <div className="space-y-4">
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">001 Ata de Fundação</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">001 Ata de Fundação</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
                   <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
@@ -1213,7 +1225,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">004 Declaração de não qualificação OSCIP</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">004 Declaração de não qualificação OSCIP</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
                   <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
@@ -1223,7 +1235,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">005 Declaração de funcionamento</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">005 Declaração de funcionamento</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
                   <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
@@ -1231,7 +1243,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 </ul>
               </div>
 
-              <div className="p-3 border-[2px] border-current bg-mustard/20">
+              <div className="p-3 border-[2px] border-current bg-[#FFDB58]/20">
                 <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
                 <ul className="list-disc pl-5 space-y-1 mb-3">
                   <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
@@ -1249,7 +1261,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">008 Estatuto da entidade</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">008 Estatuto da entidade</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Necessita <b>registro de cartório</b>.</li>
                   <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
@@ -1257,7 +1269,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">009 Relatório de Atividades</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">009 Relatório de Atividades</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
                   <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
@@ -1485,10 +1497,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
              {isPadronizadorOpen && (
                <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
-                 <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+                 <div className="mb-4 p-3 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
                    <p className="text-[10px] font-bold leading-relaxed">
                      ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
+                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-[#00b7eb]">Verifique os requisitos no Manual aqui.</button>
                    </p>
                  </div>
 
@@ -1504,7 +1516,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                          </div>
                          <div className="flex-shrink-0">
                            {!file ? (
-                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white transition-colors flex items-center gap-1">
+                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center gap-1">
                                <FileText className="w-3 h-3"/> Anexar <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
                              </label>
                            ) : (
