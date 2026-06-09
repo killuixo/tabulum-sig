@@ -39,9 +39,9 @@ const Key = (p) => <Icon {...p} path={<><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
-  mustard: '#FFDB58', // Amarelo Mostarda (Ciclo 1)
-  cyan: '#00b7eb', // Ciano confortável (Ciclo 2)
-  crimson: '#DC143C', // Carmesim (Ciclo 3)
+  mustard: '#FFDB58', // Amarelo Mostarda (Ciclo 1 / Neutros)
+  cyan: '#00b7eb', // Ciano confortável (Ciclo 2 / Sucessos)
+  crimson: '#DC143C', // Carmesim (Ciclo 3 / Erros e Perigo)
   white: '#FFFFFF', black: '#000000', darkBg: '#0f0f0f', darkCard: '#1a1a1a'
 };
 
@@ -134,7 +134,7 @@ function EditableField({ value, onSave, multiline = false, isDark, textClass = "
   return (
     <div className="group relative cursor-pointer flex-1 flex items-center min-h-[24px] w-full" onTouchStart={startPress} onTouchEnd={endPress} onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress} title={isUnlocked ? "Clique no ícone ou segure para editar" : "Desbloqueie para editar"}>
        <span className={textClass}>{value || '-'}</span>
-       <button onClick={handleEditClick} className={`absolute -right-5 top-0 opacity-0 group-hover:opacity-100 p-1 rounded-sm shadow-md transition-opacity ${isUnlocked ? 'bg-black text-white dark:bg-white dark:text-black' : 'bg-rose-600 text-white dark:bg-rose-400 dark:text-black'}`}>
+       <button onClick={handleEditClick} className={`absolute -right-5 top-0 opacity-0 group-hover:opacity-100 p-1 rounded-sm shadow-md transition-opacity ${isUnlocked ? 'bg-black text-white dark:bg-white dark:text-black' : 'theme-crimson'}`}>
          {isUnlocked ? <Edit2 size={12} /> : <Lock size={12} />}
        </button>
     </div>
@@ -177,7 +177,7 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
        ) : (
          <span className={textClass}>{value || '-'}</span>
        )}
-       <button onClick={handleEditClick} className={`opacity-0 group-hover:opacity-100 p-1 ml-1 rounded-sm shadow-md transition-opacity ${isUnlocked ? 'bg-black text-white dark:bg-white dark:text-black' : 'bg-rose-600 text-white dark:bg-rose-400 dark:text-black'}`}>
+       <button onClick={handleEditClick} className={`opacity-0 group-hover:opacity-100 p-1 ml-1 rounded-sm shadow-md transition-opacity ${isUnlocked ? 'bg-black text-white dark:bg-white dark:text-black' : 'theme-crimson'}`}>
          {isUnlocked ? <Edit2 size={12} /> : <Lock size={12} />}
        </button>
     </div>
@@ -453,8 +453,24 @@ export default function App() {
 
   const bThick = `border-[4px] ${themeConfig.border}`; const bMedium = `border-[2px] ${themeConfig.border}`;
 
+  // CLASSES MONDRIAN INJETADAS
+  const mondrianStyles = `
+    .theme-crimson { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
+    .hover-crimson:hover { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
+    .text-crimson { color: ${COLORS.crimson} !important; }
+    
+    .theme-cyan { background-color: ${COLORS.cyan} !important; color: black !important; border-color: ${COLORS.cyan} !important; }
+    .hover-cyan:hover { background-color: ${COLORS.cyan} !important; color: black !important; border-color: ${COLORS.cyan} !important; }
+    .text-cyan { color: ${COLORS.cyan} !important; }
+    
+    .theme-mustard { background-color: ${COLORS.mustard} !important; color: black !important; border-color: ${COLORS.mustard} !important; }
+    .hover-mustard:hover { background-color: ${COLORS.mustard} !important; color: black !important; border-color: ${COLORS.mustard} !important; }
+    .text-mustard { color: ${COLORS.mustard} !important; }
+  `;
+
   return (
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} ${fontSizes[fontSizeLevel]} transition-colors duration-300 flex flex-col`}>
+      <style>{mondrianStyles}</style>
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div 
@@ -463,12 +479,12 @@ export default function App() {
             title="Ir para o Kanban"
           >
             <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-cyan-600 dark:text-cyan-400">Sist. Integrado de Gestão • Dep. Marquito</p>
+            <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-1">Sist. Integrado de Gestão • Dep. Marquito</p>
           </div>
           <div className="hidden md:flex gap-2 items-center">
             <button 
               onClick={() => isUnlocked ? setIsUnlocked(false) : requireAuth()}
-              className={`flex items-center justify-center p-2 transition-all duration-300 hover:scale-110 opacity-50 hover:opacity-100 ${isUnlocked ? 'text-sky-500' : 'text-current'}`}
+              className={`flex items-center justify-center p-2 transition-all duration-300 hover:scale-110 opacity-50 hover:opacity-100 ${isUnlocked ? 'text-cyan' : 'text-current'}`}
               title={isUnlocked ? "Sessão Desbloqueada. Clique para Bloquear Edição" : "Sessão Bloqueada. Clique para Desbloquear Edição"}
             >
               {isUnlocked ? <Unlock size={20} /> : <Lock size={20} />}
@@ -554,8 +570,8 @@ export default function App() {
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
            <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} ${themeConfig.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
               <div className="flex items-center gap-3 border-b-[4px] border-current pb-2">
-                 <Lock size={24} style={{ color: accentColor }} />
-                 <h2 className="text-xl font-black uppercase tracking-widest">Acesso Restrito</h2>
+                 <Lock size={24} className="text-crimson" />
+                 <h2 className="text-xl font-black uppercase tracking-widest text-crimson">Acesso Restrito</h2>
               </div>
               <p className="text-sm font-bold opacity-80 leading-relaxed">
                  Insira a senha mestra para habilitar edições. Apenas usuários autorizados podem alterar o banco de dados.
@@ -598,7 +614,7 @@ export default function App() {
                  </button>
                  <button 
                     onClick={() => { setAuthModalOpen(false); setPendingAction(null); }}
-                    className="flex-1 p-3 bg-transparent font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current hover:-translate-y-1 transition-transform"
+                    className="flex-1 p-3 bg-transparent font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current hover:-translate-y-1 transition-transform hover-crimson"
                  >
                    Cancelar
                  </button>
@@ -787,7 +803,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
           <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
           <div>
             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.8em] text-sky-600 dark:text-sky-400">Banco de Dados da Secretaria / RH</p>
+            <p className="font-bold opacity-60 uppercase tracking-widest text-[0.8em]">Banco de Dados da Secretaria / RH</p>
           </div>
         </div>
 
@@ -804,7 +820,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
             <tbody>
               {equipe.map((membro, i) => (
                 <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
-                  <td className="p-4 border-r border-current font-black text-sky-600 dark:text-sky-400 group-hover:underline decoration-2">
+                  <td className="p-4 border-r border-current font-black group-hover:underline decoration-2">
                      {membro.Nome}
                   </td>
                   <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
@@ -848,7 +864,7 @@ function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, ac
       
       <div className="pr-10 border-b-[6px] border-current pb-4">
         <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
-        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words text-sky-600 dark:text-sky-400">
+        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
           <EditableField value={membro.Nome} onSave={(val) => onUpdate({ 'Nome do Assessor': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
         </h2>
         <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">
@@ -880,7 +896,7 @@ function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, ac
       </div>
       
       <div className="mt-4 border-t-[4px] border-current pt-4 flex flex-col sm:flex-row gap-4">
-        <button onClick={() => requireAuth(handleManualSave)} className={`flex-1 p-4 font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor] flex items-center justify-center gap-2 ${saveLabel === 'Salvo com sucesso!' ? 'bg-green-600 text-white border-green-600' : (isDark ? 'bg-white text-black' : 'bg-black text-white')}`}>
+        <button onClick={() => requireAuth(handleManualSave)} className={`flex-1 p-4 font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor] flex items-center justify-center gap-2 ${saveLabel === 'Salvo com sucesso!' ? 'theme-cyan' : (isDark ? 'bg-white text-black' : 'bg-black text-white')}`}>
           {isUnlocked ? <Save size={18} /> : <Lock size={18} />} {saveLabel}
         </button>
         <button onClick={onClose} className="flex-1 p-4 bg-transparent border-[4px] border-current font-black uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
@@ -966,7 +982,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
             accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth}
           />
           {(item['LINK']) && (
-             <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 font-black uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current transition-colors text-sky-600 dark:text-sky-400 hover:bg-sky-600 hover:text-white hover:border-sky-600 dark:hover:bg-sky-400 dark:hover:text-black`} title="Acompanhar Tramitação">
+             <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 font-black uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current transition-colors opacity-70 hover:opacity-100`} title="Acompanhar Tramitação">
                <ExternalLink size={14}/> Processo ALESC
              </a>
           )}
@@ -1015,9 +1031,9 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               <div className="col-span-2 mt-2 flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Estágio:</span> <EditableSelect value={item['ESTÁGIO ATUAL']} options={['Gabinete', 'Protocolo', 'CCJ', 'Plenário', 'Sancionado']} onSave={(val) => onUpdate({ 'ESTÁGIO ATUAL': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} /></div>
               <div className="col-span-2 mt-2 flex flex-col items-start">
                 <span className="opacity-70 text-[0.8em]">Acompanhar Tramitação (Link):</span>
-                <EditableField value={item['LINK']} onSave={(val) => onUpdate({ 'LINK': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-sky-500/50 hover:decoration-sky-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+                <EditableField value={item['LINK']} onSave={(val) => onUpdate({ 'LINK': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-current/50 hover:decoration-current transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
                 {(item['LINK']) && (
-                   <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-sky-600 dark:text-sky-400">
+                   <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline opacity-70 hover:opacity-100 transition-opacity">
                      <ExternalLink size={12}/> Abrir Link do Processo
                    </a>
                 )}
@@ -1026,12 +1042,12 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           </div>
           
           {/* CAIXA DO GOOGLE DRIVE */}
-          <div className={`p-4 border-[4px] transition-colors duration-500 mt-4`} style={{ borderColor: isDark ? '#22c55e' : '#16a34a' }}>
-            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: isDark ? '#22c55e' : '#16a34a', color: isDark ? '#22c55e' : '#16a34a' }}>Documentos no Drive</span>
+          <div className={`p-4 border-[4px] transition-colors duration-500 mt-4 border-current`}>
+            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1 border-current">Documentos no Drive</span>
             <div className="flex flex-col items-start">
-              <EditableField value={item['DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'DOCUMENTOS NO DRIVE': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-green-500/50 hover:decoration-green-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+              <EditableField value={item['DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'DOCUMENTOS NO DRIVE': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-current/50 hover:decoration-current transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
               {(item['DOCUMENTOS NO DRIVE']) && (
-                 <a href={item['DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-green-600 dark:text-green-400">
+                 <a href={item['DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline opacity-70 hover:opacity-100 transition-opacity">
                    <ExternalLink size={12}/> Abrir Pasta no Drive
                  </a>
               )}
@@ -1050,12 +1066,12 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                     {hasDoc && <CheckCircle2 size={14} className="text-black dark:text-white mix-blend-difference" />}
                   </div>
                   <span className={`font-bold text-[0.85em] transition-opacity ${hasDoc ? 'opacity-100' : 'opacity-50 group-hover:opacity-80'}`}>{displayLabel}</span>
-                  {!isUnlocked && <Lock size={12} className="ml-auto opacity-30 group-hover:opacity-100" />}
+                  {!isUnlocked && <Lock size={12} className="ml-auto opacity-30 group-hover:opacity-100 text-crimson" />}
                 </div>
               );
             })}
             
-            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-sky-600 hover:text-white' : 'bg-black text-white hover:bg-sky-600'}`}>
+            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'} hover-cyan`}>
               <Mail size={18} /> Enviar Malote por E-mail
             </a>
           </div>
@@ -1073,11 +1089,11 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         
         {isPadronizadorOpen && (
           <div className="p-6 pt-0 border-t-[4px] border-current mt-2">
-            <div className="mb-6 mt-4 p-4 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+            <div className="mb-6 mt-4 p-4 border-l-[4px] text-black dark:text-gray-200" style={{ backgroundColor: 'rgba(255,219,88,0.2)', borderColor: COLORS.mustard }}>
               <p className="text-[12px] font-bold leading-relaxed">
                 ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do arquivo</u> (ex: 001-ATA.pdf) para seu computador.
                 É estritamente necessário que o Assessor verifique manualmente o conteúdo do documento para garantir que atenda às exigências legais.
-                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-sky-600 text-sm">Consulte o Manual de Requisitos aqui.</button>
+                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 opacity-70 hover:opacity-100 text-sm">Consulte o Manual de Requisitos aqui.</button>
               </p>
             </div>
 
@@ -1088,7 +1104,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                 const previewName = stagedFile ? `${DOCS_PREFIX_MAP[key]} - ${safeEntidade}.${stagedFile.name.split('.').pop()}` : '';
 
                 return (
-                  <div key={idx} className={`flex flex-col md:flex-row md:items-center justify-between p-3 border-[3px] border-current transition-colors ${stagedFile ? (isDark ? 'bg-sky-900' : 'bg-sky-200') : 'bg-transparent'}`}>
+                  <div key={idx} className={`flex flex-col md:flex-row md:items-center justify-between p-3 border-[3px] border-current transition-colors ${stagedFile ? (isDark ? 'bg-white/10' : 'bg-black/5') : 'bg-transparent'}`}>
                     <div className="flex-1 pr-4 mb-2 md:mb-0">
                       <span className="font-black uppercase tracking-widest text-[0.75em] opacity-70 block mb-1">{key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO/NÃO REMUNERADA' : key}</span>
                       {stagedFile ? <span className="font-mono text-[0.8em] font-bold truncate block">{previewName}</span> : <span className="font-bold text-[0.8em] italic opacity-50">Nenhum arquivo anexado.</span>}
@@ -1101,10 +1117,10 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                         </label>
                       ) : (
                         <>
-                          <button onClick={() => handleDownloadStandard(key)} className="px-4 py-2 bg-black text-white dark:bg-white dark:text-black border-[2px] border-current font-black uppercase tracking-widest text-[0.7em] hover:-translate-y-1 transition-transform flex items-center gap-2">
+                          <button onClick={() => handleDownloadStandard(key)} className="px-4 py-2 bg-black text-white dark:bg-white dark:text-black border-[2px] border-current font-black uppercase tracking-widest text-[0.7em] hover:-translate-y-1 transition-transform flex items-center gap-2 hover-cyan">
                             <DownloadCloud className="w-4 h-4" /> Salvar Formatado
                           </button>
-                          <button onClick={() => setStagedFiles(prev => {const newObj = {...prev}; delete newObj[key]; return newObj;})} className="px-3 py-2 border-[2px] border-current text-[0.7em] hover:bg-rose-500 hover:text-white transition-colors" title="Remover">X</button>
+                          <button onClick={() => setStagedFiles(prev => {const newObj = {...prev}; delete newObj[key]; return newObj;})} className="px-3 py-2 border-[2px] border-current text-[0.7em] transition-colors hover-crimson" title="Remover">X</button>
                         </>
                       )}
                     </div>
@@ -1117,11 +1133,11 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center mt-4 border-t-[4px] border-current pt-4 gap-4">
-        <button onClick={() => requireAuth(onDelete)} className="flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 hover:bg-rose-600 hover:text-white transition-all hover:border-rose-600 w-full sm:w-auto justify-center">
+        <button onClick={() => requireAuth(onDelete)} className={`flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 transition-all w-full sm:w-auto justify-center hover-crimson`}>
           {isUnlocked ? <Trash2 size={16} /> : <Lock size={16} />} Apagar Registro
         </button>
 
-        <button onClick={() => requireAuth(handleManualSave)} className={`flex items-center justify-center gap-2 px-8 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current transition-all shadow-[4px_4px_0px_currentColor] w-full sm:w-auto hover:-translate-y-1 ${saveLabel === 'Salvo com sucesso!' ? 'bg-green-600 text-white border-green-600 shadow-[4px_4px_0px_#16a34a]' : (isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800')}`}>
+        <button onClick={() => requireAuth(handleManualSave)} className={`flex items-center justify-center gap-2 px-8 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current transition-all w-full sm:w-auto hover:-translate-y-1 ${saveLabel === 'Salvo com sucesso!' ? 'theme-cyan shadow-[4px_4px_0px_currentColor]' : (isDark ? 'bg-white text-black hover:bg-gray-200 shadow-[4px_4px_0px_white]' : 'bg-black text-white hover:bg-gray-800 shadow-[4px_4px_0px_black]')}`}>
           {isUnlocked ? <Save size={16} /> : <Lock size={16} />} {saveLabel}
         </button>
       </div>
@@ -1137,20 +1153,20 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 function ManualModal({ onClose, theme, thick, isDark }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className={`w-full max-w-4xl p-6 md:p-10 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,183,235,1)] relative max-h-[95vh] overflow-hidden`}>
+      <div className={`w-full max-w-4xl p-6 md:p-10 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_currentColor] relative max-h-[95vh] overflow-hidden`}>
         <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform bg-black text-white dark:bg-white dark:text-black w-10 h-10 flex items-center justify-center">X</button>
         
         <div className="border-b-[6px] border-current pb-4 pr-12 flex-shrink-0">
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
             <BookOpen size={32} /> Manual de Requisitos
           </h2>
-          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-sky-600 dark:text-sky-400">Pedido de Utilidade Pública Estadual</p>
+          <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-2">Pedido de Utilidade Pública Estadual</p>
         </div>
 
         <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
           <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
-            <p className="mt-3 text-rose-600 dark:text-rose-400">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
+            <p className="mt-3 text-crimson">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
             <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
           </section>
 
@@ -1159,17 +1175,17 @@ function ManualModal({ onClose, theme, thick, isDark }) {
             
             <div className="space-y-4">
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">001 Ata de Fundação</h4>
+                <h4 className="font-black uppercase mb-1">001 Ata de Fundação</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
+                <h4 className="font-black uppercase mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
+                <h4 className="font-black uppercase mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
                   <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
@@ -1178,7 +1194,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">004 Declaração de não qualificação OSCIP</h4>
+                <h4 className="font-black uppercase mb-1">004 Declaração de não qualificação OSCIP</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
                   <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
@@ -1188,7 +1204,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">005 Declaração de funcionamento</h4>
+                <h4 className="font-black uppercase mb-1">005 Declaração de funcionamento</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
                   <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
@@ -1196,7 +1212,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 </ul>
               </div>
 
-              <div className="p-3 border-[2px] border-current bg-mustard/20">
+              <div className="p-3 border-[2px] border-current" style={{ backgroundColor: 'rgba(255,219,88,0.2)', borderColor: COLORS.mustard }}>
                 <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
                 <ul className="list-disc pl-5 space-y-1 mb-3">
                   <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
@@ -1214,7 +1230,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">008 Estatuto da entidade</h4>
+                <h4 className="font-black uppercase mb-1">008 Estatuto da entidade</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Necessita <b>registro de cartório</b>.</li>
                   <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
@@ -1222,7 +1238,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">009 Relatório de Atividades</h4>
+                <h4 className="font-black uppercase mb-1">009 Relatório de Atividades</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
                   <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
@@ -1277,7 +1293,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
       <div className="mt-4 flex flex-col gap-3">
         <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
         {processos.map((p, i) => (
-          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all ${theme.bg}`}>
+          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all ${theme.bg}`}>
             <div>
               <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
               <span className="font-bold opacity-70 text-[0.8em]">{p['DATA DA SOLICITAÇÃO']}</span>
@@ -1367,11 +1383,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
   const filteredEquipe = equipe.filter(p => p.Nome.toLowerCase().includes(busca.toLowerCase()));
 
   if (successMode) {
-    const hasFiles = Object.keys(stagedFiles).length > 0;
     return (
       <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
-        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.3)] border-[3px]`} style={{ borderColor: accentColor }}>
-          <CheckCircle2 className="w-20 h-20 mx-auto" style={{ color: accentColor }} />
+        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} shadow-[8px_8px_0px_currentColor] border-[3px]`} style={{ borderColor: COLORS.cyan }}>
+          <CheckCircle2 className="w-20 h-20 mx-auto text-cyan" />
           <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
           <p className="font-bold opacity-80 leading-relaxed text-sm">
             Os dados da entidade foram inseridos com sucesso.<br/>
@@ -1450,7 +1465,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
             </div>
           </div>
 
-          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] flex items-center justify-center gap-3 ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
+          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_currentColor] flex items-center justify-center gap-3 ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
             <Lock size={20}/> {sending ? 'Salvando...' : 'Desbloquear e Salvar Ficha Oficial'}
           </button>
 
@@ -1464,10 +1479,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
              {isPadronizadorOpen && (
                <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
-                 <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+                 <div className="mb-4 p-3 border-l-[4px] text-black dark:text-gray-200" style={{ backgroundColor: 'rgba(255,219,88,0.2)', borderColor: COLORS.mustard }}>
                    <p className="text-[10px] font-bold leading-relaxed">
                      ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
+                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 opacity-70 hover:opacity-100">Verifique os requisitos no Manual aqui.</button>
                    </p>
                  </div>
 
@@ -1476,18 +1491,18 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                      const file = stagedFiles[key];
                      const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
                      return (
-                       <div key={idx} className={`p-2 border-[2px] border-current flex items-center justify-between transition-colors ${file ? (isDark ? 'bg-sky-900 border-sky-500' : 'bg-sky-200 border-sky-600') : ''}`}>
+                       <div key={idx} className={`p-2 border-[2px] border-current flex items-center justify-between transition-colors ${file ? (isDark ? 'bg-white/10' : 'bg-black/5') : 'bg-transparent'}`}>
                          <div className="flex-1 overflow-hidden pr-2">
                             <span className="font-black uppercase tracking-widest text-[9px] block mb-0.5 opacity-80 truncate">{displayLabel}</span>
                             {file ? <span className="font-mono text-[9px] font-bold truncate block">{file.name}</span> : <span className="font-bold text-[9px] italic opacity-40">Nenhum</span>}
                          </div>
                          <div className="flex-shrink-0">
                            {!file ? (
-                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white transition-colors flex items-center gap-1">
+                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center gap-1">
                                <FileText className="w-3 h-3"/> Anexar <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
                              </label>
                            ) : (
-                             <button type="button" onClick={() => setStagedFiles(prev => {const n = {...prev}; delete n[key]; return n;})} className="px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors">X</button>
+                             <button type="button" onClick={() => setStagedFiles(prev => {const n = {...prev}; delete n[key]; return n;})} className="px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] transition-colors hover-crimson">X</button>
                            )}
                          </div>
                        </div>
@@ -1499,7 +1514,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                      type="button" 
                      onClick={executeDownloads} 
                      disabled={Object.keys(stagedFiles).length === 0}
-                     className={`w-full p-3 font-black uppercase tracking-widest text-[10px] border-[2px] border-current transition-transform flex items-center justify-center gap-2 mt-2 ${Object.keys(stagedFiles).length > 0 ? 'bg-black text-white dark:bg-white dark:text-black hover:-translate-y-1 cursor-pointer' : 'opacity-40 cursor-not-allowed grayscale'}`}
+                     className={`w-full p-3 font-black uppercase tracking-widest text-[10px] border-[2px] border-current transition-transform flex items-center justify-center gap-2 mt-2 ${Object.keys(stagedFiles).length > 0 ? 'bg-black text-white dark:bg-white dark:text-black hover:-translate-y-1 cursor-pointer hover-cyan' : 'opacity-40 cursor-not-allowed grayscale'}`}
                  >
                      <DownloadCloud size={16} /> Baixar Documentos Formatados
                  </button>
@@ -1615,7 +1630,7 @@ function SettingsView({
 
             <button 
               onClick={handleSavePassword}
-              className="mt-2 p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[12px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
+              className="mt-2 p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[12px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 hover-cyan"
             >
               <Lock size={16} /> Confirmar Alteração de Senha
             </button>
@@ -1705,7 +1720,7 @@ function SettingsView({
             <div className="flex flex-col md:flex-row gap-4 mt-2">
               <button 
                 onClick={exportCSV}
-                className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest hover:opacity-80 transition-colors`}
+                className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest transition-colors hover-cyan`}
                 style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}
               >
                 <Download size={20} /> Baixar CSV
@@ -1738,8 +1753,8 @@ function SettingsView({
 
         {openNetwork && (
           <div className="mt-4 p-5 flex flex-col gap-6 bg-black/5 dark:bg-white/5 border-[2px] transition-colors duration-300" style={{ borderColor: accentColor }}>
-            <div className="p-3 border-l-[4px] border-red-500 text-black dark:text-gray-200">
-              <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest text-red-600 dark:text-red-400">
+            <div className="p-3 border-l-[4px] text-black dark:text-gray-200" style={{ borderColor: COLORS.crimson }}>
+              <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest text-crimson">
                 ⚠️ <b>Atenção:</b> Alterações aqui afetam apenas o seu navegador. Cuidado ao editar estes links, pois podem desconectar você do Banco de Dados Central.
               </p>
             </div>
@@ -1759,7 +1774,7 @@ function SettingsView({
               <input type="text" value={draftEmail} onChange={(e) => setDraftEmail(e.target.value)} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} />
             </div>
 
-            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2" style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
+            <button onClick={handleSaveNetwork} className="mt-2 w-full p-4 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 hover-cyan" style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
               <RefreshCw size={14} /> Salvar Localmente e Sincronizar
             </button>
             {savedMessage && <p className="font-black text-center uppercase tracking-widest text-[10px]" style={{ color: accentColor }}>{savedMessage}</p>}
