@@ -251,9 +251,10 @@ export default function App() {
           const formattedData = jsonData.map(item => {
             let newItem = {};
             for (let key in item) {
+              let cleanKey = key.trim();
               let val = item[key];
               if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { val = new Date(val).toLocaleDateString('pt-BR'); }
-              newItem[key] = val;
+              newItem[cleanKey] = val;
             }
             return newItem;
           });
@@ -276,17 +277,30 @@ export default function App() {
         } else {
           try {
             const jsonEq = JSON.parse(textEq);
-            const formattedEq = jsonEq.map(item => ({ 
-              ...item,
-              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-            }));
+            const formattedEq = jsonEq.map(item => {
+              let cleanItem = {};
+              // Limpa todos os cabeçalhos para evitar falhas por espaços ocultos da planilha
+              for (let key in item) {
+                cleanItem[key.trim()] = item[key];
+              }
+              return { 
+                ...cleanItem,
+                Nome: cleanItem['Nome do Assessor'] || cleanItem['Nome'] || 'Desconhecido' 
+              };
+            });
             if (formattedEq.length > 0) setEquipe(formattedEq);
           } catch(e) {
             const parsedEq = parseCSV(textEq);
-            const formattedEq = parsedEq.map(item => ({ 
-              ...item,
-              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-            }));
+            const formattedEq = parsedEq.map(item => {
+              let cleanItem = {};
+              for (let key in item) {
+                cleanItem[key.trim()] = item[key];
+              }
+              return { 
+                ...cleanItem,
+                Nome: cleanItem['Nome do Assessor'] || cleanItem['Nome'] || 'Desconhecido' 
+              };
+            });
             if (formattedEq.length > 0) setEquipe(formattedEq);
           }
         }
@@ -829,10 +843,16 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                             <p className="text-sm font-bold truncate" title={member["Nome Completo"]}>{member["Nome Completo"]}</p>
                           </div>
                         )}
-                        {(member["E-mail do Assessor"] || member["E-mail Principal"]) && (
+                        {member["E-mail do Assessor"] && (
                           <div>
                             <p className="text-[10px] font-black uppercase tracking-widest opacity-50">E-mail Principal</p>
-                            <p className="text-sm truncate" title={member["E-mail do Assessor"] || member["E-mail Principal"]}>{member["E-mail do Assessor"] || member["E-mail Principal"]}</p>
+                            <p className="text-sm truncate" title={member["E-mail do Assessor"]}>{member["E-mail do Assessor"]}</p>
+                          </div>
+                        )}
+                        {member["E-mail outro"] && (
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">E-mail Secundário</p>
+                            <p className="text-sm truncate" title={member["E-mail outro"]}>{member["E-mail outro"]}</p>
                           </div>
                         )}
                       </div>
@@ -874,8 +894,8 @@ function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isD
                       )}
                     </div>
 
-                    <div className="hidden lg:block w-64 shrink-0 text-sm opacity-80 truncate" title={member["E-mail do Assessor"] || member["E-mail Principal"]}>
-                      {member["E-mail do Assessor"] || member["E-mail Principal"] || '-'}
+                    <div className="hidden lg:block w-64 shrink-0 text-sm opacity-80 truncate" title={member["E-mail do Assessor"] || member["E-mail outro"]}>
+                      {member["E-mail do Assessor"] || member["E-mail outro"] || '-'}
                     </div>
 
                     <div className="w-32 shrink-0">
