@@ -32,6 +32,7 @@ const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 const Users = (p) => <Icon {...p} path={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
+const ExternalLink = (p) => <Icon {...p} path={<><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></>} />;
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
@@ -546,6 +547,14 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
                           <span className="font-bold text-[0.9em]">{item['DATA DA SOLICITAÇÃO'] || '-'}</span>
                         </div>
                       </div>
+
+                      {/* LINK DE TRAMITAÇÃO KANBAN */}
+                      {(item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']) && (
+                        <a href={item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: col.color }} onClick={e => e.stopPropagation()}>
+                          <ExternalLink size={14} /> Acompanhar tramitação
+                        </a>
+                      )}
+
                       <div className="mt-4 flex gap-1 h-3">
                         {itemProgressBoxes.map((box, bIdx) => {
                           const activeColor = box.has ? getProgressColor(hasCount) : null;
@@ -698,7 +707,17 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
 // FICHA COMPLETA DO MEMBRO DA EQUIPE
 // ==========================================
 function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent }) {
+  const [saveLabel, setSaveLabel] = useState('Salvar Alterações');
   const keys = Object.keys(membro).filter(k => k !== 'Nome');
+
+  const handleManualSave = () => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    setSaveLabel('Salvando...');
+    setTimeout(() => {
+      setSaveLabel('Salvo com sucesso!');
+      setTimeout(() => setSaveLabel('Salvar Alterações'), 2000);
+    }, 500);
+  };
 
   return (
     <div className={`max-w-4xl mx-auto w-full p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
@@ -734,9 +753,12 @@ function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, ac
         })}
       </div>
       
-      <div className="mt-4 border-t-[4px] border-current pt-4">
-        <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
-          Entendido, Voltar.
+      <div className="mt-4 border-t-[4px] border-current pt-4 flex flex-col sm:flex-row gap-4">
+        <button onClick={handleManualSave} className={`flex-1 p-4 font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor] flex items-center justify-center gap-2 ${saveLabel === 'Salvo com sucesso!' ? 'bg-green-600 text-white border-green-600' : (isDark ? 'bg-white text-black' : 'bg-black text-white')}`}>
+          <Save size={18} /> {saveLabel}
+        </button>
+        <button onClick={onClose} className="flex-1 p-4 bg-transparent border-[4px] border-current font-black uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+          Fechar
         </button>
       </div>
     </div>
@@ -750,8 +772,21 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const [stagedFiles, setStagedFiles] = useState({});
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
+  const [saveLabel, setSaveLabel] = useState('Salvar Ficha');
 
   const statusColor = getStatusColor(item['STATUS DA ANÁLISE']);
+
+  const handleManualSave = () => {
+    // Retira o foco de qualquer campo ativo no momento para forçar o auto-save onBlur
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setSaveLabel('Salvando...');
+    setTimeout(() => {
+      setSaveLabel('Salvo com sucesso!');
+      setTimeout(() => setSaveLabel('Salvar Ficha'), 2000);
+    }, 500);
+  };
 
   const handleFileStage = (docKey, event) => {
     const file = event.target.files[0];
@@ -847,6 +882,15 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               <div className="flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Data Envio:</span> <EditableField value={item['DATA DO ENVIO ALESC']} onSave={(val) => onUpdate({ 'DATA DO ENVIO ALESC': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
               <div className="flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Processo:</span> <EditableField value={item['Nº DO PROCESSO ALESC']} onSave={(val) => onUpdate({ 'Nº DO PROCESSO ALESC': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
               <div className="col-span-2 mt-2 flex flex-col items-start"><span className="opacity-70 text-[0.8em]">Estágio:</span> <EditableSelect value={item['ESTÁGIO ATUAL']} options={['Gabinete', 'Protocolo', 'CCJ', 'Plenário', 'Sancionado']} onSave={(val) => onUpdate({ 'ESTÁGIO ATUAL': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} /></div>
+              <div className="col-span-2 mt-2 flex flex-col items-start">
+                <span className="opacity-70 text-[0.8em]">Acompanhar Tramitação (Link):</span>
+                <EditableField value={item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']} onSave={(val) => onUpdate({ 'Acompanhar tramitação': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-sky-500/50 hover:decoration-sky-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} />
+                {(item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']) && (
+                   <a href={item['Acompanhar tramitação'] || item['ACOMPANHAR TRAMITAÇÃO']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-sky-600 dark:text-sky-400">
+                     <ExternalLink size={12}/> Abrir Link do Processo
+                   </a>
+                )}
+              </div>
             </div>
           </div>
           
@@ -927,9 +971,13 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         )}
       </div>
 
-      <div className="flex justify-end mt-4 border-t-[4px] border-current pt-4">
-        <button onClick={onDelete} className="flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 hover:bg-rose-600 hover:text-white transition-all hover:border-rose-600">
-          <Trash2 size={16} /> Apagar Registro Definitivamente
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-4 border-t-[4px] border-current pt-4 gap-4">
+        <button onClick={onDelete} className="flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 hover:bg-rose-600 hover:text-white transition-all hover:border-rose-600 w-full sm:w-auto justify-center">
+          <Trash2 size={16} /> Apagar Registro
+        </button>
+
+        <button onClick={handleManualSave} className={`flex items-center justify-center gap-2 px-8 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current transition-all shadow-[4px_4px_0px_currentColor] w-full sm:w-auto hover:-translate-y-1 ${saveLabel === 'Salvo com sucesso!' ? 'bg-green-600 text-white border-green-600 shadow-[4px_4px_0px_#16a34a]' : (isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800')}`}>
+          <Save size={16} /> {saveLabel}
         </button>
       </div>
       
@@ -1103,7 +1151,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 // FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
+  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'Acompanhar tramitação': '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
@@ -1155,7 +1203,8 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
         "8 ESTATUTO": stagedFiles['8 ESTATUTO'] ? "TRUE" : "FALSE",
         "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
         "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
-        "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES
+        "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
+        "Acompanhar tramitação": formData['Acompanhar tramitação']
       };
 
       await fetch(webhookUtilidade, {
@@ -1235,6 +1284,11 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                 <label className="font-black uppercase tracking-widest text-[10px]">Telefone</label>
                 <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} onFocus={() => handleFocus('TELEFONE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'currentcolor' }} />
               </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="font-black uppercase tracking-widest text-[10px]">Acompanhar tramitação (Link do Processo)</label>
+              <input type="url" value={formData['Acompanhar tramitação']} onChange={e => setFormData({...formData, 'Acompanhar tramitação': e.target.value})} onFocus={() => handleFocus('LINK')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'LINK' ? accentColor : 'currentcolor' }} placeholder="https://..." />
             </div>
 
             <div className="flex flex-col gap-1">
