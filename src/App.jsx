@@ -1029,9 +1029,9 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           <div className={`p-4 border-[4px] transition-colors duration-500 mt-4`} style={{ borderColor: isDark ? '#22c55e' : '#16a34a' }}>
             <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: isDark ? '#22c55e' : '#16a34a', color: isDark ? '#22c55e' : '#16a34a' }}>Documentos no Drive</span>
             <div className="flex flex-col items-start">
-              <EditableField value={item['V DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'V DOCUMENTOS NO DRIVE': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-green-500/50 hover:decoration-green-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
-              {(item['V DOCUMENTOS NO DRIVE']) && (
-                 <a href={item['V DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-green-600 dark:text-green-400">
+              <EditableField value={item['DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'DOCUMENTOS NO DRIVE': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-green-500/50 hover:decoration-green-500 transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+              {(item['DOCUMENTOS NO DRIVE']) && (
+                 <a href={item['DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline text-green-600 dark:text-green-400">
                    <ExternalLink size={12}/> Abrir Pasta no Drive
                  </a>
               )}
@@ -1296,7 +1296,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 // FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'V DOCUMENTOS NO DRIVE': '' });
+  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
@@ -1351,7 +1351,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
           "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
           "LINK": formData['LINK'],
-          "V DOCUMENTOS NO DRIVE": formData['V DOCUMENTOS NO DRIVE']
+          "DOCUMENTOS NO DRIVE": formData['DOCUMENTOS NO DRIVE']
         };
 
         await fetch(webhookUtilidade, {
@@ -1441,7 +1441,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Documentos no Drive (Link da Pasta)</label>
-              <input type="url" value={formData['V DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'V DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'currentcolor' }} placeholder="https://drive.google.com/..." />
+              <input type="url" value={formData['DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'currentcolor' }} placeholder="https://drive.google.com/..." />
             </div>
 
             <div className="flex flex-col gap-1">
