@@ -64,29 +64,8 @@ const DOCS_PREFIX_MAP = {
   '8 ESTATUTO': '007-ESTATUTO', '9 RELATÓRIO DE ATIVIDADES': '008-RELATORIO_ATIVIDADES'
 };
 
-const DEFAULT_NAMES = [
-  'Alexandre', 'André', 'Arthur', 'Bia', 'Cadu', 
-  'Caio', 'Carla', 'Carol Figueredo', 'Carol Morgan', 
-  'Cláudio', 'Edina', 'Fernando', 'Gabriel', 'Gelso', 
-  'Gislaine', 'Guilherme', 'Guito', 'Guto', 'Isabel', 
-  'Jekupe', 'Kerexu', 'Lais', 'Lea', 'Leon', 
-  'Lê', 'Liandra', 'Linete', 'Lui', 'Luis BL', 
-  'Maira', 'Manu', 'Marquinhos', 'Marquito', 'Mayne', 
-  'Mexiana', 'Mirê', 'Odara', 'Paty', 'Pedro Guedes', 
-  'Tânia', 'Toninho', 'Victor Klauck', 'Vina', 'Xalinska'
-];
+const DEFAULT_EQUIPE = [];
 
-const DEFAULT_EQUIPE = DEFAULT_NAMES.map(nome => ({
-  'Nome do Assessor': nome,
-  'Nome Completo': nome,
-  'Coordenação': 'Gabinete',
-  'E-mail do Assessor': '',
-  'E-mail outro': '',
-  'Foto do Assessor': '',
-  Nome: nome
-}));
-
-// Helper para obter cores de Status Kanban
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
   if (s.includes('aguardando')) return COLORS.crimson;
@@ -94,11 +73,13 @@ const getStatusColor = (status) => {
   if (s.includes('protocolado')) return COLORS.cyan;
   return null;
 };
+
 const getTextColorForStatus = (statusColor) => {
   if (statusColor === COLORS.crimson) return 'white';
   if (statusColor === COLORS.mustard || statusColor === COLORS.cyan) return 'black';
   return 'inherit';
 };
+
 const getProgressColor = (count) => {
   if (count === 0) return null;
   if (count <= 3) return COLORS.crimson;
@@ -204,7 +185,6 @@ export default function App() {
   const [equipe, setEquipe] = useState(DEFAULT_EQUIPE);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
-  const [equipeFetchError, setEquipeFetchError] = useState(false);
   
   // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
@@ -271,122 +251,157 @@ export default function App() {
   useEffect(() => { localStorage.setItem('tabulum_master_pwd', masterPassword); }, [masterPassword]);
 
   useEffect(() => { 
-    // Carrega dados na inicialização
+    // Carrega ambas as planilhas de forma segura na inicialização
     fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
   }, []);
 
-  // Passamos as URLs como parâmetro para evitar o "Bug da Memória Fantasma" (stale state no momento do clique)
+  // MOTOR DE BUSCA EM PARALELO (PROMISE.ALL) SEM SENSIVILIDADE A BUGS ASSÍNCRONOS
   const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade, currentUrlEquipe = webhookEquipe) => {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
-    setEquipeFetchError(false);
     
-    // QUEBRADOR DE CACHE: Garante que o navegador pegue a versão mais nova da planilha sempre
     const noCache = `t=${new Date().getTime()}`;
-
-    // Função auxiliar robusta que usa o desvio automático de CORS por proxy AllOrigins caso o fetch direto dê Failed to fetch
-    const smartFetchText = async (url) => {
-      try {
-        const res = await fetch(url, { method: 'GET', redirect: 'follow' });
-        return await res.text();
-      } catch (err) {
-        console.warn("Fetch primário falhou (CORS/Sandbox esperado). Tentando contornar via proxy de rede público...", err);
-        try {
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-          const res = await fetch(proxyUrl);
-          return await res.text();
-        } catch (proxyErr) {
-          console.error("Fetch via proxy também falhou:", proxyErr);
-          throw new Error("Falha ao obter dados (Erro de Rede/CORS em todos os canais).");
-        }
-      }
-    };
+    let utilidadeSuccess = false;
+    let equipeSuccess = false;
+    let utilidadeError = '';
+    let equipeError = '';
     
-    if (currentUrlUtilidade) {
+    // 1. Sincronização da Planilha de Utilidade Pública
+    const fetchUtilidade = async () => {
+      if (!currentUrlUtilidade) {
+        utilidadeError = '⚠️ URL de Utilidade Pública não configurada.';
+        return;
+      }
       try {
         const urlUtilidade = currentUrlUtilidade + (currentUrlUtilidade.includes('?') ? '&' : '?') + noCache;
-        const text = await smartFetchText(urlUtilidade);
+        const response = await fetch(urlUtilidade, { method: 'GET', redirect: 'follow' });
+        const text = await response.text();
+        
+        // Bloqueio preventivo contra retornos de login ou erro em HTML do Google
+        if (text.toLowerCase().includes('<!doctype html>') || text.toLowerCase().includes('<html')) {
+          throw new Error('Retornou página HTML. Verifique se as permissões estão como "Qualquer pessoa" (Anyone).');
+        }
+
+        let parsedData = [];
         try {
           const jsonData = JSON.parse(text);
-          const formattedData = jsonData.map(item => {
+          // Suporte flexível para JSON envelopado em 'data', 'rows' ou array puro
+          parsedData = Array.isArray(jsonData) 
+            ? jsonData 
+            : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.data) 
+              ? jsonData.data 
+              : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.rows) ? jsonData.rows : []));
+              
+          if (parsedData.length === 0 && typeof jsonData === 'object' && !Array.isArray(jsonData)) {
+            for (let k in jsonData) {
+              if (Array.isArray(jsonData[k])) {
+                parsedData = jsonData[k];
+                break;
+              }
+            }
+          }
+        } catch(e) {
+          parsedData = parseCSV(text);
+        }
+
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          const formattedData = parsedData.map(item => {
             let newItem = {};
             for (let key in item) {
               let val = item[key];
-              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { val = new Date(val).toLocaleDateString('pt-BR'); }
+              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { 
+                val = new Date(val).toLocaleDateString('pt-BR'); 
+              }
               newItem[key] = val;
             }
             return newItem;
           });
           setData(formattedData);
-        } catch(e) {
-            setData(parseCSV(text));
-            setSyncStatus('Sincronizado (Formato CSV).');
+          utilidadeSuccess = true;
+        } else {
+          throw new Error('Nenhum registro válido encontrado.');
         }
       } catch (error) { 
         console.error("Erro Entidades:", error); 
-        setSyncStatus('⚠️ Erro de Conexão na Utilidade Pública. Tentativas normais e de proxy esgotadas.');
+        utilidadeError = `⚠️ Utilidade Pública: ${error.message || 'Erro de conexão/CORS.'}`;
       }
-    }
+    };
 
-    if (currentUrlEquipe) {
+    // 2. Sincronização da Planilha de Equipe
+    const fetchEquipe = async () => {
+      if (!currentUrlEquipe) {
+        equipeError = '⚠️ URL de Equipe não configurada.';
+        return;
+      }
       try {
         const urlEquipe = currentUrlEquipe + (currentUrlEquipe.includes('?') ? '&' : '?') + noCache;
-        const textEq = await smartFetchText(urlEquipe);
+        const resEq = await fetch(urlEquipe, { method: 'GET', redirect: 'follow' });
+        const textEq = await resEq.text();
         
-        // Bloqueio contra erros de permissão do Google Script
+        // Bloqueio preventivo contra retornos de login ou erro em HTML do Google
         if (textEq.toLowerCase().includes('<!doctype html>') || textEq.toLowerCase().includes('<html')) {
-          console.error("Script da Equipe não está público.");
-          setSyncStatus('⚠️ Erro: Script da Equipe exige acesso "Qualquer pessoa"');
-          setEquipeFetchError(true);
-          setEquipe(DEFAULT_EQUIPE); // Fallback silencioso para não quebrar a tela
-        } else {
-          try {
-            const jsonEq = JSON.parse(textEq);
-            const formattedEq = jsonEq.map(item => ({ 
-              ...item,
-              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-            }));
-            if (formattedEq.length > 0) {
-              setEquipe(formattedEq);
-            } else {
-              setEquipe(DEFAULT_EQUIPE);
-              setEquipeFetchError(true);
-            }
-          } catch(e) {
-            const parsedEq = parseCSV(textEq);
-            const formattedEq = parsedEq.map(item => ({ 
-              ...item,
-              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-            }));
-            if (formattedEq.length > 0) {
-              setEquipe(formattedEq);
-            } else {
-              setEquipe(DEFAULT_EQUIPE);
-              setEquipeFetchError(true);
+          throw new Error('Retornou página HTML. Verifique se as permissões estão como "Qualquer pessoa" (Anyone).');
+        }
+
+        let parsedEquipe = [];
+        try {
+          const jsonEq = JSON.parse(textEq);
+          parsedEquipe = Array.isArray(jsonEq) 
+            ? jsonEq 
+            : (jsonEq && typeof jsonEq === 'object' && Array.isArray(jsonEq.data) 
+              ? jsonEq.data 
+              : (jsonEq && typeof jsonEq === 'object' && Array.isArray(jsonEq.rows) ? jsonEq.rows : []));
+
+          if (parsedEquipe.length === 0 && typeof jsonEq === 'object' && !Array.isArray(jsonEq)) {
+            for (let k in jsonEq) {
+              if (Array.isArray(jsonEq[k])) {
+                parsedEquipe = jsonEq[k];
+                break;
+              }
             }
           }
+        } catch(e) {
+          parsedEquipe = parseCSV(textEq);
+        }
+
+        if (Array.isArray(parsedEquipe) && parsedEquipe.length > 0) {
+          const formattedEq = parsedEquipe.map(item => {
+            const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
+            return { ...item, Nome: String(chave || 'Desconhecido').trim() };
+          });
+          setEquipe(formattedEq);
+          equipeSuccess = true;
+        } else {
+          throw new Error('Nenhum registro de equipe válido encontrado.');
         }
       } catch(e) { 
-        console.error("Erro Equipe:", e);
-        // O CORS no ambiente sandboxed impede a leitura. Fazemos o fallback para a lista local compatível.
-        setEquipe(DEFAULT_EQUIPE);
-        setEquipeFetchError(true);
+        console.error("Erro Equipe Rede/CORS:", e); 
+        equipeError = `⚠️ Equipe: ${e.message || 'Erro de conexão/CORS.'}`;
+        setEquipe([]); 
       }
-    } else {
-      setEquipe(DEFAULT_EQUIPE);
-      setEquipeFetchError(true);
-    }
+    };
+
+    // Executa as duas requisições simultaneamente sem se bloquearem
+    await Promise.all([fetchUtilidade(), fetchEquipe()]);
     
     setLoading(false); 
-    if(!syncStatus.includes('Erro')) setSyncStatus('Sincronizado!');
-    setTimeout(() => setSyncStatus(''), 5000);
+
+    // Consolida e exibe erros simultâneos sem sobreposição assíncrona
+    if (utilidadeSuccess && equipeSuccess) {
+      setSyncStatus('Sincronizado!');
+      setTimeout(() => setSyncStatus(''), 5000);
+    } else {
+      const errorMessages = [];
+      if (utilidadeError) errorMessages.push(utilidadeError);
+      if (equipeError) errorMessages.push(equipeError);
+      setSyncStatus(errorMessages.join('<br/>'));
+    }
   };
 
   const applyNetworkSettings = (newUtilidade, newEquipe, newEmail) => {
     setWebhookUtilidade(newUtilidade); 
     setWebhookEquipe(newEquipe); 
     setEmailCentral(newEmail);
-    // Dispara a busca forçando as URLs novas imediatamente
     fetchFromWebhooks(newUtilidade, newEquipe);
   };
 
@@ -421,7 +436,7 @@ export default function App() {
   const handleUpdateEquipe = async (originalName, updatedFields) => {
     setEquipe(prev => prev.map(p => {
       if (p.Nome === originalName) {
-        const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : p.Nome;
+        const novoNome = updatedFields.Nome !== undefined ? updatedFields.Nome : p.Nome;
         return { ...p, ...updatedFields, Nome: novoNome };
       }
       return p;
@@ -429,18 +444,20 @@ export default function App() {
     
     setActiveMembroEquipe(prev => {
        if(prev && prev.Nome === originalName) {
-         const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : prev.Nome;
+         const novoNome = updatedFields.Nome !== undefined ? updatedFields.Nome : prev.Nome;
          return { ...prev, ...updatedFields, Nome: novoNome };
        }
        return prev;
     });
 
+    const payloadData = { ...updatedFields };
+    delete payloadData.Nome; 
+
     if (webhookEquipe) {
       try {
         await fetch(webhookEquipe, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          // Usamos ENTIDADE_ORIGINAL para o doPost identificar corretamente quem editar na Coluna A
-          body: JSON.stringify({ action: 'update', ENTIDADE_ORIGINAL: originalName, newData: updatedFields })
+          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalName, newData: payloadData })
         });
       } catch (error) { console.error("Erro ao atualizar equipe", error); }
     } else {
@@ -510,7 +527,6 @@ export default function App() {
 
   const bThick = `border-[4px] ${themeConfig.border}`; const bMedium = `border-[2px] ${themeConfig.border}`;
 
-  // CLASSES MONDRIAN INJETADAS
   const mondrianStyles = `
     .theme-crimson { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
     .hover-crimson:hover { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
@@ -566,7 +582,6 @@ export default function App() {
             +
           </button>
           
-          {/* BOTÃO DISCRETO DA EQUIPE */}
           <button 
             onClick={() => {setView('equipe_list'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
             className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'equipe_list' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
@@ -576,7 +591,6 @@ export default function App() {
             <Users size={24} />
           </button>
 
-          {/* BOTÃO DISCRETO DE AJUSTES */}
           <button 
             onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
             className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'settings' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
@@ -592,7 +606,9 @@ export default function App() {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
             <RefreshCw className="animate-spin mb-4" size={48} style={{ color: COLORS.cyan }} />
-            <p className="font-black uppercase tracking-widest animate-pulse" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : 'inherit' }}>{syncStatus}</p>
+            <p className="font-black uppercase tracking-widest animate-pulse text-center leading-relaxed" style={{ color: (syncStatus.includes('Erro') || syncStatus.includes('Falha') || syncStatus.includes('⚠️')) ? COLORS.crimson : 'inherit' }}>
+              {syncStatus.split('<br/>').map((line, i) => <React.Fragment key={i}>{line}{i < syncStatus.split('<br/>').length - 1 ? <br/> : ''}</React.Fragment>)}
+            </p>
           </div>
         ) : (
           <>
@@ -612,7 +628,7 @@ export default function App() {
             
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
-            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('kanban'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} hasError={equipeFetchError} webhookEquipe={webhookEquipe} />}
+            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('kanban'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
             {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
               <FichaMembroEquipe 
@@ -869,39 +885,15 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// LISTA COMPLETA DA EQUIPE (SISTEMA HÍBRIDO LISTA/CARDS)
+// LISTA COMPLETA DA EQUIPE
 // ==========================================
-function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, hasError, webhookEquipe }) {
-  const [viewMode, setViewMode] = useState('grid'); // padrão para exibir em cards Mondrian
+function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
+  const [viewMode, setViewMode] = useState('list');
 
   return (
     <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
-      {hasError && (
-        <div className="p-4 border-[3px] border-current text-black dark:text-white" style={{ backgroundColor: 'rgba(220,20,60,0.15)', borderColor: COLORS.crimson }}>
-          <h4 className="font-black uppercase text-sm tracking-widest flex items-center gap-2 text-crimson">
-            <AlertCircle size={20} /> Diagnóstico de Conexão (Erro de Rede/CORS)
-          </h4>
-          <p className="text-xs font-bold mt-2 leading-relaxed opacity-90">
-            A requisição direta via navegador falhou (comum em ambientes de visualização fechados devido a restrições estritas de CORS do Google ou do próprio iframe).
-            Como contingência de dados e segurança, o Tabulum acionou um <b>mecanismo secundário automático</b> de desvio de CORS e carregou o banco de dados alternativo local para manter o sistema operacional.
-          </p>
-          <p className="text-xs font-bold mt-2 leading-relaxed opacity-90">
-            Para que o aplicativo atualize diretamente no Google Sheets sem interrupções de CORS no seu uso diário:
-          </p>
-          <ol className="list-decimal text-xs font-bold pl-5 mt-2 space-y-1 opacity-90 text-left">
-            <li>Abra a sua planilha de <b>Gestão de Equipe</b>.</li>
-            <li>No menu superior, vá em <b>Extensões</b> → <b>Apps Script</b>.</li>
-            <li>No canto superior direito, clique em <b>Implantar</b> → <b>Gerenciar implantações</b> (ou Nova Implantação).</li>
-            <li>Certifique-se de que o acesso esteja configurado exatamente assim:
-              <br /><span className="bg-black/15 dark:bg-white/15 px-1 font-mono">Quem tem acesso (Who has access): "Qualquer pessoa" (Anyone)</span>. <i>(Atenção: Não selecione "Qualquer pessoa com conta do Google")</i>.
-            </li>
-            <li>Clique em <b>Implantar</b>, copie o novo link gerado e atualize-o na aba de <b>Ajustes do Tabulum</b>.</li>
-          </ol>
-        </div>
-      )}
-
       <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-[6px] border-current pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[6px] border-current pb-4">
           <div className="flex items-center gap-4">
             <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
             <div>
@@ -910,17 +902,17 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, 
             </div>
           </div>
 
-          <div className="flex items-center gap-2 border-[3px] border-current p-1 bg-black/5 dark:bg-white/5 w-max flex-shrink-0">
+          <div className="flex items-center gap-2 border-[3px] border-current p-1 bg-black/5 dark:bg-white/5 w-max">
             <button 
               onClick={() => setViewMode('list')} 
-              className={`p-2 transition-all ${viewMode === 'list' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10 opacity-65'}`}
-              title="Visualização em Lista (Tabela)"
+              className={`p-2 transition-colors ${viewMode === 'list' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10'}`}
+              title="Visualização em Tabela"
             >
               <ListIcon size={20} />
             </button>
             <button 
               onClick={() => setViewMode('grid')} 
-              className={`p-2 transition-all ${viewMode === 'grid' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10 opacity-65'}`}
+              className={`p-2 transition-colors ${viewMode === 'grid' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10'}`}
               title="Visualização em Cards"
             >
               <GridIcon size={20} />
@@ -930,12 +922,9 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, 
 
         {equipe.length === 0 ? (
           <div className="p-10 border-[4px] border-dashed border-current flex flex-col items-center justify-center text-center opacity-60 mt-4">
-            <AlertCircle size={48} className="mb-4 text-crimson animate-bounce" />
+            <AlertCircle size={48} className="mb-4" />
             <h3 className="text-xl font-black uppercase tracking-widest">Nenhuma conexão de dados</h3>
-            <p className="font-bold mt-2 text-sm leading-relaxed">
-              O banco de dados não retornou registros no momento.<br />
-              Se a planilha estiver vazia, adicione um registro nela primeiro.
-            </p>
+            <p className="font-bold mt-2">O banco de dados não retornou nenhum registro de equipe ou falhou ao conectar.<br/>Se a planilha estiver vazia, adicione um registro nela primeiro ou revise suas conexões nos Ajustes.</p>
           </div>
         ) : viewMode === 'list' ? (
           <div className="overflow-x-auto border-[4px] border-current mt-4">
@@ -945,7 +934,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, 
                   <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
                   <th className="p-4 border-r border-current">Nome Completo</th>
                   <th className="p-4 border-r border-current">Coordenação</th>
-                  <th className="p-4">E-mail Principal</th>
+                  <th className="p-4">E-mail do Assessor</th>
                 </tr>
               </thead>
               <tbody>
@@ -961,7 +950,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, 
                        {membro['Coordenação'] || '-'}
                     </td>
                     <td className="p-4 font-bold opacity-90 text-xs">
-                       {membro['E-mail do Assessor'] || membro['E-mail Principal'] || '-'}
+                       {membro['E-mail do Assessor'] || membro['E-mail outro'] || '-'}
                     </td>
                   </tr>
                 ))}
@@ -970,48 +959,23 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, 
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-            {equipe.map((membro, i) => {
-              const fotoUrl = membro['Foto do Assessor'] || membro['Foto'];
-              const hasPhoto = fotoUrl && (fotoUrl.startsWith('http') || fotoUrl.startsWith('data:'));
-              return (
-                <div key={i} onClick={() => onMembroClick(membro)} className={`p-5 border-[4px] border-current cursor-pointer hover:-translate-y-1 hover:shadow-[6px_6px_0px_currentColor] transition-all flex flex-col h-full justify-between ${theme.bg}`}>
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      {hasPhoto ? (
-                        <img 
-                          src={fotoUrl} 
-                          alt={membro.Nome} 
-                          className="w-14 h-14 border-[3px] border-current object-cover flex-shrink-0 rounded-full bg-white"
-                          onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 border-[3px] border-current flex-shrink-0 flex items-center justify-center font-black text-2xl bg-black text-white dark:bg-white dark:text-black uppercase">
-                          {(membro.Nome || '?').charAt(0)}
-                        </div>
-                      )}
-                      <div className="overflow-hidden">
-                        <h3 className="font-black text-lg uppercase leading-tight truncate" title={membro.Nome}>{membro.Nome}</h3>
-                        <span className="font-bold opacity-75 text-[0.7em] uppercase tracking-widest truncate block" title={membro['Coordenação']}>{membro['Coordenação'] || 'Sem Coordenação'}</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 text-xs pt-1 border-t-[2px] border-current border-dotted">
-                      <div>
-                        <span className="font-black opacity-50 uppercase text-[9px] block">Nome Completo</span>
-                        <span className="font-bold opacity-90 truncate block">{membro['Nome Completo'] || '-'}</span>
-                      </div>
-                    </div>
+            {equipe.map((membro, i) => (
+              <div key={i} onClick={() => onMembroClick(membro)} className={`p-5 border-[4px] border-current cursor-pointer hover:-translate-y-1 hover:shadow-[6px_6px_0px_currentColor] transition-all flex flex-col h-full ${theme.bg}`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 border-[3px] border-current flex-shrink-0 flex items-center justify-center font-black text-2xl bg-black text-white dark:bg-white dark:text-black uppercase">
+                    {(membro.Nome || '?').charAt(0)}
                   </div>
-
-                  <div className="mt-4 pt-3 border-t-[3px] border-current border-dashed">
-                    <span className="text-[0.65em] font-black uppercase opacity-60 tracking-widest block mb-0.5">E-mail Principal</span>
-                    <span className="font-bold text-[0.8em] truncate block text-cyan" title={membro['E-mail do Assessor'] || membro['E-mail Principal'] || membro['E-mail outro']}>
-                      {membro['E-mail do Assessor'] || membro['E-mail Principal'] || membro['E-mail outro'] || 'Não cadastrado'}
-                    </span>
+                  <div className="overflow-hidden">
+                    <h3 className="font-black text-lg uppercase leading-tight truncate" title={membro.Nome}>{membro.Nome}</h3>
+                    <span className="font-bold opacity-70 text-[0.7em] uppercase tracking-widest truncate block" title={membro['Coordenação']}>{membro['Coordenação'] || 'Sem Coordenação'}</span>
                   </div>
                 </div>
-              );
-            })}
+                <div className="mt-auto pt-3 border-t-[3px] border-current border-dashed">
+                  <span className="text-[0.65em] font-black uppercase opacity-60 tracking-widest block mb-1">E-mail do Assessor</span>
+                  <span className="font-bold text-[0.8em] truncate block" title={membro['E-mail do Assessor'] || membro['E-mail outro']}>{membro['E-mail do Assessor'] || membro['E-mail outro'] || 'Não cadastrado'}</span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -1025,6 +989,8 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark, 
 function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [saveLabel, setSaveLabel] = useState('Salvar Alterações');
   const keys = Object.keys(membro).filter(k => k !== 'Nome');
+  
+  const originalNameKey = Object.keys(membro).find(k => k !== 'Nome' && membro[k] === membro.Nome) || 'Nome do Assessor';
 
   const handleManualSave = () => {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -1042,7 +1008,7 @@ function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, ac
       <div className="pr-10 border-b-[6px] border-current pb-4">
         <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
-          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ 'Nome do Assessor': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ [originalNameKey]: val, Nome: val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
         </h2>
         <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">
           {isUnlocked ? "Clique no lápis (ou segure no celular) para editar qualquer campo. As alterações são sincronizadas com a planilha matriz." : "⚠️ A sessão está bloqueada. É necessário senha para editar este registro."}
@@ -1096,7 +1062,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const statusColor = getStatusColor(item['STATUS DA ANÁLISE']);
 
   const handleManualSave = () => {
-    // Retira o foco de qualquer campo ativo no momento para forçar o auto-save onBlur
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -1218,7 +1183,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
             </div>
           </div>
           
-          {/* CAIXA DO GOOGLE DRIVE */}
           <div className={`p-4 border-[4px] transition-colors duration-500 mt-4 border-current`}>
             <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1 border-current">Documentos no Drive</span>
             <div className="flex flex-col items-start">
@@ -1401,8 +1365,8 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 <h4 className="font-black uppercase mb-1">007 Declaração de remuneração</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
-                  <li>A entidade por seu representante legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
-                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condição de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
+                  <li>A entidade por seu representative legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
+                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condition de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
                 </ul>
               </div>
 
@@ -1439,8 +1403,8 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 // PAINEL DO ARTICULADOR E DASHBOARD
 // ==========================================
 function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
-  const processos = data.filter(d => d.ARTICULADOR === nome);
-  const protocolados = processos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
+  const procesos = data.filter(d => d.ARTICULADOR === nome);
+  const protocolados = procesos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
@@ -1458,7 +1422,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 
       <div className="grid grid-cols-2 gap-4">
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
-          <span className="text-5xl font-black leading-none">{processos.length}</span>
+          <span className="text-5xl font-black leading-none">{procesos.length}</span>
           <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Processos Assumidos</span>
         </div>
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
@@ -1469,7 +1433,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 
       <div className="mt-4 flex flex-col gap-3">
         <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
-        {processos.map((p, i) => (
+        {procesos.map((p, i) => (
           <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all ${theme.bg}`}>
             <div>
               <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
@@ -1486,7 +1450,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 }
 
 // ==========================================
-// FORMULÁRIO DE NOVO PROCESSO (BORDAS MÁGICAS)
+// FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
@@ -1866,17 +1830,6 @@ function SettingsView({
             </div>
           </div>
         )}
-      </div>
-
-      {/* BLOCO 2: GESTÃO DE EQUIPE */}
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: accentColor }}>
-        <button 
-          onClick={() => { setView('equipe_list'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Users size={18} /> Acessar Banco de Dados da Equipe</span>
-          <span className="text-xl leading-none font-mono">→</span>
-        </button>
       </div>
 
       {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
