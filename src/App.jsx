@@ -20,9 +20,9 @@ const AlertCircle = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/>
 const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />;
 const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></>} />;
 const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
-const SaveIcon = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
+const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
 const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
-const UserIcon = (p) => <Icon {...p} path={<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
+const UserIcon = (p) => <Icon {...p} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
 const SearchIcon = (p) => <Icon {...p} path={<><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></>} />;
 const Trash2 = (p) => <Icon {...p} path={<><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></>} />;
 const Mail = (p) => <Icon {...p} path={<><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></>} />;
@@ -32,57 +32,18 @@ const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 const Users = (p) => <Icon {...p} path={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
-const GridIcon = (p) => <Icon {...p} path={<><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></>} />;
-const ListIcon = (p) => <Icon {...p} path={<><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>} />;
-const XIcon = (p) => <Icon {...p} path={<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>} />;
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
-  mustard: '#FFDB58', 
-  cyan: '#00b7eb', 
-  crimson: '#DC143C', 
+  mustard: '#FFDB58', // Amarelo Mostarda (Ciclo 1)
+  cyan: '#00b7eb', // Ciano confortável (Ciclo 2)
+  crimson: '#DC143C', // Carmesim (Ciclo 3)
   white: '#FFFFFF', black: '#000000', darkBg: '#0f0f0f', darkCard: '#1a1a1a'
 };
 
-const getRandomAccentColor = () => {
-  const accents = [COLORS.crimson, COLORS.cyan, COLORS.mustard];
-  return accents[Math.floor(Math.random() * accents.length)];
-};
-
-// Funções Seguras para LocalStorage
-const safeGetStorage = (key, defaultVal) => {
-  try {
-    const val = window.localStorage.getItem(key);
-    return val !== null ? val : defaultVal;
-  } catch (e) {
-    return defaultVal;
-  }
-};
-
-const safeSetStorage = (key, val) => {
-  try {
-    window.localStorage.setItem(key, val);
-  } catch (e) {
-    // Ignora silenciosamente
-  }
-};
-
-// Funções Seguras para apanhar Variáveis de Ambiente (Vite/Create React App/Vercel)
-const getEnv = (key) => {
-  try {
-    if (typeof process !== 'undefined' && process.env && process.env[key]) return process.env[key];
-  } catch (e) {}
-  try {
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) return import.meta.env[key];
-  } catch (e) {}
-  return '';
-};
-
-// SEM DADOS SENSÍVEIS: Puxa do Vercel (Environment Variables) ou inicia vazio para configuração manual nos Ajustes
-const DEFAULT_WEBHOOK_UTILIDADE = getEnv('VITE_WH_UTILIDADE') || getEnv('REACT_APP_WH_UTILIDADE') || "";
-const DEFAULT_WEBHOOK_EQUIPE = getEnv('VITE_WH_EQUIPE') || getEnv('REACT_APP_WH_EQUIPE') || ""; 
-const DEFAULT_EMAIL_CENTRAL = getEnv('VITE_EMAIL_CENTRAL') || getEnv('REACT_APP_EMAIL_CENTRAL') || ""; 
+const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
+const DEFAULT_WEBHOOK_EQUIPE = ""; 
+const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
   '1 ATA DE FUNDAÇÃO', '2 ATA DE ELEIÇÃO/POSSE', '3 CNPJ', 
@@ -97,6 +58,19 @@ const DOCS_PREFIX_MAP = {
   '8 ESTATUTO': '007-ESTATUTO', '9 RELATÓRIO DE ATIVIDADES': '008-RELATORIO_ATIVIDADES'
 };
 
+const DEFAULT_EQUIPE = [
+  { Nome: 'Alexandre' }, { Nome: 'André' }, { Nome: 'Arthur' }, { Nome: 'Bia' }, { Nome: 'Cadu' }, 
+  { Nome: 'Caio' }, { Nome: 'Carla' }, { Nome: 'Carol Figueredo' }, { Nome: 'Carol Morgan' }, 
+  { Nome: 'Cláudio' }, { Nome: 'Edina' }, { Nome: 'Fernando' }, { Nome: 'Gabriel' }, { Nome: 'Gelso' }, 
+  { Nome: 'Gislaine' }, { Nome: 'Guilherme' }, { Nome: 'Guito' }, { Nome: 'Guto' }, { Nome: 'Isabel' }, 
+  { Nome: 'Jekupe' }, { Nome: 'Kerexu' }, { Nome: 'Lais' }, { Nome: 'Lea' }, { Nome: 'Leon' }, 
+  { Nome: 'Lê' }, { Nome: 'Liandra' }, { Nome: 'Linete' }, { Nome: 'Lui' }, { Nome: 'Luis BL' }, 
+  { Nome: 'Maira' }, { Nome: 'Manu' }, { Nome: 'Marquinhos' }, { Nome: 'Marquito' }, { Nome: 'Mayne' }, 
+  { Nome: 'Mexiana' }, { Nome: 'Mirê' }, { Nome: 'Odara' }, { Nome: 'Paty' }, { Nome: 'Pedro Guedes' }, 
+  { Nome: 'Tânia' }, { Nome: 'Toninho' }, { Nome: 'Victor Klauck' }, { Nome: 'Vina' }, { Nome: 'Xalinska' }
+];
+
+// Helper para obter cores de Status Kanban
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
   if (s.includes('aguardando')) return COLORS.crimson;
@@ -185,65 +159,64 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
 // ==========================================
 export default function App() {
   const [data, setData] = useState([]);
-  const [equipe, setEquipe] = useState([]); // Array puro. Depende 100% do App Script!
+  const [equipe, setEquipe] = useState(DEFAULT_EQUIPE);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
+  // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
-    const saved = safeGetStorage('tabulum_dark', null);
-    if (saved !== null) { try { return JSON.parse(saved); } catch(e) { return true; } }
-    return true;
+    const saved = localStorage.getItem('tabulum_dark');
+    return saved !== null ? JSON.parse(saved) : true;
   });
-  
   const [fontSizeLevel, setFontSizeLevel] = useState(() => {
-    const saved = safeGetStorage('tabulum_font', null);
+    const saved = localStorage.getItem('tabulum_font');
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  // TRAVA DE SEGURANÇA: Se o navegador tiver salvo um vazio antes, ele puxa o Default que pode vir das Variáveis de Ambiente
-  const [webhookUtilidade, setWebhookUtilidade] = useState(() => {
-    const saved = safeGetStorage('tabulum_wh_utilidade', null);
-    return (saved && saved.trim() !== "") ? saved : DEFAULT_WEBHOOK_UTILIDADE;
-  });
-  const [webhookEquipe, setWebhookEquipe] = useState(() => {
-    const saved = safeGetStorage('tabulum_wh_equipe', null);
-    return (saved && saved.trim() !== "") ? saved : DEFAULT_WEBHOOK_EQUIPE;
-  });
-  const [emailCentral, setEmailCentral] = useState(() => {
-    const saved = safeGetStorage('tabulum_email', null);
-    return (saved && saved.trim() !== "") ? saved : DEFAULT_EMAIL_CENTRAL;
-  });
+  // URLs de Rede (Memória Local vs Matriz Global)
+  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
+  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
+  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
 
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
+  const [activeMembroEquipe, setActiveMembroEquipe] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // MOTOR CÍCLICO MONDRIAN
+  // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
   const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson];
   const [accentIndex, setAccentIndex] = useState(0);
   const accentColor = accentColors[accentIndex];
   const cycleAccent = () => setAccentIndex(prev => (prev + 1) % 3);
 
-  const handleEntityClick = (entityData) => { setActiveFicha(entityData); setView('entity_details'); };
-  const handleArticulatorClick = (articulatorName) => {
-    if (!articulatorName || articulatorName === '-') return;
-    setActiveArticulador(articulatorName); setView('articulator_details');
+  const handleEntityClick = (entityData) => {
+    setActiveFicha(entityData);
+    setView('entity_details');
   };
 
-  useEffect(() => { safeSetStorage('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
-  useEffect(() => { safeSetStorage('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
-  useEffect(() => { safeSetStorage('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
-  useEffect(() => { safeSetStorage('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
-  useEffect(() => { safeSetStorage('tabulum_email', emailCentral); }, [emailCentral]);
+  const handleArticulatorClick = (articulatorName) => {
+    if (!articulatorName || articulatorName === '-') return;
+    setActiveArticulador(articulatorName);
+    setView('articulator_details');
+  };
 
-  useEffect(() => { fetchFromWebhooks(webhookUtilidade, webhookEquipe); }, []);
+  useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
+  useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
+  useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
+  useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
+  useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
 
+  useEffect(() => { 
+    // Carrega dados na inicialização
+    fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
+  }, []);
+
+  // Passamos as URLs como parâmetro para evitar o "Bug da Memória Fantasma" (stale state no momento do clique)
   const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade, currentUrlEquipe = webhookEquipe) => {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
     
-    // --- FETCH UTILIDADE PÚBLICA ---
     if (currentUrlUtilidade) {
       try {
         const response = await fetch(currentUrlUtilidade);
@@ -253,11 +226,9 @@ export default function App() {
           const formattedData = jsonData.map(item => {
             let newItem = {};
             for (let key in item) {
-              let cleanKey = key.trim();
               let val = item[key];
               if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { val = new Date(val).toLocaleDateString('pt-BR'); }
-              else if (typeof val === 'string') { val = val.trim(); }
-              newItem[cleanKey] = val;
+              newItem[key] = val;
             }
             return newItem;
           });
@@ -269,36 +240,30 @@ export default function App() {
       } catch (error) { console.error("Erro Entidades:", error); }
     }
 
-    // --- FETCH EQUIPE (LEITURA PURA E DINÂMICA) ---
     if (currentUrlEquipe) {
       try {
         const resEq = await fetch(currentUrlEquipe);
         const textEq = await resEq.text();
         
-        if (textEq.toLowerCase().includes('<!doctype html>')) {
+        // Bloqueio contra erros de permissão do Google Script
+        if (textEq.toLowerCase().includes('<!doctype html>') || textEq.toLowerCase().includes('<html')) {
+          console.error("Script da Equipe não está público.");
           setSyncStatus('⚠️ Erro: Script da Equipe exige acesso "Qualquer pessoa"');
         } else {
-          let parsedEq = [];
           try {
-            parsedEq = JSON.parse(textEq); 
+            const jsonEq = JSON.parse(textEq);
+            const formattedEq = jsonEq.map(item => ({ 
+              ...item,
+              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
+            }));
+            if (formattedEq.length > 0) setEquipe(formattedEq);
           } catch(e) {
-            parsedEq = parseCSV(textEq); 
-          }
-          if (Array.isArray(parsedEq) && parsedEq.length > 0) {
-             // Limpeza final para a UI
-             const limpoEq = parsedEq.map(item => {
-               let cleanItem = {};
-               for (let key in item) {
-                 let val = item[key];
-                 if (typeof val === 'string') val = val.trim();
-                 cleanItem[key.trim()] = val;
-               }
-               return { 
-                 ...cleanItem,
-                 Nome: cleanItem['Nome do Assessor'] || cleanItem['Nome'] || 'Desconhecido' 
-               };
-             });
-             setEquipe(limpoEq);
+            const parsedEq = parseCSV(textEq);
+            const formattedEq = parsedEq.map(item => ({ 
+              ...item,
+              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
+            }));
+            if (formattedEq.length > 0) setEquipe(formattedEq);
           }
         }
       } catch(e) { console.error("Erro Equipe:", e); }
@@ -310,21 +275,24 @@ export default function App() {
   };
 
   const applyNetworkSettings = (newUtilidade, newEquipe, newEmail) => {
-    setWebhookUtilidade(newUtilidade); setWebhookEquipe(newEquipe); setEmailCentral(newEmail);
+    setWebhookUtilidade(newUtilidade); 
+    setWebhookEquipe(newEquipe); 
+    setEmailCentral(newEmail);
+    // Dispara a busca forçando as URLs novas imediatamente
     fetchFromWebhooks(newUtilidade, newEquipe);
   };
 
   const deleteItem = async (entidadeName) => {
     if (!webhookUtilidade) return;
     if (window.confirm(`Arquivista, confirma a exclusão definitiva do processo de: ${entidadeName}?`)) {
-      setSyncStatus('Apagando registo no banco de dados...');
+      setSyncStatus('Apagando registro no banco de dados...');
       try {
         await fetch(webhookUtilidade, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'delete', ENTIDADE: entidadeName })
         });
         setData(prevData => prevData.filter(d => d.ENTIDADE !== entidadeName));
-        setActiveFicha(null); setView('kanban'); setSyncStatus('Registo apagado.');
+        setActiveFicha(null); setView('kanban'); setSyncStatus('Registro apagado.');
       } catch (error) { console.error(error); } finally { setTimeout(() => setSyncStatus(''), 3000); }
     }
   };
@@ -342,53 +310,35 @@ export default function App() {
     }
   };
 
-  // --- LÓGICA DE ATUALIZAÇÃO DA EQUIPE (Sincroniza com a mesma mecânica do Kanban) ---
-  const handleAddEquipe = async (newData) => {
-    setEquipe(prev => [...prev, newData]);
+  const handleUpdateEquipe = async (originalName, updatedFields) => {
+    setEquipe(prev => prev.map(p => {
+      if (p.Nome === originalName) {
+        const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : p.Nome;
+        return { ...p, ...updatedFields, Nome: novoNome };
+      }
+      return p;
+    }));
+    
+    setActiveMembroEquipe(prev => {
+       if(prev && prev.Nome === originalName) {
+         const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : prev.Nome;
+         return { ...prev, ...updatedFields, Nome: novoNome };
+       }
+       return prev;
+    });
+
     if (webhookEquipe) {
       try {
         await fetch(webhookEquipe, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'add', newData: newData })
+          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalName, newData: updatedFields })
         });
-      } catch (error) { console.error("Erro ao adicionar na equipa", error); }
+      } catch (error) { console.error("Erro ao atualizar equipe", error); }
+    } else {
+      alert("⚠️ Aviso: O Webhook da Equipe não está configurado na rede. A alteração foi salva apenas localmente.");
     }
   };
 
-  const handleUpdateEquipe = async (originalPrimaryKey, updatedFields) => {
-    const primaryKeyName = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
-    
-    // Atualiza otimisticamente a memória local
-    setEquipe(prev => prev.map(p => p[primaryKeyName] === originalPrimaryKey ? { ...p, ...updatedFields } : p));
-    
-    if (webhookEquipe) {
-      try {
-        await fetch(webhookEquipe, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalPrimaryKey, newData: updatedFields })
-        });
-      } catch (error) { console.error("Erro ao atualizar equipa", error); }
-    }
-  };
-
-  const handleDeleteEquipe = async (originalPrimaryKey) => {
-    const primaryKeyName = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
-    if (!window.confirm(`Tem a certeza que deseja remover este membro da equipa?`)) return false;
-    
-    setEquipe(prev => prev.filter(item => item[primaryKeyName] !== originalPrimaryKey));
-    
-    if (webhookEquipe) {
-      try {
-        await fetch(webhookEquipe, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'delete', NOME_ORIGINAL: originalPrimaryKey }) 
-        });
-      } catch (error) { console.error("Erro ao deletar da equipa", error); }
-    }
-    return true; 
-  };
-
-  // Funções Auxiliares (Backup)
   const exportCSV = () => {
     if (data.length === 0) { alert("Nenhum dado para exportar."); return; }
     const headers = Object.keys(data[0]);
@@ -417,10 +367,10 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = (evt) => {
       setData(parseCSV(evt.target.result));
-      setLoading(false); setSyncStatus('Backup carregado na ecrã atual!');
+      setLoading(false); setSyncStatus('Backup carregado na tela atual!');
       setTimeout(() => setSyncStatus(''), 5000);
     };
-    reader.onerror = () => { setLoading(false); setSyncStatus('Erro ao ler ficheiro.'); };
+    reader.onerror = () => { setLoading(false); setSyncStatus('Erro ao ler arquivo.'); };
     reader.readAsText(file); e.target.value = '';
   };
 
@@ -457,7 +407,7 @@ export default function App() {
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div>
             <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-[#00b7eb] dark:text-[#00b7eb]">Sist. Integrado de Gestão • Dep. Marquito</p>
+            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-cyan-600 dark:text-cyan-400">Sist. Integrado de Gestão • Dep. Marquito</p>
           </div>
           <div className="hidden md:flex gap-2">
             <div className="w-8 h-8" style={{ backgroundColor: COLORS.cyan, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
@@ -467,8 +417,8 @@ export default function App() {
         </div>
 
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
-          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
-          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
           <button 
             onClick={() => {setIsFormOpen(true); cycleAccent();}}
             className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
@@ -479,17 +429,7 @@ export default function App() {
           >
             +
           </button>
-          
-          <button 
-            onClick={() => {setView('gestao_equipe'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}}
-            className={`flex items-center justify-center w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${view === 'gestao_equipe' && !isFormOpen ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : (isDark ? 'bg-[#1a1a1a] text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white')}`}
-            style={view === 'gestao_equipe' && !isFormOpen ? { borderColor: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'currentColor' }}
-            title="Gestão de Equipe"
-          >
-            <Users size={20} />
-          </button>
-
-          <NavButton active={view === 'settings' && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={(view === 'settings' || view === 'equipe_list') && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
         </nav>
       </header>
 
@@ -516,28 +456,27 @@ export default function App() {
             
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
-            {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
-            {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
+            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('settings'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
-            {/* O NOVO GESTOR DE EQUIPE INTEGRA AQUI */}
-            {!isFormOpen && view === 'gestao_equipe' && (
-              <GestaoEquipeView 
-                equipe={equipe}
-                webhookEquipe={webhookEquipe}
-                onAdd={handleAddEquipe} 
-                onUpdate={handleUpdateEquipe} 
-                onDelete={handleDeleteEquipe} 
+            {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
+              <FichaMembroEquipe 
+                membro={activeMembroEquipe} 
+                onClose={() => {setActiveMembroEquipe(null); setView('equipe_list'); cycleAccent();}} 
+                onUpdate={(fields) => handleUpdateEquipe(activeMembroEquipe.Nome, fields)} 
                 theme={themeConfig} thick={bThick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
               />
             )}
 
+            {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
+            {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
+            
             {!isFormOpen && view === 'settings' && (
               <SettingsView 
                 isDark={isDark} setIsDark={setIsDark} 
                 fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
                 webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
                 applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
-                theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
+                setView={setView} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
               />
             )}
           </>
@@ -548,8 +487,9 @@ export default function App() {
 }
 
 // ==========================================
-// COMPONENTES DE VISUALIZAÇÃO KANBAN E DASH
+// COMPONENTES DE VISUALIZAÇÃO
 // ==========================================
+
 function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticulatorClick }) {
   const [collapsedCols, setCollapsedCols] = useState({});
   const toggleCol = (id) => setCollapsedCols(prev => ({ ...prev, [id]: !prev[id] }));
@@ -705,346 +645,98 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// NOVO SISTEMA INTEGRADO DE GESTÃO DE EQUIPE
-// Arquitetura Idêntica ao Kanban (Ficha e Inline-Edit)
+// LISTA COMPLETA DA EQUIPE
 // ==========================================
-function GestaoEquipeView({ equipe, webhookEquipe, onAdd, onUpdate, onDelete, theme, thick, isDark, accentColor, cycleAccent }) {
-  const [viewMode, setViewMode] = useState('grid');
-  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
-  const [activeMembro, setActiveMembro] = useState(null); 
-
-  const [formData, setFormData] = useState({});
-
-  // Dinâmico: Lê as colunas EXATAMENTE como vieram do Google Sheets. A 1ª é sempre a Chave.
-  const dynamicColumns = equipe.length > 0 
-    ? Object.keys(equipe[0]).filter(k => k !== 'Nome') 
-    : [ "Nome do Assessor", "E-mail", "Telefone", "Coordenação" ]; 
-
-  const primaryKeyName = dynamicColumns[0] || 'Nome do Assessor';
-
-  const openNewForm = () => {
-    const emptyForm = dynamicColumns.reduce((acc, col) => ({ ...acc, [col]: '' }), {});
-    setFormData(emptyForm);
-    setIsAddFormOpen(true);
-  };
-
-  const handleSaveNovo = (e) => {
-    e.preventDefault();
-    onAdd(formData);
-    setIsAddFormOpen(false);
-  };
-
+function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
   return (
-    <div className={`w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200 h-full`}>
-      
-      {/* HEADER MONDRIAN DA EQUIPE */}
-      <header className={`border-b-[4px] border-current p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden ${theme.cardBg}`}>
-        <div className="absolute top-0 right-0 w-32 h-32 border-l-[4px] border-b-[4px] border-current translate-x-16 -translate-y-16 rotate-12 z-0 hidden md:block pointer-events-none bg-[#FFDB58]"></div>
-        <div className="absolute top-0 left-1/2 w-16 h-32 border-[4px] border-current -translate-y-16 z-0 hidden lg:block pointer-events-none bg-[#00b7eb]"></div>
-
-        <div className="relative z-10 flex flex-col">
-          <div className="mb-1 md:mb-2">
-            <h2 className="font-black tracking-widest text-sm uppercase opacity-70 text-[#00b7eb] dark:text-[#00b7eb]">Banco de Dados da Secretaria / RH</h2>
-          </div>
-          <div className="flex items-center gap-3 md:gap-4">
-            <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Gestão de Equipe</h1>
-            <button 
-              onClick={openNewForm}
-              title="Adicionar Novo Membro"
-              className="w-8 h-8 md:w-10 md:h-10 shrink-0 border-[3px] md:border-[4px] border-current cursor-pointer hover:bg-black transition-all duration-300 flex items-center justify-center group bg-[#DC143C]"
-            >
-              <span className="text-white font-black text-2xl md:text-3xl leading-none pb-1 group-hover:rotate-90 transition-transform duration-300">+</span>
-            </button>
+    <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
+      <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
+        <div className="flex items-center gap-4 border-b-[6px] border-current pb-4">
+          <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
+          <div>
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
+            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.8em] text-sky-600 dark:text-sky-400">Banco de Dados da Secretaria / RH</p>
           </div>
         </div>
 
-        <div className="flex gap-4 relative z-10 w-full md:w-auto">
-          <button 
-            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className={`p-3 border-[4px] border-current transition-colors ${isDark ? 'bg-[#1a1a1a] hover:bg-white hover:text-black' : 'bg-white hover:bg-black hover:text-white'}`}
-            title={viewMode === 'grid' ? "Visualizar em Lista" : "Visualizar em Grade (Cards)"}
-          >
-            {viewMode === 'grid' ? <ListIcon size={24} /> : <GridIcon size={24} />}
-          </button>
+        <div className="overflow-x-auto border-[4px] border-current mt-4">
+          <table className="w-full text-left border-collapse min-w-[700px]">
+            <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
+              <tr>
+                <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
+                <th className="p-4 border-r border-current">Nome Completo</th>
+                <th className="p-4 border-r border-current">Coordenação</th>
+                <th className="p-4">E-mail Principal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {equipe.map((membro, i) => (
+                <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
+                  <td className="p-4 border-r border-current font-black text-sky-600 dark:text-sky-400 group-hover:underline decoration-2">
+                     {membro.Nome}
+                  </td>
+                  <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
+                     {membro['Nome Completo'] || '-'}
+                  </td>
+                  <td className="p-4 border-r border-current font-bold opacity-90 text-xs uppercase tracking-widest">
+                     {membro['Coordenação'] || '-'}
+                  </td>
+                  <td className="p-4 font-bold opacity-90 text-xs">
+                     {membro['E-mail Principal'] || membro['E-mail do Assessor'] || '-'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </header>
-
-      {/* AVISO DE REDE DESCONECTADA */}
-      {!webhookEquipe && (
-        <div className="mb-2 p-4 border-[4px] border-[#DC143C] bg-[#DC143C]/10 text-black dark:text-white font-bold text-sm">
-          ⚠️ Aviso: O sistema não está conectado ao Banco de Dados da Equipa. Vá na aba "Ajustes" e insira a URL (Google App Script) no campo "Webhook Equipe".
-        </div>
-      )}
-
-      {/* RENDERIZAÇÃO DA FICHA DE MEMBRO (Idêntico à arquitetura do Kanban) */}
-      {activeMembro && (
-        <FichaMembro 
-          member={activeMembro}
-          primaryKeyName={primaryKeyName}
-          onClose={() => setActiveMembro(null)}
-          onUpdate={(fields) => {
-            onUpdate(activeMembro[primaryKeyName], fields);
-            setActiveMembro(prev => ({ ...prev, ...fields })); 
-          }}
-          onDelete={() => {
-            if (onDelete(activeMembro[primaryKeyName])) setActiveMembro(null);
-          }}
-          theme={theme} thick={thick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent}
-        />
-      )}
-
-      {/* EXIBIÇÃO DA EQUIPE (Cards e Lista) */}
-      {!activeMembro && equipe.length === 0 ? (
-        <div className={`p-12 text-center border-[4px] border-current border-dashed ${theme.cardBg}`}>
-          <h2 className="text-2xl font-black uppercase tracking-widest mb-4">Nenhum articulador cadastrado</h2>
-          <p className="opacity-70">Certifique-se de que o Webhook está conectado e que a folha de cálculo possui dados.</p>
-        </div>
-      ) : (
-        !activeMembro && (
-          <>
-            {/* MODO GRADE (CARDS) */}
-            {viewMode === 'grid' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {equipe.map((member, index) => {
-                  const accent = getRandomAccentColor();
-                  const photoKey = dynamicColumns.find(k => k.toLowerCase().includes('foto'));
-                  const photoVal = photoKey ? member[photoKey] : null;
-                  
-                  // Pegamos 3 campos aleatórios para exibir no Card para não poluir
-                  const previewKeys = dynamicColumns.filter(k => k !== primaryKeyName && k !== photoKey).slice(0, 3);
-
-                  return (
-                    <div 
-                      key={index} 
-                      onClick={() => setActiveMembro(member)}
-                      className={`flex flex-col border-[4px] border-current relative group hover:-translate-y-2 transition-transform duration-300 cursor-pointer ${theme.cardBg}`}
-                    >
-                      <div className="h-4 w-full border-b-[4px] border-current" style={{ backgroundColor: accent }}></div>
-                      
-                      <div className="p-6 flex-1 flex flex-col">
-                        <div className="flex justify-between items-start mb-6">
-                          <div className={`w-16 h-16 border-[4px] border-current flex items-center justify-center overflow-hidden shrink-0 ${theme.bg}`}>
-                            {photoVal ? (
-                              <img src={photoVal} alt="Foto" className="w-full h-full object-cover" />
-                            ) : (
-                              <UserIcon size={32} className="opacity-30" />
-                            )}
-                          </div>
-                          <button className={`p-2 border-[3px] border-current transition-colors opacity-0 group-hover:opacity-100 bg-[#00b7eb] text-black`}>
-                            <Edit2 size={16} />
-                          </button>
-                        </div>
-
-                        <h3 className="text-xl font-black uppercase tracking-tight mb-4 truncate" title={member[primaryKeyName]}>
-                          {member[primaryKeyName] || "Sem Nome"}
-                        </h3>
-                        
-                        <div className="space-y-3 mt-auto pt-4 border-t-[3px] border-dashed border-gray-500 opacity-90">
-                          {previewKeys.map(key => {
-                            if (!member[key]) return null;
-                            return (
-                              <div key={key}>
-                                <p className="text-[10px] font-black uppercase tracking-widest opacity-50">{key}</p>
-                                <p className="text-sm font-bold truncate" title={member[key]}>{member[key]}</p>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* MODO LISTA */}
-            {viewMode === 'list' && (
-              <div className="flex flex-col gap-3">
-                {equipe.map((member, index) => {
-                  const accent = getRandomAccentColor();
-                  const photoKey = dynamicColumns.find(k => k.toLowerCase().includes('foto'));
-                  const emailKey = dynamicColumns.find(k => k.toLowerCase().includes('mail'));
-                  const coordKey = dynamicColumns.find(k => k.toLowerCase().includes('coord'));
-
-                  return (
-                    <div 
-                      key={index} 
-                      onClick={() => setActiveMembro(member)}
-                      className={`flex flex-col md:flex-row items-start md:items-center p-4 pl-6 border-[4px] border-current gap-4 group relative hover:-translate-x-1 cursor-pointer transition-transform ${theme.cardBg}`}
-                    >
-                      <div className="absolute left-0 top-0 bottom-0 w-3 border-r-[4px] border-current" style={{ backgroundColor: accent }}></div>
-                      
-                      <div className={`w-12 h-12 shrink-0 border-[3px] border-current flex items-center justify-center overflow-hidden ${theme.bg}`}>
-                        {photoKey && member[photoKey] ? (
-                          <img src={member[photoKey]} alt="Foto" className="w-full h-full object-cover" />
-                        ) : (
-                          <UserIcon size={24} className="opacity-30" />
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-black uppercase tracking-tight truncate" title={member[primaryKeyName]}>
-                          {member[primaryKeyName] || "Sem Nome"}
-                        </h3>
-                      </div>
-
-                      {emailKey && (
-                        <div className="hidden lg:block w-64 shrink-0 text-sm opacity-80 truncate" title={member[emailKey]}>
-                          {member[emailKey] || '-'}
-                        </div>
-                      )}
-
-                      {coordKey && member[coordKey] && (
-                        <div className="w-32 shrink-0">
-                          <span className="inline-block border-[2px] border-current text-black px-2 py-1 text-[9px] font-black uppercase tracking-widest truncate max-w-full bg-[#FFDB58]" title={member[coordKey]}>
-                            {member[coordKey]}
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity mt-2 md:mt-0">
-                        <button className="p-2 border-[3px] border-current transition-colors bg-[#00b7eb] text-black">
-                          <Edit2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )
-      )}
-
-      {/* FORMULÁRIO DE ADIÇÃO DE NOVO MEMBRO */}
-      {isAddFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row border-[6px] border-current shadow-[10px_10px_0px_rgba(0,0,0,0.5)] ${theme.cardBg}`}>
-            
-            <div className="hidden md:flex w-24 flex-col border-r-[4px] border-current">
-              <div className="flex-1 border-b-[4px] border-current bg-[#DC143C]"></div>
-              <div className="h-32 border-b-[4px] border-current bg-[#FFDB58]"></div>
-              <div className="h-48 bg-[#00b7eb]"></div>
-            </div>
-
-            <div className="flex-1 flex flex-col relative">
-              <button 
-                onClick={() => setIsAddFormOpen(false)}
-                className={`absolute top-4 right-4 p-2 border-[4px] border-current transition-colors z-10 ${theme.bg} hover:bg-[#DC143C] hover:text-white`}
-              >
-                <XIcon size={20} />
-              </button>
-
-              <div className="p-8 border-b-[4px] border-current">
-                <h2 className="text-3xl font-black uppercase tracking-tighter">Novo Articulador</h2>
-                <p className="text-sm font-bold uppercase tracking-widest opacity-60 mt-2">Preencha os dados da equipa</p>
-              </div>
-
-              <form onSubmit={handleSaveNovo} className="p-8 flex flex-col gap-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Campo Primário */}
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2">
-                      {primaryKeyName} <span style={{ color: COLORS.crimson }}>*</span>
-                      <span className="text-[9px] font-normal opacity-60">(Chave Primária de Identificação)</span>
-                    </label>
-                    <input 
-                      type="text" 
-                      required
-                      value={formData[primaryKeyName] || ''}
-                      onChange={(e) => setFormData(prev => ({ ...prev, [primaryKeyName]: e.target.value }))}
-                      className={`w-full p-4 text-lg font-bold border-[4px] border-current outline-none transition-colors focus:border-sky-500 ${theme.inputBg}`}
-                    />
-                  </div>
-
-                  {/* Outros Campos Dinâmicos */}
-                  {dynamicColumns.slice(1).map((col) => (
-                    <div key={col} className={col.toLowerCase().includes("nome") ? "md:col-span-2" : ""}>
-                      <label className="block text-xs font-black uppercase tracking-widest mb-2">{col}</label>
-                      <input 
-                        type="text" 
-                        value={formData[col] || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, [col]: e.target.value }))}
-                        className={`w-full p-3 font-bold border-[4px] border-current outline-none transition-colors focus:border-sky-500 ${theme.inputBg}`}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-8 pt-6 border-t-[4px] border-dashed border-gray-500 flex justify-end gap-4">
-                  <button 
-                    type="button" 
-                    onClick={() => setIsAddFormOpen(false)}
-                    className={`px-6 py-4 font-black uppercase tracking-widest border-[4px] border-current transition-colors ${theme.bg} hover:opacity-70`}
-                  >
-                    Cancelar
-                  </button>
-                  <button 
-                    type="submit" 
-                    className={`px-8 py-4 font-black uppercase tracking-widest border-[4px] border-current text-black hover:-translate-y-1 transition-transform flex items-center gap-3 bg-[#00b7eb]`}
-                  >
-                    <SaveIcon size={20} /> Salvar Membro
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
 
 // ==========================================
-// FICHA DE MEMBRO (A Mágica da Edição Inline igual Utilidade Pública)
+// FICHA COMPLETA DO MEMBRO DA EQUIPE
 // ==========================================
-function FichaMembro({ member, primaryKeyName, onClose, onDelete, onUpdate, theme, thick, isDark, accentColor, cycleAccent }) {
-  const name = member[primaryKeyName];
-  const photoKey = Object.keys(member).find(k => k.toLowerCase().includes('foto'));
-  const photoUrl = photoKey ? member[photoKey] : null;
+function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent }) {
+  const keys = Object.keys(membro).filter(k => k !== 'Nome');
 
   return (
-    <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
+    <div className={`max-w-4xl mx-auto w-full p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
       <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
       
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-6 border-b-[6px] border-current pb-6 pr-10">
-        <div className={`w-24 h-24 md:w-32 md:h-32 border-[4px] border-current flex items-center justify-center shrink-0 ${theme.bg}`}>
-          {photoUrl ? <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" /> : <UserIcon size={48} className="opacity-30" />}
-        </div>
-        <div className="flex-1">
-          <span className="block text-[0.7em] uppercase font-black tracking-widest opacity-60 mb-1">Chave de Busca ({primaryKeyName})</span>
-          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-none">
-            <EditableField value={name} onSave={(val) => onUpdate({ [primaryKeyName]: val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} />
-          </h2>
-          <div className="mt-2 text-[10px] uppercase font-bold opacity-50">Toque em qualquer informação abaixo para editá-la</div>
-        </div>
+      <div className="pr-10 border-b-[6px] border-current pb-4">
+        <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
+        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words text-sky-600 dark:text-sky-400">
+          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ 'Nome do Assessor': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} />
+        </h2>
+        <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">Clique no lápis (ou segure no celular) para editar qualquer campo. As alterações são sincronizadas com a planilha matriz.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Renderiza TODAS as colunas que estão na folha de cálculo do utilizador */}
-        {Object.keys(member).map(key => {
-          if (key === primaryKeyName || key === 'Nome') return null; 
-          
+        {keys.map((key, i) => {
+          const val = membro[key];
+          const isLarge = key.toLowerCase().includes('endereço') || key.toLowerCase().includes('observação');
+
           return (
-            <div key={key} className={`p-4 border-[2px] border-current flex flex-col items-start w-full ${theme.bg}`}>
+            <div key={i} className={`p-4 border-[2px] border-current flex flex-col items-start w-full ${isLarge ? 'md:col-span-2' : ''} ${theme.bg}`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">{key}</span>
               <EditableField 
-                value={member[key]} 
-                onSave={(val) => onUpdate({ [key]: val })} 
+                value={val} 
+                onSave={(newVal) => onUpdate({ [key]: newVal })} 
                 isDark={isDark} 
-                textClass="font-bold break-words max-w-full w-full" 
+                multiline={isLarge}
+                textClass={`font-bold break-words max-w-full ${isLarge ? 'whitespace-pre-wrap leading-relaxed' : ''}`} 
                 accentColor={accentColor} 
                 cycleAccent={cycleAccent} 
-                multiline={member[key] && String(member[key]).length > 50} 
               />
             </div>
           );
         })}
       </div>
-
-      <div className="flex justify-end mt-4 border-t-[4px] border-current pt-4">
-        <button onClick={onDelete} className="flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 hover:bg-[#DC143C] hover:text-white transition-all hover:border-[#DC143C]">
-          <Trash2 size={16} /> Apagar Membro Definitivamente
+      
+      <div className="mt-4 border-t-[4px] border-current pt-4">
+        <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
+          Entendido, Voltar.
         </button>
       </div>
     </div>
@@ -1052,7 +744,7 @@ function FichaMembro({ member, primaryKeyName, onClose, onDelete, onUpdate, them
 }
 
 // ==========================================
-// FICHA COMPLETA (UTILIDADE PÚBLICA)
+// FICHA COMPLETA COM EDIÇÃO INLINE MÁGICA
 // ==========================================
 function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipe, emailCentral, accentColor, cycleAccent }) {
   const [stagedFiles, setStagedFiles] = useState({});
@@ -1085,10 +777,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
   const docsCount = DOCS_KEYS.filter(k => String(item[k] || '').toUpperCase() === 'TRUE').length;
   const checkGlobalColor = getProgressColor(docsCount);
-  
-  // Extrai apenas a chave primária da equipa para o Select
-  const pkEquipe = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
-  const equipeOptions = equipe.map(e => e[pkEquipe]);
+  const equipeOptions = equipe.map(e => e.Nome);
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
@@ -1177,7 +866,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               );
             })}
             
-            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-[#00b7eb] hover:text-white' : 'bg-black text-white hover:bg-[#00b7eb]'}`}>
+            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-sky-600 hover:text-white' : 'bg-black text-white hover:bg-sky-600'}`}>
               <Mail size={18} /> Enviar Malote por E-mail
             </a>
           </div>
@@ -1195,11 +884,11 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         
         {isPadronizadorOpen && (
           <div className="p-6 pt-0 border-t-[4px] border-current mt-2">
-            <div className="mb-6 mt-4 p-4 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
+            <div className="mb-6 mt-4 p-4 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
               <p className="text-[12px] font-bold leading-relaxed">
-                ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do ficheiro</u> (ex: 001-ATA.pdf). 
+                ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do arquivo</u> (ex: 001-ATA.pdf). 
                 É estritamente necessário que o Assessor verifique manualmente o conteúdo do documento para garantir que atenda às exigências legais.
-                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-[#00b7eb] text-sm">Consulte o Manual de Requisitos aqui.</button>
+                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-sky-600 text-sm">Consulte o Manual de Requisitos aqui.</button>
               </p>
             </div>
 
@@ -1213,7 +902,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                   <div key={idx} className={`flex flex-col md:flex-row md:items-center justify-between p-3 border-[3px] border-current transition-colors ${stagedFile ? (isDark ? 'bg-sky-900' : 'bg-sky-200') : 'bg-transparent'}`}>
                     <div className="flex-1 pr-4 mb-2 md:mb-0">
                       <span className="font-black uppercase tracking-widest text-[0.75em] opacity-70 block mb-1">{key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO/NÃO REMUNERADA' : key}</span>
-                      {stagedFile ? <span className="font-mono text-[0.8em] font-bold truncate block">{previewName}</span> : <span className="font-bold text-[0.8em] italic opacity-50">Nenhum ficheiro anexado.</span>}
+                      {stagedFile ? <span className="font-mono text-[0.8em] font-bold truncate block">{previewName}</span> : <span className="font-bold text-[0.8em] italic opacity-50">Nenhum arquivo anexado.</span>}
                     </div>
                     <div className="flex gap-2 flex-shrink-0">
                       {!stagedFile ? (
@@ -1240,7 +929,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
       <div className="flex justify-end mt-4 border-t-[4px] border-current pt-4">
         <button onClick={onDelete} className="flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 hover:bg-rose-600 hover:text-white transition-all hover:border-rose-600">
-          <Trash2 size={16} /> Apagar Registo Definitivamente
+          <Trash2 size={16} /> Apagar Registro Definitivamente
         </button>
       </div>
       
@@ -1262,13 +951,13 @@ function ManualModal({ onClose, theme, thick, isDark }) {
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
             <BookOpen size={32} /> Manual de Requisitos
           </h2>
-          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-[#00b7eb] dark:text-[#00b7eb]">Pedido de Utilidade Pública Estadual</p>
+          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-sky-600 dark:text-sky-400">Pedido de Utilidade Pública Estadual</p>
         </div>
 
         <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
           <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
-            <p className="mt-3 text-[#DC143C] dark:text-[#DC143C]">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
+            <p className="mt-3 text-rose-600 dark:text-rose-400">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
             <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
           </section>
 
@@ -1277,17 +966,17 @@ function ManualModal({ onClose, theme, thick, isDark }) {
             
             <div className="space-y-4">
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">001 Ata de Fundação</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">001 Ata de Fundação</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
                   <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
@@ -1296,7 +985,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">004 Declaração de não qualificação OSCIP</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">004 Declaração de não qualificação OSCIP</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
                   <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
@@ -1306,15 +995,15 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">005 Declaração de funcionamento</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">005 Declaração de funcionamento</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
                   <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
-                  <li>Devem constar o número do registo no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
+                  <li>Devem constar o número do registro no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
                 </ul>
               </div>
 
-              <div className="p-3 border-[2px] border-current bg-[#FFDB58]/20">
+              <div className="p-3 border-[2px] border-current bg-mustard/20">
                 <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
                 <ul className="list-disc pl-5 space-y-1 mb-3">
                   <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
@@ -1332,15 +1021,15 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">008 Estatuto da entidade</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">008 Estatuto da entidade</h4>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Necessita <b>registo de cartório</b>.</li>
+                  <li>Necessita <b>registro de cartório</b>.</li>
                   <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
                 </ul>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">009 Relatório de Atividades</h4>
+                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">009 Relatório de Atividades</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
                   <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
@@ -1411,7 +1100,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 }
 
 // ==========================================
-// FORMULÁRIO DE NOVO PROCESSO (Utilidade)
+// FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
@@ -1424,9 +1113,6 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
   
   const [isManualOpen, setIsManualOpen] = useState(false);
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
-
-  // Pega a chave principal para usar na listagem de articuladores (normalmente a primeira coluna)
-  const pkEquipe = equipe.length > 0 ? Object.keys(equipe[0])[0] : 'Nome do Assessor';
 
   const handleFocus = (fieldName) => { setFocusedField(fieldName); if(cycleAccent) cycleAccent(); };
   
@@ -1481,7 +1167,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
     } catch (error) { console.error(error); alert("Erro ao comunicar com o Arquivo Central."); } finally { setSending(false); }
   };
 
-  const filteredEquipe = equipe.filter(p => String(p[pkEquipe]).toLowerCase().includes(busca.toLowerCase()));
+  const filteredEquipe = equipe.filter(p => p.Nome.toLowerCase().includes(busca.toLowerCase()));
 
   if (successMode) {
     const hasFiles = Object.keys(stagedFiles).length > 0;
@@ -1489,10 +1175,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
       <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
         <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.3)] border-[3px]`} style={{ borderColor: accentColor }}>
           <CheckCircle2 className="w-20 h-20 mx-auto" style={{ color: accentColor }} />
-          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registado!</h2>
+          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
           <p className="font-bold opacity-80 leading-relaxed text-sm">
             Os dados da entidade foram inseridos com sucesso.<br/>
-            Para enviar anexos, aceda à Ficha Institucional.
+            Para enviar anexos, acesse a Ficha Institucional.
           </p>
           <button onClick={onClose} className="mt-4 p-4 border-[4px] border-current font-black uppercase tracking-widest hover:-translate-y-1 transition-transform">
             Concluir e Voltar
@@ -1534,7 +1220,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
               {showDropdown && (
                 <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] z-10 max-h-40 overflow-y-auto ${theme.cardBg}`} style={{ borderColor: accentColor }}>
                   {filteredEquipe.map((p, idx) => (
-                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p[pkEquipe]}); setBusca(p[pkEquipe]); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors border-b border-current opacity-60 hover:opacity-100`}>{p[pkEquipe]}</div>
+                    <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors border-b border-current opacity-60 hover:opacity-100`}>{p.Nome}</div>
                   ))}
                 </div>
               )}
@@ -1558,7 +1244,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           </div>
 
           <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
-            {sending ? 'A guardar...' : 'Salvar Ficha Oficial'}
+            {sending ? 'Salvando...' : 'Salvar Ficha Oficial'}
           </button>
 
           <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: isPadronizadorOpen ? accentColor : 'currentcolor' }}>
@@ -1571,10 +1257,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
              {isPadronizadorOpen && (
                <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
-                 <div className="mb-4 p-3 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
+                 <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
                    <p className="text-[10px] font-bold leading-relaxed">
-                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o ficheiro para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-[#00b7eb]">Verifique os requisitos no Manual aqui.</button>
+                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
+                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
                    </p>
                  </div>
 
@@ -1590,7 +1276,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                          </div>
                          <div className="flex-shrink-0">
                            {!file ? (
-                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center gap-1">
+                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white transition-colors flex items-center gap-1">
                                <FileText className="w-3 h-3"/> Anexar <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
                              </label>
                            ) : (
@@ -1622,13 +1308,13 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 }
 
 // ==========================================
-// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E REDE)
+// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E EQUIPE)
 // ==========================================
 function SettingsView({ 
   isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
   webhookUtilidade, webhookEquipe, emailCentral, 
   applyNetworkSettings, exportCSV, importCSV, 
-  theme, thick, med, accentColor, cycleAccent
+  setView, theme, thick, med, accentColor, cycleAccent
 }) {
   const [openSection, setOpenSection] = useState('aparencia'); 
   const [openNetwork, setOpenNetwork] = useState(false);
@@ -1646,7 +1332,7 @@ function SettingsView({
   };
 
   const handleSaveNetwork = () => {
-    if(window.confirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem a certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?")) {
+    if(window.confirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?")) {
         applyNetworkSettings(draftUtilidade, draftEquipe, draftEmail);
         setSavedMessage('Configuração sobreposta localmente com sucesso!');
         setTimeout(() => setSavedMessage(''), 4000);
@@ -1712,20 +1398,31 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
+      {/* BLOCO 2: GESTÃO DE EQUIPE (Acesso Rápido) */}
+      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: accentColor }}>
+        <button 
+          onClick={() => { setView('equipe_list'); cycleAccent(); }}
+          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        >
+          <span className="flex items-center gap-2"><Users size={18} /> Acessar Banco de Dados da Equipe</span>
+          <span className="text-xl leading-none font-mono">→</span>
+        </button>
+      </div>
+
+      {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('backup'); cycleAccent(); }}
           className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
         >
-          <span className="flex items-center gap-2"><SaveIcon size={18} /> Backup e Restauração (.CSV)</span>
+          <span className="flex items-center gap-2"><Save size={18} /> Backup e Restauração (.CSV)</span>
           <span className="text-xl leading-none font-mono">{openSection === 'backup' ? '−' : '+'}</span>
         </button>
         
         {openSection === 'backup' && (
           <div className="p-4 border-t-[4px] flex flex-col gap-3" style={{ borderColor: accentColor }}>
             <p className="opacity-80 font-bold" style={{ fontSize: '0.9em' }}>
-              Baixe os dados atuais para preservação ou carregue um ficheiro CSV de backup para visualização imediata no Kanban.
+              Baixe os dados atuais para preservação ou carregue um arquivo CSV de backup para visualização imediata no Kanban.
             </p>
             <div className="flex flex-col md:flex-row gap-4 mt-2">
               <button 
@@ -1754,7 +1451,7 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
+      {/* BLOCO 4: SISTEMA (AVANÇADO) */}
       <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
         <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
@@ -1775,8 +1472,8 @@ function SettingsView({
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipa</label>
-              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="URL do script da equipa..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
+              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
             </div>
 
             <div className="flex flex-col gap-2">
