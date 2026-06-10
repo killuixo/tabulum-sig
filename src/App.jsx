@@ -508,7 +508,26 @@ export default function App() {
           >
             +
           </button>
-          <NavButton active={(view === 'settings' || view === 'equipe_list') && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
+          
+          {/* BOTÃO DISCRETO DA EQUIPE */}
+          <button 
+            onClick={() => {setView('equipe_list'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
+            className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'equipe_list' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
+            style={view === 'equipe_list' && !isFormOpen ? { borderColor: accentColor, color: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, zIndex: 10 } : { color: 'inherit' }}
+            title="Banco de Dados da Equipe"
+          >
+            <Users size={24} />
+          </button>
+
+          {/* BOTÃO DISCRETO DE AJUSTES (AGORA COMO O ÚLTIMO, SEM TEXTO, APENAS A ENGRENAGEM) */}
+          <button 
+            onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
+            className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'settings' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
+            style={view === 'settings' && !isFormOpen ? { borderColor: accentColor, color: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, zIndex: 10 } : { color: 'inherit' }}
+            title="Ajustes do Sistema"
+          >
+            <Settings size={24} />
+          </button>
         </nav>
       </header>
 
@@ -536,7 +555,7 @@ export default function App() {
             
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
-            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('settings'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
+            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('kanban'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
             {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
               <FichaMembroEquipe 
@@ -1225,7 +1244,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 <ul className="list-disc pl-5 space-y-1">
                   <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
                   <li>A entidade por seu representante legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
-                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condição de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
+                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condition de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
                 </ul>
               </div>
 
@@ -1262,8 +1281,8 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 // PAINEL DO ARTICULADOR E DASHBOARD
 // ==========================================
 function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
-  const processos = data.filter(d => d.ARTICULADOR === nome);
-  const protocolados = processos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
+  const procesos = data.filter(d => d.ARTICULADOR === nome);
+  const protocolados = procesos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
@@ -1281,7 +1300,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 
       <div className="grid grid-cols-2 gap-4">
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
-          <span className="text-5xl font-black leading-none">{processos.length}</span>
+          <span className="text-5xl font-black leading-none">{procesos.length}</span>
           <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Processos Assumidos</span>
         </div>
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
@@ -1292,7 +1311,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 
       <div className="mt-4 flex flex-col gap-3">
         <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
-        {processos.map((p, i) => (
+        {procesos.map((p, i) => (
           <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all ${theme.bg}`}>
             <div>
               <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
@@ -1689,17 +1708,6 @@ function SettingsView({
             </div>
           </div>
         )}
-      </div>
-
-      {/* BLOCO 2: GESTÃO DE EQUIPE (Acesso Rápido) */}
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: accentColor }}>
-        <button 
-          onClick={() => { setView('equipe_list'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Users size={18} /> Acessar Banco de Dados da Equipe</span>
-          <span className="text-xl leading-none font-mono">→</span>
-        </button>
       </div>
 
       {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
