@@ -20,9 +20,9 @@ const AlertCircle = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/>
 const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />;
 const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></>} />;
 const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
-const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
+const SaveIcon = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
 const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
-const UserIcon = (p) => <Icon {...p} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
+const UserIcon = (p) => <Icon {...p} path={<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
 const SearchIcon = (p) => <Icon {...p} path={<><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></>} />;
 const Trash2 = (p) => <Icon {...p} path={<><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></>} />;
 const Mail = (p) => <Icon {...p} path={<><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></>} />;
@@ -32,13 +32,39 @@ const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 const Users = (p) => <Icon {...p} path={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
+const GridIcon = (p) => <Icon {...p} path={<><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></>} />;
+const ListIcon = (p) => <Icon {...p} path={<><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>} />;
+const XIcon = (p) => <Icon {...p} path={<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>} />;
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
-  mustard: '#FFDB58', // Amarelo Mostarda (Ciclo 1)
-  cyan: '#00b7eb', // Ciano confortável (Ciclo 2)
-  crimson: '#DC143C', // Carmesim (Ciclo 3)
+  mustard: '#FFDB58', 
+  cyan: '#00b7eb', 
+  crimson: '#DC143C', 
   white: '#FFFFFF', black: '#000000', darkBg: '#0f0f0f', darkCard: '#1a1a1a'
+};
+
+const getRandomAccentColor = () => {
+  const accents = [COLORS.crimson, COLORS.cyan, COLORS.mustard];
+  return accents[Math.floor(Math.random() * accents.length)];
+};
+
+// Funções Seguras para LocalStorage (Evita Crash em Iframes Restritos)
+const safeGetStorage = (key, defaultVal) => {
+  try {
+    const val = window.localStorage.getItem(key);
+    return val !== null ? val : defaultVal;
+  } catch (e) {
+    return defaultVal;
+  }
+};
+
+const safeSetStorage = (key, val) => {
+  try {
+    window.localStorage.setItem(key, val);
+  } catch (e) {
+    // Ignora silenciosamente se o navegador bloquear
+  }
 };
 
 const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
@@ -70,7 +96,6 @@ const DEFAULT_EQUIPE = [
   { Nome: 'Tânia' }, { Nome: 'Toninho' }, { Nome: 'Victor Klauck' }, { Nome: 'Vina' }, { Nome: 'Xalinska' }
 ];
 
-// Helper para obter cores de Status Kanban
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
   if (s.includes('aguardando')) return COLORS.crimson;
@@ -163,25 +188,27 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
-  // Ajustes Locais (Navegador)
+  // Ajustes Locais Seguros
   const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('tabulum_dark');
-    return saved !== null ? JSON.parse(saved) : true;
+    const saved = safeGetStorage('tabulum_dark', null);
+    if (saved !== null) {
+      try { return JSON.parse(saved); } catch(e) { return true; }
+    }
+    return true;
   });
+  
   const [fontSizeLevel, setFontSizeLevel] = useState(() => {
-    const saved = localStorage.getItem('tabulum_font');
+    const saved = safeGetStorage('tabulum_font', null);
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  // URLs de Rede (Memória Local vs Matriz Global)
-  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
-  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
-  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
+  const [webhookUtilidade, setWebhookUtilidade] = useState(() => safeGetStorage('tabulum_wh_utilidade', DEFAULT_WEBHOOK_UTILIDADE));
+  const [webhookEquipe, setWebhookEquipe] = useState(() => safeGetStorage('tabulum_wh_equipe', DEFAULT_WEBHOOK_EQUIPE));
+  const [emailCentral, setEmailCentral] = useState(() => safeGetStorage('tabulum_email', DEFAULT_EMAIL_CENTRAL));
 
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
-  const [activeMembroEquipe, setActiveMembroEquipe] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
@@ -201,18 +228,16 @@ export default function App() {
     setView('articulator_details');
   };
 
-  useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
-  useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
-  useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
-  useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
-  useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
+  useEffect(() => { safeSetStorage('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
+  useEffect(() => { safeSetStorage('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
+  useEffect(() => { safeSetStorage('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
+  useEffect(() => { safeSetStorage('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
+  useEffect(() => { safeSetStorage('tabulum_email', emailCentral); }, [emailCentral]);
 
   useEffect(() => { 
-    // Carrega dados na inicialização
     fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
   }, []);
 
-  // Passamos as URLs como parâmetro para evitar o "Bug da Memória Fantasma" (stale state no momento do clique)
   const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade, currentUrlEquipe = webhookEquipe) => {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
@@ -245,7 +270,6 @@ export default function App() {
         const resEq = await fetch(currentUrlEquipe);
         const textEq = await resEq.text();
         
-        // Bloqueio contra erros de permissão do Google Script
         if (textEq.toLowerCase().includes('<!doctype html>') || textEq.toLowerCase().includes('<html')) {
           console.error("Script da Equipe não está público.");
           setSyncStatus('⚠️ Erro: Script da Equipe exige acesso "Qualquer pessoa"');
@@ -278,7 +302,6 @@ export default function App() {
     setWebhookUtilidade(newUtilidade); 
     setWebhookEquipe(newEquipe); 
     setEmailCentral(newEmail);
-    // Dispara a busca forçando as URLs novas imediatamente
     fetchFromWebhooks(newUtilidade, newEquipe);
   };
 
@@ -310,6 +333,21 @@ export default function App() {
     }
   };
 
+  const handleAddEquipe = async (newData) => {
+    const nome = newData['Nome do Assessor'];
+    setEquipe(prev => [...prev, { ...newData, Nome: nome }]);
+    if (webhookEquipe) {
+      try {
+        await fetch(webhookEquipe, {
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'add', ...newData })
+        });
+      } catch (error) { console.error("Erro ao adicionar na equipe", error); }
+    } else {
+      alert("⚠️ Aviso: Webhook da Equipe não configurado. Salvo apenas localmente.");
+    }
+  };
+
   const handleUpdateEquipe = async (originalName, updatedFields) => {
     setEquipe(prev => prev.map(p => {
       if (p.Nome === originalName) {
@@ -319,14 +357,6 @@ export default function App() {
       return p;
     }));
     
-    setActiveMembroEquipe(prev => {
-       if(prev && prev.Nome === originalName) {
-         const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : prev.Nome;
-         return { ...prev, ...updatedFields, Nome: novoNome };
-       }
-       return prev;
-    });
-
     if (webhookEquipe) {
       try {
         await fetch(webhookEquipe, {
@@ -336,6 +366,20 @@ export default function App() {
       } catch (error) { console.error("Erro ao atualizar equipe", error); }
     } else {
       alert("⚠️ Aviso: O Webhook da Equipe não está configurado na rede. A alteração foi salva apenas localmente.");
+    }
+  };
+
+  const handleDeleteEquipe = async (nomeAssessor) => {
+    if (!window.confirm(`Tem certeza que deseja remover ${nomeAssessor} da equipe?`)) return;
+    setEquipe(prev => prev.filter(item => item.Nome !== nomeAssessor));
+    
+    if (webhookEquipe) {
+      try {
+        await fetch(webhookEquipe, {
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'delete', ENTIDADE: nomeAssessor }) 
+        });
+      } catch (error) { console.error("Erro ao deletar equipe", error); }
     }
   };
 
@@ -407,7 +451,7 @@ export default function App() {
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div>
             <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-cyan-600 dark:text-cyan-400">Sist. Integrado de Gestão • Dep. Marquito</p>
+            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-1 text-[#00b7eb] dark:text-[#00b7eb]">Sist. Integrado de Gestão • Dep. Marquito</p>
           </div>
           <div className="hidden md:flex gap-2">
             <div className="w-8 h-8" style={{ backgroundColor: COLORS.cyan, border: `3px solid ${isDark ? '#fff' : '#000'}` }}></div>
@@ -417,8 +461,8 @@ export default function App() {
         </div>
 
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
-          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
-          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
           <button 
             onClick={() => {setIsFormOpen(true); cycleAccent();}}
             className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
@@ -429,7 +473,17 @@ export default function App() {
           >
             +
           </button>
-          <NavButton active={(view === 'settings' || view === 'equipe_list') && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
+          
+          <button 
+            onClick={() => {setView('gestao_equipe'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}}
+            className={`flex items-center justify-center w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${view === 'gestao_equipe' && !isFormOpen ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : (isDark ? 'bg-[#1a1a1a] text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white')}`}
+            style={view === 'gestao_equipe' && !isFormOpen ? { borderColor: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'currentColor' }}
+            title="Gestão de Equipe"
+          >
+            <Users size={20} />
+          </button>
+
+          <NavButton active={view === 'settings' && !isFormOpen} onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Settings />} label="Ajustes" isDark={isDark} accentColor={accentColor} />
         </nav>
       </header>
 
@@ -456,27 +510,26 @@ export default function App() {
             
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} />}
             
-            {!isFormOpen && view === 'equipe_list' && <ListaEquipeView equipe={equipe} onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} onBack={() => {setView('settings'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} />}
+            {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
+            {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
             
-            {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
-              <FichaMembroEquipe 
-                membro={activeMembroEquipe} 
-                onClose={() => {setActiveMembroEquipe(null); setView('equipe_list'); cycleAccent();}} 
-                onUpdate={(fields) => handleUpdateEquipe(activeMembroEquipe.Nome, fields)} 
+            {!isFormOpen && view === 'gestao_equipe' && (
+              <GestaoEquipeView 
+                equipe={equipe} 
+                onAdd={handleAddEquipe} 
+                onUpdate={handleUpdateEquipe} 
+                onDelete={handleDeleteEquipe} 
                 theme={themeConfig} thick={bThick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
               />
             )}
 
-            {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
-            {!isFormOpen && view === 'dashboard' && <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />}
-            
             {!isFormOpen && view === 'settings' && (
               <SettingsView 
                 isDark={isDark} setIsDark={setIsDark} 
                 fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
                 webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
                 applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
-                setView={setView} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
+                theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
               />
             )}
           </>
@@ -645,100 +698,287 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// LISTA COMPLETA DA EQUIPE
+// NOVO SISTEMA INTEGRADO DE GESTÃO DE EQUIPE
 // ==========================================
-function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
+function GestaoEquipeView({ equipe, onAdd, onUpdate, onDelete, theme, thick, isDark, accentColor, cycleAccent }) {
+  const [viewMode, setViewMode] = useState('grid');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [originalEntity, setOriginalEntity] = useState(null);
+
+  const COLUMNS = [
+    "Nome do Assessor", "E-mail do Assessor", "E-mail outro", "Nome Completo", "Foto do Assessor", "Coordenação"
+  ];
+
+  const openNewForm = () => {
+    const emptyForm = COLUMNS.reduce((acc, col) => ({ ...acc, [col]: '' }), {});
+    setFormData(emptyForm);
+    setOriginalEntity(null);
+    setIsFormOpen(true);
+  };
+
+  const openEditForm = (member) => {
+    const safeMember = { ...member };
+    if (!safeMember["Nome do Assessor"]) safeMember["Nome do Assessor"] = member.Nome;
+    setFormData(safeMember);
+    setOriginalEntity(member.Nome);
+    setIsFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+    setFormData({});
+    setOriginalEntity(null);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (originalEntity) {
+      onUpdate(originalEntity, formData);
+    } else {
+      onAdd(formData);
+    }
+    closeForm();
+  };
+
   return (
-    <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
-      <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
-        <div className="flex items-center gap-4 border-b-[6px] border-current pb-4">
-          <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
-          <div>
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
-            <p className="font-bold opacity-80 uppercase tracking-widest text-[0.8em] text-sky-600 dark:text-sky-400">Banco de Dados da Secretaria / RH</p>
+    <div className={`w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200 h-full`}>
+      {/* HEADER MONDRIAN DA EQUIPE */}
+      <header className={`border-b-[4px] border-current p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden ${theme.cardBg}`}>
+        <div className="absolute top-0 right-0 w-32 h-32 border-l-[4px] border-b-[4px] border-current translate-x-16 -translate-y-16 rotate-12 z-0 hidden md:block pointer-events-none bg-[#FFDB58]"></div>
+        <div className="absolute top-0 left-1/2 w-16 h-32 border-[4px] border-current -translate-y-16 z-0 hidden lg:block pointer-events-none bg-[#00b7eb]"></div>
+
+        <div className="relative z-10 flex flex-col">
+          <div className="mb-1 md:mb-2">
+            <h2 className="font-black tracking-widest text-sm uppercase opacity-70 text-[#00b7eb] dark:text-[#00b7eb]">Banco de Dados da Secretaria / RH</h2>
+          </div>
+          <div className="flex items-center gap-3 md:gap-4">
+            <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Gestão de Equipe</h1>
+            <button 
+              onClick={openNewForm}
+              title="Novo Articulador"
+              className="w-8 h-8 md:w-10 md:h-10 shrink-0 border-[3px] md:border-[4px] border-current cursor-pointer hover:bg-black transition-all duration-300 flex items-center justify-center group bg-[#DC143C]"
+            >
+              <span className="text-white font-black text-2xl md:text-3xl leading-none pb-1 group-hover:rotate-90 transition-transform duration-300">+</span>
+            </button>
           </div>
         </div>
 
-        <div className="overflow-x-auto border-[4px] border-current mt-4">
-          <table className="w-full text-left border-collapse min-w-[700px]">
-            <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
-              <tr>
-                <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
-                <th className="p-4 border-r border-current">Nome Completo</th>
-                <th className="p-4 border-r border-current">Coordenação</th>
-                <th className="p-4">E-mail Principal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {equipe.map((membro, i) => (
-                <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
-                  <td className="p-4 border-r border-current font-black text-sky-600 dark:text-sky-400 group-hover:underline decoration-2">
-                     {membro.Nome}
-                  </td>
-                  <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
-                     {membro['Nome Completo'] || '-'}
-                  </td>
-                  <td className="p-4 border-r border-current font-bold opacity-90 text-xs uppercase tracking-widest">
-                     {membro['Coordenação'] || '-'}
-                  </td>
-                  <td className="p-4 font-bold opacity-90 text-xs">
-                     {membro['E-mail Principal'] || membro['E-mail do Assessor'] || '-'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex gap-4 relative z-10 w-full md:w-auto">
+          <button 
+            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+            className={`p-3 border-[4px] border-current transition-colors ${isDark ? 'bg-[#1a1a1a] hover:bg-white hover:text-black' : 'bg-white hover:bg-black hover:text-white'}`}
+            title={viewMode === 'grid' ? "Visualizar em Lista" : "Visualizar em Grade (Cards)"}
+          >
+            {viewMode === 'grid' ? <ListIcon size={24} /> : <GridIcon size={24} />}
+          </button>
         </div>
-      </div>
-    </div>
-  );
-}
+      </header>
 
-// ==========================================
-// FICHA COMPLETA DO MEMBRO DA EQUIPE
-// ==========================================
-function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent }) {
-  const keys = Object.keys(membro).filter(k => k !== 'Nome');
+      {/* EXIBIÇÃO DOS MEMBROS */}
+      {equipe.length === 0 ? (
+        <div className={`p-12 text-center border-[4px] border-current border-dashed ${theme.cardBg}`}>
+          <h2 className="text-2xl font-black uppercase tracking-widest mb-4">Nenhum articulador cadastrado</h2>
+          <p className="opacity-70">Encontre o botão escondido no quadrado vermelho para adicionar membros.</p>
+        </div>
+      ) : (
+        <>
+          {/* MODO GRADE (CARDS) */}
+          {viewMode === 'grid' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {equipe.map((member, index) => {
+                const accent = getRandomAccentColor();
+                return (
+                  <div key={index} className={`flex flex-col border-[4px] border-current relative group hover:-translate-y-2 transition-transform duration-300 ${theme.cardBg}`}>
+                    <div className="h-4 w-full border-b-[4px] border-current" style={{ backgroundColor: accent }}></div>
+                    
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className={`w-16 h-16 border-[4px] border-current flex items-center justify-center overflow-hidden shrink-0 ${theme.bg}`}>
+                          {member["Foto do Assessor"] ? (
+                            <img src={member["Foto do Assessor"]} alt="Foto" className="w-full h-full object-cover" />
+                          ) : (
+                            <UserIcon size={32} className="opacity-30" />
+                          )}
+                        </div>
+                        
+                        <div className="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => openEditForm(member)} className={`p-2 border-[3px] border-current transition-colors hover:text-black hover:bg-[#00b7eb]`}>
+                            <Edit2 size={16} />
+                          </button>
+                          <button onClick={() => onDelete(member.Nome)} className={`p-2 border-[3px] border-current transition-colors hover:bg-[#DC143C] hover:text-white`}>
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
 
-  return (
-    <div className={`max-w-4xl mx-auto w-full p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
-      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
-      
-      <div className="pr-10 border-b-[6px] border-current pb-4">
-        <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
-        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words text-sky-600 dark:text-sky-400">
-          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ 'Nome do Assessor': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} />
-        </h2>
-        <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">Clique no lápis (ou segure no celular) para editar qualquer campo. As alterações são sincronizadas com a planilha matriz.</p>
-      </div>
+                      <h3 className="text-xl font-black uppercase tracking-tight mb-1 truncate" title={member.Nome}>
+                        {member.Nome || "Sem Nome"}
+                      </h3>
+                      
+                      {member["Coordenação"] && (
+                        <div className="inline-block border-[3px] border-current text-black px-2 py-1 text-[10px] font-black uppercase tracking-widest mb-4 self-start bg-[#FFDB58]">
+                          {member["Coordenação"]}
+                        </div>
+                      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {keys.map((key, i) => {
-          const val = membro[key];
-          const isLarge = key.toLowerCase().includes('endereço') || key.toLowerCase().includes('observação');
-
-          return (
-            <div key={i} className={`p-4 border-[2px] border-current flex flex-col items-start w-full ${isLarge ? 'md:col-span-2' : ''} ${theme.bg}`}>
-              <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">{key}</span>
-              <EditableField 
-                value={val} 
-                onSave={(newVal) => onUpdate({ [key]: newVal })} 
-                isDark={isDark} 
-                multiline={isLarge}
-                textClass={`font-bold break-words max-w-full ${isLarge ? 'whitespace-pre-wrap leading-relaxed' : ''}`} 
-                accentColor={accentColor} 
-                cycleAccent={cycleAccent} 
-              />
+                      <div className="space-y-3 mt-auto pt-4 border-t-[3px] border-dashed border-gray-500 opacity-90">
+                        {member["Nome Completo"] && (
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Nome Completo</p>
+                            <p className="text-sm font-bold truncate" title={member["Nome Completo"]}>{member["Nome Completo"]}</p>
+                          </div>
+                        )}
+                        {(member["E-mail do Assessor"] || member["E-mail Principal"]) && (
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">E-mail Principal</p>
+                            <p className="text-sm truncate" title={member["E-mail do Assessor"] || member["E-mail Principal"]}>{member["E-mail do Assessor"] || member["E-mail Principal"]}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
-      
-      <div className="mt-4 border-t-[4px] border-current pt-4">
-        <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
-          Entendido, Voltar.
-        </button>
-      </div>
+          )}
+
+          {/* MODO LISTA */}
+          {viewMode === 'list' && (
+            <div className="flex flex-col gap-3">
+              {equipe.map((member, index) => {
+                const accent = getRandomAccentColor();
+                return (
+                  <div 
+                    key={index} 
+                    className={`flex flex-col md:flex-row items-start md:items-center p-4 pl-6 border-[4px] border-current gap-4 group relative hover:-translate-x-1 transition-transform ${theme.cardBg}`}
+                  >
+                    <div className="absolute left-0 top-0 bottom-0 w-3 border-r-[4px] border-current" style={{ backgroundColor: accent }}></div>
+                    
+                    <div className={`w-12 h-12 shrink-0 border-[3px] border-current flex items-center justify-center overflow-hidden ${theme.bg}`}>
+                      {member["Foto do Assessor"] ? (
+                        <img src={member["Foto do Assessor"]} alt="Foto" className="w-full h-full object-cover" />
+                      ) : (
+                        <UserIcon size={24} className="opacity-30" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-black uppercase tracking-tight truncate" title={member.Nome}>
+                        {member.Nome || "Sem Nome"}
+                      </h3>
+                      {member["Nome Completo"] && (
+                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 truncate" title={member["Nome Completo"]}>
+                          {member["Nome Completo"]}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="hidden lg:block w-64 shrink-0 text-sm opacity-80 truncate" title={member["E-mail do Assessor"] || member["E-mail Principal"]}>
+                      {member["E-mail do Assessor"] || member["E-mail Principal"] || '-'}
+                    </div>
+
+                    <div className="w-32 shrink-0">
+                      {member["Coordenação"] && (
+                        <span className="inline-block border-[2px] border-current text-black px-2 py-1 text-[9px] font-black uppercase tracking-widest truncate max-w-full bg-[#FFDB58]" title={member["Coordenação"]}>
+                          {member["Coordenação"]}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 w-full md:w-auto justify-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity mt-2 md:mt-0">
+                      <button onClick={() => openEditForm(member)} className="p-2 border-[3px] border-current transition-colors hover:bg-[#00b7eb] hover:text-black">
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => onDelete(member.Nome)} className="p-2 border-[3px] border-current transition-colors hover:bg-[#DC143C] hover:text-white">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* MODAL DE FORMULÁRIO MONDRIAN DA EQUIPE */}
+      {isFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row border-[6px] border-current shadow-[10px_10px_0px_rgba(0,0,0,0.5)] ${theme.cardBg}`}>
+            
+            <div className="hidden md:flex w-24 flex-col border-r-[4px] border-current">
+              <div className="flex-1 border-b-[4px] border-current bg-[#DC143C]"></div>
+              <div className="h-32 border-b-[4px] border-current bg-[#FFDB58]"></div>
+              <div className="h-48 bg-[#00b7eb]"></div>
+            </div>
+
+            <div className="flex-1 flex flex-col relative">
+              <button 
+                onClick={closeForm}
+                className={`absolute top-4 right-4 p-2 border-[4px] border-current transition-colors z-10 ${theme.bg} hover:bg-[#DC143C] hover:text-white`}
+              >
+                <XIcon size={20} />
+              </button>
+
+              <div className="p-8 border-b-[4px] border-current">
+                <h2 className="text-3xl font-black uppercase tracking-tighter">
+                  {originalEntity ? 'Editar Articulador' : 'Novo Articulador'}
+                </h2>
+                <p className="text-sm font-bold uppercase tracking-widest opacity-60 mt-2">Preencha os dados da equipe</p>
+              </div>
+
+              <form onSubmit={handleSave} className="p-8 flex flex-col gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                      Nome do Articulador <span style={{ color: COLORS.crimson }}>*</span>
+                      <span className="text-[9px] font-normal opacity-60">(Usado como identificador de Chave)</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      value={formData["Nome do Assessor"] || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, "Nome do Assessor": e.target.value }))}
+                      className={`w-full p-4 text-lg font-bold border-[4px] border-current outline-none transition-colors focus:border-[#FFDB58] ${theme.inputBg}`}
+                      placeholder="Ex: Marquito"
+                    />
+                  </div>
+
+                  {COLUMNS.filter(c => c !== "Nome do Assessor").map((col) => (
+                    <div key={col} className={col === "Nome Completo" ? "md:col-span-2" : ""}>
+                      <label className="block text-xs font-black uppercase tracking-widest mb-2">{col}</label>
+                      <input 
+                        type="text" 
+                        value={formData[col] || ''}
+                        onChange={(e) => setFormData(prev => ({ ...prev, [col]: e.target.value }))}
+                        className={`w-full p-3 font-bold border-[4px] border-current outline-none transition-colors focus:border-[#FFDB58] ${theme.inputBg}`}
+                        placeholder={`Inserir ${col.toLowerCase()}...`}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 pt-6 border-t-[4px] border-dashed border-gray-500 flex justify-end gap-4">
+                  <button 
+                    type="button" 
+                    onClick={closeForm}
+                    className={`px-6 py-4 font-black uppercase tracking-widest border-[4px] border-current transition-colors ${theme.bg} hover:opacity-70`}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className={`px-8 py-4 font-black uppercase tracking-widest border-[4px] border-current text-black hover:-translate-y-1 transition-transform flex items-center gap-3 bg-[#00b7eb]`}
+                  >
+                    <SaveIcon size={20} /> Salvar Articulador
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -866,7 +1106,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
               );
             })}
             
-            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-sky-600 hover:text-white' : 'bg-black text-white hover:bg-sky-600'}`}>
+            <a href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-[#00b7eb] hover:text-white' : 'bg-black text-white hover:bg-[#00b7eb]'}`}>
               <Mail size={18} /> Enviar Malote por E-mail
             </a>
           </div>
@@ -884,11 +1124,11 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         
         {isPadronizadorOpen && (
           <div className="p-6 pt-0 border-t-[4px] border-current mt-2">
-            <div className="mb-6 mt-4 p-4 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+            <div className="mb-6 mt-4 p-4 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
               <p className="text-[12px] font-bold leading-relaxed">
                 ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do arquivo</u> (ex: 001-ATA.pdf). 
                 É estritamente necessário que o Assessor verifique manualmente o conteúdo do documento para garantir que atenda às exigências legais.
-                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-sky-600 text-sm">Consulte o Manual de Requisitos aqui.</button>
+                <br/><button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 hover:text-[#00b7eb] text-sm">Consulte o Manual de Requisitos aqui.</button>
               </p>
             </div>
 
@@ -951,13 +1191,13 @@ function ManualModal({ onClose, theme, thick, isDark }) {
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
             <BookOpen size={32} /> Manual de Requisitos
           </h2>
-          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-sky-600 dark:text-sky-400">Pedido de Utilidade Pública Estadual</p>
+          <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2 text-[#00b7eb] dark:text-[#00b7eb]">Pedido de Utilidade Pública Estadual</p>
         </div>
 
         <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
           <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
-            <p className="mt-3 text-rose-600 dark:text-rose-400">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
+            <p className="mt-3 text-[#DC143C] dark:text-[#DC143C]">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
             <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
           </section>
 
@@ -966,17 +1206,17 @@ function ManualModal({ onClose, theme, thick, isDark }) {
             
             <div className="space-y-4">
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">001 Ata de Fundação</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">001 Ata de Fundação</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
                 <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
                   <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
@@ -985,7 +1225,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">004 Declaração de não qualificação OSCIP</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">004 Declaração de não qualificação OSCIP</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
                   <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
@@ -995,7 +1235,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">005 Declaração de funcionamento</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">005 Declaração de funcionamento</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
                   <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
@@ -1003,7 +1243,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
                 </ul>
               </div>
 
-              <div className="p-3 border-[2px] border-current bg-mustard/20">
+              <div className="p-3 border-[2px] border-current bg-[#FFDB58]/20">
                 <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
                 <ul className="list-disc pl-5 space-y-1 mb-3">
                   <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
@@ -1021,7 +1261,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">008 Estatuto da entidade</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">008 Estatuto da entidade</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Necessita <b>registro de cartório</b>.</li>
                   <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
@@ -1029,7 +1269,7 @@ function ManualModal({ onClose, theme, thick, isDark }) {
               </div>
 
               <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase text-sky-600 dark:text-sky-400 mb-1">009 Relatório de Atividades</h4>
+                <h4 className="font-black uppercase text-[#00b7eb] dark:text-[#00b7eb] mb-1">009 Relatório de Atividades</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
                   <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
@@ -1100,7 +1340,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 }
 
 // ==========================================
-// FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
+// FORMULÁRIO DE NOVO PROCESSO
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '' });
@@ -1257,10 +1497,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 
              {isPadronizadorOpen && (
                <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
-                 <div className="mb-4 p-3 bg-mustard/20 border-l-[4px] border-mustard text-black dark:text-gray-200">
+                 <div className="mb-4 p-3 bg-[#FFDB58]/20 border-l-[4px] border-[#FFDB58] text-black dark:text-gray-200">
                    <p className="text-[10px] font-bold leading-relaxed">
                      ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-sky-600">Verifique os requisitos no Manual aqui.</button>
+                     <br/><button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 hover:text-[#00b7eb]">Verifique os requisitos no Manual aqui.</button>
                    </p>
                  </div>
 
@@ -1276,7 +1516,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                          </div>
                          <div className="flex-shrink-0">
                            {!file ? (
-                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white transition-colors flex items-center gap-1">
+                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center gap-1">
                                <FileText className="w-3 h-3"/> Anexar <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
                              </label>
                            ) : (
@@ -1308,13 +1548,13 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 }
 
 // ==========================================
-// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E EQUIPE)
+// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E REDE)
 // ==========================================
 function SettingsView({ 
   isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
   webhookUtilidade, webhookEquipe, emailCentral, 
   applyNetworkSettings, exportCSV, importCSV, 
-  setView, theme, thick, med, accentColor, cycleAccent
+  theme, thick, med, accentColor, cycleAccent
 }) {
   const [openSection, setOpenSection] = useState('aparencia'); 
   const [openNetwork, setOpenNetwork] = useState(false);
@@ -1398,24 +1638,13 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 2: GESTÃO DE EQUIPE (Acesso Rápido) */}
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: accentColor }}>
-        <button 
-          onClick={() => { setView('equipe_list'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Users size={18} /> Acessar Banco de Dados da Equipe</span>
-          <span className="text-xl leading-none font-mono">→</span>
-        </button>
-      </div>
-
-      {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
+      {/* BLOCO 2: BACKUP E RECUPERAÇÃO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('backup'); cycleAccent(); }}
           className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
         >
-          <span className="flex items-center gap-2"><Save size={18} /> Backup e Restauração (.CSV)</span>
+          <span className="flex items-center gap-2"><SaveIcon size={18} /> Backup e Restauração (.CSV)</span>
           <span className="text-xl leading-none font-mono">{openSection === 'backup' ? '−' : '+'}</span>
         </button>
         
@@ -1451,7 +1680,7 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 4: SISTEMA (AVANÇADO) */}
+      {/* BLOCO 3: SISTEMA (AVANÇADO) */}
       <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
         <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
@@ -1472,8 +1701,8 @@ function SettingsView({
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
-              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="Cole aqui caso crie um script para a equipe..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
+              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe</label>
+              <input type="text" value={draftEquipe} onChange={(e) => setDraftEquipe(e.target.value)} onFocus={() => handleFocus('WH2')} onBlur={() => setFocusedField(null)} placeholder="URL do script da equipe..." className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} />
             </div>
 
             <div className="flex flex-col gap-2">
