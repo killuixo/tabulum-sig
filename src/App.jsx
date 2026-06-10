@@ -48,7 +48,7 @@ const COLORS = {
 };
 
 const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
-const DEFAULT_WEBHOOK_EQUIPE = ""; 
+const DEFAULT_WEBHOOK_EQUIPE = "https://script.google.com/macros/s/AKfycbwc5jtiL2wuIRzJkprzojiH-e9AxvnsyPUq3GfOT0_7f_VjAnMPMMcRntUSYX4dq2RqgQ/exec"; 
 const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
@@ -64,17 +64,8 @@ const DOCS_PREFIX_MAP = {
   '8 ESTATUTO': '007-ESTATUTO', '9 RELATÓRIO DE ATIVIDADES': '008-RELATORIO_ATIVIDADES'
 };
 
-const DEFAULT_EQUIPE = [
-  { Nome: 'Alexandre' }, { Nome: 'André' }, { Nome: 'Arthur' }, { Nome: 'Bia' }, { Nome: 'Cadu' }, 
-  { Nome: 'Caio' }, { Nome: 'Carla' }, { Nome: 'Carol Figueredo' }, { Nome: 'Carol Morgan' }, 
-  { Nome: 'Cláudio' }, { Nome: 'Edina' }, { Nome: 'Fernando' }, { Nome: 'Gabriel' }, { Nome: 'Gelso' }, 
-  { Nome: 'Gislaine' }, { Nome: 'Guilherme' }, { Nome: 'Guito' }, { Nome: 'Guto' }, { Nome: 'Isabel' }, 
-  { Nome: 'Jekupe' }, { Nome: 'Kerexu' }, { Nome: 'Lais' }, { Nome: 'Lea' }, { Nome: 'Leon' }, 
-  { Nome: 'Lê' }, { Nome: 'Liandra' }, { Nome: 'Linete' }, { Nome: 'Lui' }, { Nome: 'Luis BL' }, 
-  { Nome: 'Maira' }, { Nome: 'Manu' }, { Nome: 'Marquinhos' }, { Nome: 'Marquito' }, { Nome: 'Mayne' }, 
-  { Nome: 'Mexiana' }, { Nome: 'Mirê' }, { Nome: 'Odara' }, { Nome: 'Paty' }, { Nome: 'Pedro Guedes' }, 
-  { Nome: 'Tânia' }, { Nome: 'Toninho' }, { Nome: 'Victor Klauck' }, { Nome: 'Vina' }, { Nome: 'Xalinska' }
-];
+// Esvaziado para não mascarar erros. Se a planilha não carregar, a tela deve ficar vazia e alertar.
+const DEFAULT_EQUIPE = [];
 
 // Helper para obter cores de Status Kanban
 const getStatusColor = (status) => {
@@ -207,7 +198,10 @@ export default function App() {
 
   // URLs de Rede (Memória Local vs Matriz Global)
   const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
-  const [webhookEquipe, setWebhookEquipe] = useState(() => localStorage.getItem('tabulum_wh_equipe') || DEFAULT_WEBHOOK_EQUIPE);
+  const [webhookEquipe, setWebhookEquipe] = useState(() => {
+    const saved = localStorage.getItem('tabulum_wh_equipe');
+    return (saved !== null && saved !== "") ? saved : DEFAULT_WEBHOOK_EQUIPE;
+  });
   const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
 
   // Sistema de Segurança Global
@@ -272,7 +266,7 @@ export default function App() {
     if (currentUrlUtilidade) {
       try {
         const urlUtilidade = currentUrlUtilidade + (currentUrlUtilidade.includes('?') ? '&' : '?') + noCache;
-        const response = await fetch(urlUtilidade);
+        const response = await fetch(urlUtilidade, { method: 'GET', redirect: 'follow' });
         const text = await response.text();
         try {
           const jsonData = JSON.parse(text);
@@ -290,41 +284,55 @@ export default function App() {
             setData(parseCSV(text));
             setSyncStatus('Sincronizado (Formato CSV).');
         }
-      } catch (error) { console.error("Erro Entidades:", error); }
+      } catch (error) { 
+        console.error("Erro Entidades:", error); 
+        if (error.message.includes('Failed to fetch')) {
+            setSyncStatus('⚠️ Erro de Conexão na Utilidade Pública. Verifique CORS ou Permissões do Script.');
+        }
+      }
     }
 
     if (currentUrlEquipe) {
       try {
         const urlEquipe = currentUrlEquipe + (currentUrlEquipe.includes('?') ? '&' : '?') + noCache;
-        const resEq = await fetch(urlEquipe);
+        const resEq = await fetch(urlEquipe, { method: 'GET', redirect: 'follow' });
         const textEq = await resEq.text();
         
         // Bloqueio contra erros de permissão do Google Script
         if (textEq.toLowerCase().includes('<!doctype html>') || textEq.toLowerCase().includes('<html')) {
-          console.error("Script da Equipe não está público.");
-          setSyncStatus('⚠️ Erro: Script da Equipe exige acesso "Qualquer pessoa"');
+          console.error("Script da Equipe retornou página HTML (Erro ou Login bloqueando o JSON).");
+          setSyncStatus('⚠️ Erro de Acesso: O Webhook da equipe exige permissão "Qualquer pessoa".');
+          setEquipe([]); // Limpa qualquer resquício
         } else {
           try {
             const jsonEq = JSON.parse(textEq);
-            const formattedEq = jsonEq.map(item => ({ 
-              ...item,
-              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-            }));
-            if (formattedEq.length > 0) setEquipe(formattedEq);
+            const formattedEq = jsonEq.map(item => {
+              const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
+              return { ...item, Nome: chave || 'Desconhecido' };
+            });
+            setEquipe(formattedEq); // Sempre atualiza, mesmo se vazio
           } catch(e) {
             const parsedEq = parseCSV(textEq);
-            const formattedEq = parsedEq.map(item => ({ 
-              ...item,
-              Nome: item['Nome do Assessor'] || item['Nome'] || 'Desconhecido' 
-            }));
-            if (formattedEq.length > 0) setEquipe(formattedEq);
+            const formattedEq = parsedEq.map(item => {
+              const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
+              return { ...item, Nome: chave || 'Desconhecido' };
+            });
+            setEquipe(formattedEq); // Sempre atualiza, mesmo se vazio
           }
         }
-      } catch(e) { console.error("Erro Equipe:", e); }
+      } catch(e) { 
+        console.error("Erro Equipe Rede/CORS:", e); 
+        let errorMsg = '⚠️ Falha de Conexão: Erro de Rede ao buscar Equipe.';
+        if (e.message && e.message.includes('Failed to fetch')) {
+            errorMsg = '⚠️ Erro (Failed to fetch): O Script da Equipe precisa ser implantado para "Qualquer pessoa" (Anyone) no Google.';
+        }
+        setSyncStatus(errorMsg);
+        setEquipe([]); 
+      }
     }
     
     setLoading(false); 
-    if(!syncStatus.includes('Erro')) setSyncStatus('Sincronizado!');
+    if(!syncStatus.includes('Erro') && !syncStatus.includes('Falha')) setSyncStatus('Sincronizado!');
     setTimeout(() => setSyncStatus(''), 5000);
   };
 
@@ -367,7 +375,7 @@ export default function App() {
   const handleUpdateEquipe = async (originalName, updatedFields) => {
     setEquipe(prev => prev.map(p => {
       if (p.Nome === originalName) {
-        const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : p.Nome;
+        const novoNome = updatedFields.Nome !== undefined ? updatedFields.Nome : p.Nome;
         return { ...p, ...updatedFields, Nome: novoNome };
       }
       return p;
@@ -375,17 +383,20 @@ export default function App() {
     
     setActiveMembroEquipe(prev => {
        if(prev && prev.Nome === originalName) {
-         const novoNome = updatedFields['Nome do Assessor'] !== undefined ? updatedFields['Nome do Assessor'] : prev.Nome;
+         const novoNome = updatedFields.Nome !== undefined ? updatedFields.Nome : prev.Nome;
          return { ...prev, ...updatedFields, Nome: novoNome };
        }
        return prev;
     });
 
+    const payloadData = { ...updatedFields };
+    delete payloadData.Nome; // Limpa a chave artificial para enviar apenas os cabeçalhos reais da planilha
+
     if (webhookEquipe) {
       try {
         await fetch(webhookEquipe, {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalName, newData: updatedFields })
+          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalName, newData: payloadData })
         });
       } catch (error) { console.error("Erro ao atualizar equipe", error); }
     } else {
@@ -537,7 +548,9 @@ export default function App() {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
             <RefreshCw className="animate-spin mb-4" size={48} style={{ color: COLORS.cyan }} />
-            <p className="font-black uppercase tracking-widest animate-pulse" style={{ color: syncStatus.includes('Erro') ? COLORS.crimson : 'inherit' }}>{syncStatus}</p>
+            <p className="font-black uppercase tracking-widest animate-pulse text-center leading-relaxed" style={{ color: (syncStatus.includes('Erro') || syncStatus.includes('Falha')) ? COLORS.crimson : 'inherit' }}>
+              {syncStatus.split('<br/>').map((line, i) => <React.Fragment key={i}>{line}{i < syncStatus.split('<br/>').length - 1 ? <br/> : ''}</React.Fragment>)}
+            </p>
           </div>
         ) : (
           <>
@@ -849,7 +862,13 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
           </div>
         </div>
 
-        {viewMode === 'list' ? (
+        {equipe.length === 0 ? (
+          <div className="p-10 border-[4px] border-dashed border-current flex flex-col items-center justify-center text-center opacity-60 mt-4">
+            <AlertCircle size={48} className="mb-4" />
+            <h3 className="text-xl font-black uppercase tracking-widest">Nenhuma conexão de dados</h3>
+            <p className="font-bold mt-2">O banco de dados não retornou nenhum registro ou falhou ao conectar.<br/>Se a planilha estiver vazia, adicione um registro nela primeiro.</p>
+          </div>
+        ) : viewMode === 'list' ? (
           <div className="overflow-x-auto border-[4px] border-current mt-4">
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
@@ -857,7 +876,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
                   <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
                   <th className="p-4 border-r border-current">Nome Completo</th>
                   <th className="p-4 border-r border-current">Coordenação</th>
-                  <th className="p-4">E-mail Principal</th>
+                  <th className="p-4">E-mail do Assessor</th>
                 </tr>
               </thead>
               <tbody>
@@ -873,7 +892,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
                        {membro['Coordenação'] || '-'}
                     </td>
                     <td className="p-4 font-bold opacity-90 text-xs">
-                       {membro['E-mail Principal'] || membro['E-mail do Assessor'] || '-'}
+                       {membro['E-mail do Assessor'] || membro['E-mail outro'] || '-'}
                     </td>
                   </tr>
                 ))}
@@ -886,7 +905,7 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
               <div key={i} onClick={() => onMembroClick(membro)} className={`p-5 border-[4px] border-current cursor-pointer hover:-translate-y-1 hover:shadow-[6px_6px_0px_currentColor] transition-all flex flex-col h-full ${theme.bg}`}>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 border-[3px] border-current flex-shrink-0 flex items-center justify-center font-black text-2xl bg-black text-white dark:bg-white dark:text-black uppercase">
-                    {membro.Nome ? membro.Nome.charAt(0) : '?'}
+                    {(membro.Nome || '?').charAt(0)}
                   </div>
                   <div className="overflow-hidden">
                     <h3 className="font-black text-lg uppercase leading-tight truncate" title={membro.Nome}>{membro.Nome}</h3>
@@ -894,8 +913,8 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
                   </div>
                 </div>
                 <div className="mt-auto pt-3 border-t-[3px] border-current border-dashed">
-                  <span className="text-[0.65em] font-black uppercase opacity-60 tracking-widest block mb-1">E-mail Principal</span>
-                  <span className="font-bold text-[0.8em] truncate block" title={membro['E-mail Principal'] || membro['E-mail do Assessor']}>{membro['E-mail Principal'] || membro['E-mail do Assessor'] || 'Não cadastrado'}</span>
+                  <span className="text-[0.65em] font-black uppercase opacity-60 tracking-widest block mb-1">E-mail do Assessor</span>
+                  <span className="font-bold text-[0.8em] truncate block" title={membro['E-mail do Assessor'] || membro['E-mail outro']}>{membro['E-mail do Assessor'] || membro['E-mail outro'] || 'Não cadastrado'}</span>
                 </div>
               </div>
             ))}
@@ -912,6 +931,9 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
 function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [saveLabel, setSaveLabel] = useState('Salvar Alterações');
   const keys = Object.keys(membro).filter(k => k !== 'Nome');
+  
+  // Descobre qual é o nome exato da coluna principal na planilha dinamicamente
+  const originalNameKey = Object.keys(membro).find(k => k !== 'Nome' && membro[k] === membro.Nome) || 'Nome do Assessor';
 
   const handleManualSave = () => {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -929,7 +951,7 @@ function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, ac
       <div className="pr-10 border-b-[6px] border-current pb-4">
         <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
-          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ 'Nome do Assessor': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+          <EditableField value={membro.Nome} onSave={(val) => onUpdate({ [originalNameKey]: val, Nome: val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
         </h2>
         <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">
           {isUnlocked ? "Clique no lápis (ou segure no celular) para editar qualquer campo. As alterações são sincronizadas com a planilha matriz." : "⚠️ A sessão está bloqueada. É necessário senha para editar este registro."}
@@ -1326,8 +1348,8 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 // PAINEL DO ARTICULADOR E DASHBOARD
 // ==========================================
 function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
-  const procesos = data.filter(d => d.ARTICULADOR === nome);
-  const protocolados = procesos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
+  const processos = data.filter(d => d.ARTICULADOR === nome);
+  const protocolados = processos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
@@ -1345,7 +1367,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 
       <div className="grid grid-cols-2 gap-4">
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.mustard, color: 'black' }}>
-          <span className="text-5xl font-black leading-none">{procesos.length}</span>
+          <span className="text-5xl font-black leading-none">{processos.length}</span>
           <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Processos Assumidos</span>
         </div>
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
@@ -1356,7 +1378,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 
       <div className="mt-4 flex flex-col gap-3">
         <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
-        {procesos.map((p, i) => (
+        {processos.map((p, i) => (
           <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all ${theme.bg}`}>
             <div>
               <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
