@@ -36,6 +36,8 @@ const ExternalLink = (p) => <Icon {...p} path={<><path d="M18 13v6a2 2 0 0 1-2 2
 const Lock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
 const Unlock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></>} />;
 const Key = (p) => <Icon {...p} path={<><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></>} />;
+const ListIcon = (p) => <Icon {...p} path={<><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>} />;
+const GridIcon = (p) => <Icon {...p} path={<><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></>} />;
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
@@ -815,47 +817,90 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 // LISTA COMPLETA DA EQUIPE
 // ==========================================
 function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
+  const [viewMode, setViewMode] = useState('list');
+
   return (
     <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
       <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
-        <div className="flex items-center gap-4 border-b-[6px] border-current pb-4">
-          <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
-          <div>
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
-            <p className="font-bold opacity-60 uppercase tracking-widest text-[0.8em]">Banco de Dados da Secretaria / RH</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[6px] border-current pb-4">
+          <div className="flex items-center gap-4">
+            <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
+            <div>
+              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
+              <p className="font-bold opacity-60 uppercase tracking-widest text-[0.8em]">Banco de Dados da Secretaria / RH</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 border-[3px] border-current p-1 bg-black/5 dark:bg-white/5 w-max">
+            <button 
+              onClick={() => setViewMode('list')} 
+              className={`p-2 transition-colors ${viewMode === 'list' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10'}`}
+              title="Visualização em Tabela"
+            >
+              <ListIcon size={20} />
+            </button>
+            <button 
+              onClick={() => setViewMode('grid')} 
+              className={`p-2 transition-colors ${viewMode === 'grid' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10'}`}
+              title="Visualização em Cards"
+            >
+              <GridIcon size={20} />
+            </button>
           </div>
         </div>
 
-        <div className="overflow-x-auto border-[4px] border-current mt-4">
-          <table className="w-full text-left border-collapse min-w-[700px]">
-            <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
-              <tr>
-                <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
-                <th className="p-4 border-r border-current">Nome Completo</th>
-                <th className="p-4 border-r border-current">Coordenação</th>
-                <th className="p-4">E-mail Principal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {equipe.map((membro, i) => (
-                <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
-                  <td className="p-4 border-r border-current font-black group-hover:underline decoration-2">
-                     {membro.Nome}
-                  </td>
-                  <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
-                     {membro['Nome Completo'] || '-'}
-                  </td>
-                  <td className="p-4 border-r border-current font-bold opacity-90 text-xs uppercase tracking-widest">
-                     {membro['Coordenação'] || '-'}
-                  </td>
-                  <td className="p-4 font-bold opacity-90 text-xs">
-                     {membro['E-mail Principal'] || membro['E-mail do Assessor'] || '-'}
-                  </td>
+        {viewMode === 'list' ? (
+          <div className="overflow-x-auto border-[4px] border-current mt-4">
+            <table className="w-full text-left border-collapse min-w-[700px]">
+              <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
+                <tr>
+                  <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
+                  <th className="p-4 border-r border-current">Nome Completo</th>
+                  <th className="p-4 border-r border-current">Coordenação</th>
+                  <th className="p-4">E-mail Principal</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {equipe.map((membro, i) => (
+                  <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
+                    <td className="p-4 border-r border-current font-black group-hover:underline decoration-2">
+                       {membro.Nome}
+                    </td>
+                    <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
+                       {membro['Nome Completo'] || '-'}
+                    </td>
+                    <td className="p-4 border-r border-current font-bold opacity-90 text-xs uppercase tracking-widest">
+                       {membro['Coordenação'] || '-'}
+                    </td>
+                    <td className="p-4 font-bold opacity-90 text-xs">
+                       {membro['E-mail Principal'] || membro['E-mail do Assessor'] || '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+            {equipe.map((membro, i) => (
+              <div key={i} onClick={() => onMembroClick(membro)} className={`p-5 border-[4px] border-current cursor-pointer hover:-translate-y-1 hover:shadow-[6px_6px_0px_currentColor] transition-all flex flex-col h-full ${theme.bg}`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 border-[3px] border-current flex-shrink-0 flex items-center justify-center font-black text-2xl bg-black text-white dark:bg-white dark:text-black uppercase">
+                    {membro.Nome ? membro.Nome.charAt(0) : '?'}
+                  </div>
+                  <div className="overflow-hidden">
+                    <h3 className="font-black text-lg uppercase leading-tight truncate" title={membro.Nome}>{membro.Nome}</h3>
+                    <span className="font-bold opacity-70 text-[0.7em] uppercase tracking-widest truncate block" title={membro['Coordenação']}>{membro['Coordenação'] || 'Sem Coordenação'}</span>
+                  </div>
+                </div>
+                <div className="mt-auto pt-3 border-t-[3px] border-current border-dashed">
+                  <span className="text-[0.65em] font-black uppercase opacity-60 tracking-widest block mb-1">E-mail Principal</span>
+                  <span className="font-bold text-[0.8em] truncate block" title={membro['E-mail Principal'] || membro['E-mail do Assessor']}>{membro['E-mail Principal'] || membro['E-mail do Assessor'] || 'Não cadastrado'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
