@@ -45,8 +45,6 @@ const ExternalLink = (p) => <Icon {...p} path={<><path d="M18 13v6a2 2 0 0 1-2 2
 const Lock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
 const Unlock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></>} />;
 const Key = (p) => <Icon {...p} path={<><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></>} />;
-const ListIcon = (p) => <Icon {...p} path={<><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>} />;
-const GridIcon = (p) => <Icon {...p} path={<><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></>} />;
 
 // --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
@@ -60,7 +58,6 @@ const COLORS = {
 };
 
 const DEFAULT_WEBHOOK_UTILIDADE = "https://script.google.com/macros/s/AKfycbzJ3Cg0SaE373kiXgU6auHQF9ufc5KU-KloRISH_h6Cg7ToDaNzj6FjfDbKe7YSh4o/exec";
-const DEFAULT_WEBHOOK_EQUIPE = "https://script.google.com/macros/s/AKfycbwc5jtiL2wuIRzJkprzojiH-e9AxvnsyPUq3GfOT0_7f_VjAnMPMMcRntUSYX4dq2RqgQ/exec"; 
 const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
@@ -90,8 +87,6 @@ const DOCS_REQUIREMENTS = {
   '8 ESTATUTO': 'Obrigatório: REGISTRO EM CARTÓRIO. Deve declarar expressamente se a entidade não remunera os cargos (se for o caso).',
   '9 RELATÓRIO DE ATIVIDADES': 'Detalhado MÊS A MÊS sem faltar nenhum dos 12 meses anteriores. O relatório necessita DATA e tem validade de 180 dias.'
 };
-
-const DEFAULT_EQUIPE = [];
 
 const getStatusColor = (status) => {
   const s = String(status || '').trim().toLowerCase();
@@ -281,7 +276,6 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
 // ==========================================
 export default function App() {
   const [data, setData] = useState([]);
-  const [equipe, setEquipe] = useState(DEFAULT_EQUIPE);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   const [isGlobalManualOpen, setIsGlobalManualOpen] = useState(false);
@@ -304,10 +298,6 @@ export default function App() {
 
   // URLs de Rede (Memória Local vs Matriz Global)
   const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
-  const [webhookEquipe, setWebhookEquipe] = useState(() => {
-    const saved = localStorage.getItem('tabulum_wh_equipe');
-    return (saved !== null && saved !== "") ? saved : DEFAULT_WEBHOOK_EQUIPE;
-  });
   const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
 
   // Sistema de Segurança Global
@@ -320,7 +310,6 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState('');
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
-  const [activeMembroEquipe, setActiveMembroEquipe] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
@@ -352,166 +341,87 @@ export default function App() {
   useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
   useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
   useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
-  useEffect(() => { localStorage.setItem('tabulum_wh_equipe', webhookEquipe); }, [webhookEquipe]);
   useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
   useEffect(() => { localStorage.setItem('tabulum_master_pwd', masterPassword); }, [masterPassword]);
 
   useEffect(() => { 
-    fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
+    fetchFromWebhooks(webhookUtilidade); 
   }, []);
 
-  const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade, currentUrlEquipe = webhookEquipe) => {
+  const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade) => {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
     
     const noCache = `t=${new Date().getTime()}`;
-    let utilidadeSuccess = false;
-    let equipeSuccess = false;
-    let utilidadeError = '';
-    let equipeError = '';
     
-    // 1. Sincronização da Planilha de Utilidade Pública
-    const fetchUtilidade = async () => {
-      if (!currentUrlUtilidade) {
-        utilidadeError = '⚠️ URL de Utilidade Pública não configurada.';
-        return;
-      }
-      try {
-        const urlUtilidade = currentUrlUtilidade + (currentUrlUtilidade.includes('?') ? '&' : '?') + noCache;
-        const response = await fetch(urlUtilidade, { method: 'GET', redirect: 'follow' });
-        const text = await response.text();
-        
-        // Bloqueio preventivo contra retornos de login ou erro em HTML do Google
-        if (text.toLowerCase().includes('<!doctype html>') || text.toLowerCase().includes('<html')) {
-          throw new Error('Retornou página HTML. Verifique permissões como "Qualquer pessoa".');
-        }
+    if (!currentUrlUtilidade) {
+      setSyncStatus('⚠️ URL de Utilidade Pública não configurada.');
+      setLoading(false);
+      return;
+    }
 
-        let parsedData = [];
-        try {
-          const jsonData = JSON.parse(text);
-          parsedData = Array.isArray(jsonData) 
-            ? jsonData 
-            : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.data) 
-              ? jsonData.data 
-              : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.rows) ? jsonData.rows : []));
-              
-          if (parsedData.length === 0 && typeof jsonData === 'object' && !Array.isArray(jsonData)) {
-            for (let k in jsonData) {
-              if (Array.isArray(jsonData[k])) {
-                parsedData = jsonData[k];
-                break;
-              }
+    try {
+      const urlUtilidade = currentUrlUtilidade + (currentUrlUtilidade.includes('?') ? '&' : '?') + noCache;
+      const response = await fetch(urlUtilidade, { method: 'GET', redirect: 'follow' });
+      const text = await response.text();
+      
+      if (text.toLowerCase().includes('<!doctype html>') || text.toLowerCase().includes('<html')) {
+        throw new Error('Retornou página HTML. Verifique permissões como "Qualquer pessoa".');
+      }
+
+      let parsedData = [];
+      try {
+        const jsonData = JSON.parse(text);
+        parsedData = Array.isArray(jsonData) 
+          ? jsonData 
+          : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.data) 
+            ? jsonData.data 
+            : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.rows) ? jsonData.rows : []));
+            
+        if (parsedData.length === 0 && typeof jsonData === 'object' && !Array.isArray(jsonData)) {
+          for (let k in jsonData) {
+            if (Array.isArray(jsonData[k])) {
+              parsedData = jsonData[k];
+              break;
             }
           }
-        } catch(e) {
-          parsedData = parseCSV(text);
         }
-
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-          const formattedData = parsedData
-            .filter(item => item && item.ENTIDADE && String(item.ENTIDADE).trim() !== '')
-            .map(item => {
-              let newItem = {};
-              for (let key in item) {
-                let val = item[key];
-                if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { 
-                  val = new Date(val).toLocaleDateString('pt-BR'); 
-                }
-                newItem[key] = val;
-              }
-              return newItem;
-            });
-          setData(formattedData);
-          utilidadeSuccess = true;
-        } else {
-          throw new Error('Nenhum registro válido encontrado.');
-        }
-      } catch (error) { 
-        console.error("Erro Entidades:", error); 
-        utilidadeError = `⚠️ Utilidade Pública: ${error.message || 'Erro de conexão/CORS.'}`;
+      } catch(e) {
+        parsedData = parseCSV(text);
       }
-    };
 
-    // 2. Sincronização da Planilha de Equipe
-    const fetchEquipe = async () => {
-      if (!currentUrlEquipe) {
-        equipeError = '⚠️ URL de Equipe não configurada.';
-        return;
-      }
-      try {
-        const urlEquipe = currentUrlEquipe + (currentUrlEquipe.includes('?') ? '&' : '?') + noCache;
-        const resEq = await fetch(urlEquipe, { method: 'GET', redirect: 'follow' });
-        const textEq = await resEq.text();
-        
-        if (textEq.toLowerCase().includes('<!doctype html>') || textEq.toLowerCase().includes('<html')) {
-          throw new Error('Retornou página HTML. Verifique permissões como "Qualquer pessoa".');
-        }
-
-        let parsedEquipe = [];
-        try {
-          const jsonEq = JSON.parse(textEq);
-          parsedEquipe = Array.isArray(jsonEq) 
-            ? jsonEq 
-            : (jsonEq && typeof jsonEq === 'object' && Array.isArray(jsonEq.data) 
-              ? jsonEq.data 
-              : (jsonEq && typeof jsonEq === 'object' && Array.isArray(jsonEq.rows) ? jsonEq.rows : []));
-
-          if (parsedEquipe.length === 0 && typeof jsonEq === 'object' && !Array.isArray(jsonEq)) {
-            for (let k in jsonEq) {
-              if (Array.isArray(jsonEq[k])) {
-                parsedEquipe = jsonEq[k];
-                break;
+      if (Array.isArray(parsedData) && parsedData.length > 0) {
+        const formattedData = parsedData
+          .filter(item => item && item.ENTIDADE && String(item.ENTIDADE).trim() !== '')
+          .map(item => {
+            let newItem = {};
+            for (let key in item) {
+              let val = item[key];
+              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) { 
+                val = new Date(val).toLocaleDateString('pt-BR'); 
               }
+              newItem[key] = val;
             }
-          }
-        } catch(e) {
-          parsedEquipe = parseCSV(textEq);
-        }
-
-        if (Array.isArray(parsedEquipe) && parsedEquipe.length > 0) {
-          const formattedEq = parsedEquipe
-            .filter(item => {
-              const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
-              return chave && String(chave).trim() !== '';
-            })
-            .map(item => {
-              const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
-              return { ...item, Nome: String(chave || 'Desconhecido').trim() };
-            });
-          setEquipe(formattedEq);
-          equipeSuccess = true;
-        } else {
-          throw new Error('Nenhum registro de equipe válido encontrado.');
-        }
-      } catch(e) { 
-        console.error("Erro Equipe Rede/CORS:", e); 
-        equipeError = `⚠️ Equipe: ${e.message || 'Erro de conexão/CORS.'}`;
-        setEquipe([]); 
+            return newItem;
+          });
+        setData(formattedData);
+        setSyncStatus('Sincronizado!');
+        setTimeout(() => setSyncStatus(''), 5000);
+      } else {
+        throw new Error('Nenhum registro válido encontrado.');
       }
-    };
-
-    // Executa as duas requisições simultaneamente sem se bloquearem
-    await Promise.all([fetchUtilidade(), fetchEquipe()]);
-    
-    setLoading(false); 
-
-    // Consolida e exibe erros simultâneos
-    if (utilidadeSuccess && equipeSuccess) {
-      setSyncStatus('Sincronizado!');
-      setTimeout(() => setSyncStatus(''), 5000);
-    } else {
-      const errorMessages = [];
-      if (utilidadeError) errorMessages.push(utilidadeError);
-      if (equipeError) errorMessages.push(equipeError);
-      setSyncStatus(errorMessages.join('<br/>'));
+    } catch (error) { 
+      console.error("Erro Entidades:", error); 
+      setSyncStatus(`⚠️ Utilidade Pública: ${error.message || 'Erro de conexão/CORS.'}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const applyNetworkSettings = (newUtilidade, newEquipe, newEmail) => {
+  const applyNetworkSettings = (newUtilidade, newEmail) => {
     setWebhookUtilidade(newUtilidade); 
-    setWebhookEquipe(newEquipe); 
     setEmailCentral(newEmail);
-    fetchFromWebhooks(newUtilidade, newEquipe);
+    fetchFromWebhooks(newUtilidade);
   };
 
   const deleteItem = (entidadeName) => {
@@ -546,38 +456,6 @@ export default function App() {
           body: JSON.stringify({ action: 'update', ENTIDADE_ORIGINAL: originalName, newData: updatedFields })
         });
       } catch (error) { console.error("Erro ao atualizar", error); }
-    }
-  };
-
-  const handleUpdateEquipe = async (originalName, updatedFields) => {
-    setEquipe(prev => prev.map(p => {
-      if (p.Nome === originalName) {
-        const novoNome = updatedFields.Nome !== undefined ? updatedFields.Nome : p.Nome;
-        return { ...p, ...updatedFields, Nome: novoNome };
-      }
-      return p;
-    }));
-    
-    setActiveMembroEquipe(prev => {
-       if(prev && prev.Nome === originalName) {
-         const novoNome = updatedFields.Nome !== undefined ? updatedFields.Nome : prev.Nome;
-         return { ...prev, ...updatedFields, Nome: novoNome };
-       }
-       return prev;
-    });
-
-    const payloadData = { ...updatedFields };
-    delete payloadData.Nome; 
-
-    if (webhookEquipe) {
-      try {
-        await fetch(webhookEquipe, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'update', NOME_ORIGINAL: originalName, newData: payloadData })
-        });
-      } catch (error) { console.error("Erro ao atualizar equipe", error); }
-    } else {
-      showAlert("⚠️ Aviso: O Webhook da Equipe não está configurado na rede. A alteração foi salva apenas localmente.");
     }
   };
 
@@ -644,6 +522,8 @@ export default function App() {
   const bThick = `border-[4px] ${themeConfig.border}`; 
   const bMedium = `border-[2px] ${themeConfig.border}`;
 
+  const articuladoresUnicos = Array.from(new Set(data.map(d => String(d.ARTICULADOR || '').trim()).filter(Boolean)));
+
   const mondrianStyles = `
     .theme-crimson { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
     .hover-crimson:hover { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
@@ -664,7 +544,7 @@ export default function App() {
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div 
-            onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
+            onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}}
             className="cursor-pointer hover:opacity-70 transition-opacity"
             title="Ir para o Kanban"
           >
@@ -686,8 +566,8 @@ export default function App() {
         </div>
 
         <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
-          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
-          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" isDark={isDark} accentColor={accentColor} />
+          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" isDark={isDark} accentColor={accentColor} />
           <button 
             onClick={() => requireAuth(() => { setIsFormOpen(true); cycleAccent(); })}
             className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 ${isDark ? 'bg-black text-white hover:bg-white hover:text-black' : 'bg-white text-black hover:bg-black hover:text-white'}`}
@@ -700,16 +580,7 @@ export default function App() {
           </button>
           
           <button 
-            onClick={() => {setView('equipe_list'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
-            className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'equipe_list' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
-            style={view === 'equipe_list' && !isFormOpen ? { borderColor: accentColor, color: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, zIndex: 10 } : { color: 'inherit' }}
-            title="Banco de Dados da Equipe"
-          >
-            <Users size={24} />
-          </button>
-
-          <button 
-            onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setActiveMembroEquipe(null); setIsFormOpen(false); cycleAccent();}}
+            onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}}
             className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'settings' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
             style={view === 'settings' && !isFormOpen ? { borderColor: accentColor, color: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, zIndex: 10 } : { color: 'inherit' }}
             title="Ajustes do Sistema"
@@ -733,7 +604,7 @@ export default function App() {
               <FormNovoPedido 
                 onClose={() => setIsFormOpen(false)} 
                 theme={themeConfig} thick={bThick} isDark={isDark} 
-                fetchFromWebhooks={() => fetchFromWebhooks()} equipe={equipe} 
+                fetchFromWebhooks={() => fetchFromWebhooks()} equipeOptions={articuladoresUnicos} 
                 webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} 
                 accentColor={accentColor} cycleAccent={cycleAccent} requireAuth={requireAuth} 
                 showAlert={showAlert}
@@ -742,7 +613,7 @@ export default function App() {
             
             {!isFormOpen && view === 'entity_details' && activeFicha && (
               <FichaEntidade 
-                item={activeFicha} equipe={equipe} emailCentral={emailCentral}
+                item={activeFicha} equipeOptions={articuladoresUnicos} emailCentral={emailCentral}
                 onClose={() => {setActiveFicha(null); setView('kanban'); cycleAccent();}} 
                 onArticuladorClick={handleArticulatorClick}
                 onDelete={() => deleteItem(activeFicha.ENTIDADE)}
@@ -759,24 +630,6 @@ export default function App() {
                 onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} isDark={isDark} 
               />
             )}
-            
-            {!isFormOpen && view === 'equipe_list' && (
-              <ListaEquipeView 
-                equipe={equipe} 
-                onMembroClick={(membro) => {setActiveMembroEquipe(membro); setView('equipe_details'); cycleAccent();}} 
-                onBack={() => {setView('kanban'); cycleAccent();}} theme={themeConfig} thick={bThick} isDark={isDark} 
-              />
-            )}
-            
-            {!isFormOpen && view === 'equipe_details' && activeMembroEquipe && (
-              <FichaMembroEquipe 
-                membro={activeMembroEquipe} 
-                onClose={() => {setActiveMembroEquipe(null); setView('equipe_list'); cycleAccent();}} 
-                onUpdate={(fields) => handleUpdateEquipe(activeMembroEquipe.Nome, fields)} 
-                theme={themeConfig} thick={bThick} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} 
-                isUnlocked={isUnlocked} requireAuth={requireAuth}
-              />
-            )}
 
             {!isFormOpen && view === 'kanban' && (
               <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} isDark={isDark} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />
@@ -790,7 +643,7 @@ export default function App() {
               <SettingsView 
                 isDark={isDark} setIsDark={setIsDark} 
                 fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
-                webhookUtilidade={webhookUtilidade} webhookEquipe={webhookEquipe} emailCentral={emailCentral}
+                webhookUtilidade={webhookUtilidade} emailCentral={emailCentral}
                 applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
                 setView={setView} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
                 masterPassword={masterPassword} setMasterPassword={setMasterPassword} EMERGENCY_PHRASE={EMERGENCY_PHRASE}
@@ -1140,182 +993,9 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// LISTA COMPLETA DA EQUIPE E FICHA
-// ==========================================
-function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
-  const [viewMode, setViewMode] = useState('list');
-
-  return (
-    <div className={`max-w-6xl mx-auto w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-200`}>
-      <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-4`}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[6px] border-current pb-4">
-          <div className="flex items-center gap-4">
-            <button onClick={onBack} className={`p-2 border-[3px] border-current hover:-translate-x-1 transition-transform`}><ChevronLeft size={24} /></button>
-            <div>
-              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 flex items-center gap-3"><Users size={36} /> Gestão de Equipe</h2>
-              <p className="font-bold opacity-60 uppercase tracking-widest text-[0.8em]">Banco de Dados da Secretaria / RH</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 border-[3px] border-current p-1 bg-black/5 dark:bg-white/5 w-max">
-            <button 
-              onClick={() => setViewMode('list')} 
-              className={`p-2 transition-colors ${viewMode === 'list' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10'}`}
-              title="Visualização em Tabela"
-            >
-              <ListIcon size={20} />
-            </button>
-            <button 
-              onClick={() => setViewMode('grid')} 
-              className={`p-2 transition-colors ${viewMode === 'grid' ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-black/10 dark:hover:bg-white/10'}`}
-              title="Visualização em Cards"
-            >
-              <GridIcon size={20} />
-            </button>
-          </div>
-        </div>
-
-        {equipe.length === 0 ? (
-          <div className="p-10 border-[4px] border-dashed border-current flex flex-col items-center justify-center text-center opacity-60 mt-4">
-            <AlertCircle size={48} className="mb-4" />
-            <h3 className="text-xl font-black uppercase tracking-widest">Nenhuma conexão de dados</h3>
-            <p className="font-bold mt-2">O banco de dados não retornou nenhum registro de equipe ou falhou ao conectar.<br/>Se a planilha estiver vazia, adicione um registro nela primeiro ou revise suas conexões nos Ajustes.</p>
-          </div>
-        ) : viewMode === 'list' ? (
-          <div className="overflow-x-auto border-[4px] border-current mt-4">
-            <table className="w-full text-left border-collapse min-w-[700px]">
-              <thead className={`border-b-[4px] border-current bg-black text-white dark:bg-white dark:text-black uppercase font-black tracking-widest text-[11px]`}>
-                <tr>
-                  <th className="p-4 border-r border-current">Nome Assessor (Chave)</th>
-                  <th className="p-4 border-r border-current">Nome Completo</th>
-                  <th className="p-4 border-r border-current">Coordenação</th>
-                  <th className="p-4">E-mail do Assessor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {equipe.map((membro, i) => (
-                  <tr key={i} onClick={() => onMembroClick(membro)} className={`border-b-[2px] border-current hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group`}>
-                    <td className="p-4 border-r border-current font-black group-hover:underline decoration-2">
-                       {membro.Nome}
-                    </td>
-                    <td className="p-4 border-r border-current font-bold opacity-90 text-sm">
-                       {membro['Nome Completo'] || '-'}
-                    </td>
-                    <td className="p-4 border-r border-current font-bold opacity-90 text-xs uppercase tracking-widest">
-                       {membro['Coordenação'] || '-'}
-                    </td>
-                    <td className="p-4 font-bold opacity-90 text-xs">
-                       {membro['E-mail do Assessor'] || membro['E-mail outro'] || '-'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-            {equipe.map((membro, i) => (
-              <div key={i} onClick={() => onMembroClick(membro)} className={`p-5 border-[4px] border-current cursor-pointer hover:-translate-y-1 hover:shadow-[6px_6px_0px_currentColor] transition-all flex flex-col h-full ${theme.bg}`}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 border-[3px] border-current flex-shrink-0 flex items-center justify-center font-black text-2xl bg-black text-white dark:bg-white dark:text-black uppercase">
-                    {(membro.Nome || '?').charAt(0)}
-                  </div>
-                  <div className="overflow-hidden">
-                    <h3 className="font-black text-lg uppercase leading-tight truncate" title={membro.Nome}>{membro.Nome}</h3>
-                    <span className="font-bold opacity-70 text-[0.7em] uppercase tracking-widest truncate block" title={membro['Coordenação']}>{membro['Coordenação'] || 'Sem Coordenação'}</span>
-                  </div>
-                </div>
-                <div className="mt-auto pt-3 border-t-[3px] border-current border-dashed">
-                  <span className="text-[0.65em] font-black uppercase opacity-60 tracking-widest block mb-1">E-mail do Assessor</span>
-                  <span className="font-bold text-[0.8em] truncate block" title={membro['E-mail do Assessor'] || membro['E-mail outro']}>{membro['E-mail do Assessor'] || membro['E-mail outro'] || 'Não cadastrado'}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent, isUnlocked, requireAuth }) {
-  const [saveLabel, setSaveLabel] = useState('Salvar Alterações');
-  const keys = Object.keys(membro).filter(k => k !== 'Nome');
-  
-  const originalNameKey = Object.keys(membro).find(k => k !== 'Nome' && membro[k] === membro.Nome) || 'Nome do Assessor';
-
-  const handleManualSave = () => {
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-    setSaveLabel('Salvando...');
-    setTimeout(() => {
-      setSaveLabel('Salvo com sucesso!');
-      setTimeout(() => setSaveLabel('Salvar Alterações'), 2000);
-    }, 500);
-  };
-
-  return (
-    <div className={`max-w-4xl mx-auto w-full p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
-      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
-      
-      <div className="pr-10 border-b-[6px] border-current pb-4">
-        <span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest mb-1">Ficha Funcional</span>
-        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
-          <EditableField 
-            value={membro.Nome} 
-            onSave={(val) => onUpdate({ [originalNameKey]: val, Nome: val })} 
-            isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} 
-          />
-        </h2>
-        <p className="font-bold opacity-80 uppercase tracking-widest text-[0.7em] mt-2">
-          {isUnlocked ? "Clique no lápis (ou segure no celular) para editar qualquer campo. As alterações são sincronizadas com a planilha matriz." : "⚠️ A sessão está bloqueada. É necessário senha para editar este registro."}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {keys.map((key, i) => {
-          const val = membro[key];
-          const isLarge = key.toLowerCase().includes('endereço') || key.toLowerCase().includes('observação');
-
-          return (
-            <div key={i} className={`p-4 border-[2px] border-current flex flex-col items-start w-full ${isLarge ? 'md:col-span-2' : ''} ${theme.bg}`}>
-              <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">{key}</span>
-              <EditableField 
-                value={val} 
-                onSave={(newVal) => onUpdate({ [key]: newVal })} 
-                isDark={isDark} 
-                multiline={isLarge}
-                textClass={`font-bold break-words max-w-full ${isLarge ? 'whitespace-pre-wrap leading-relaxed' : ''}`} 
-                accentColor={accentColor} 
-                cycleAccent={cycleAccent}
-                isUnlocked={isUnlocked} requireAuth={requireAuth}
-              />
-            </div>
-          );
-        })}
-      </div>
-      
-      <div className="mt-4 border-t-[4px] border-current pt-4 flex flex-col sm:flex-row gap-4">
-        <button 
-          onClick={() => requireAuth(handleManualSave)} 
-          className={`flex-1 p-4 font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor] flex items-center justify-center gap-2 ${saveLabel === 'Salvo com sucesso!' ? 'theme-cyan' : (isDark ? 'bg-white text-black' : 'bg-black text-white')}`}
-        >
-          {isUnlocked ? <Save size={18} /> : <Lock size={18} />} {saveLabel}
-        </button>
-        <button 
-          onClick={onClose} 
-          className="flex-1 p-4 bg-transparent border-[4px] border-current font-black uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-        >
-          Fechar
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
 // FICHA COMPLETA COM EDIÇÃO INLINE MÁGICA
 // ==========================================
-function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipe, emailCentral, accentColor, cycleAccent, isUnlocked, requireAuth }) {
+function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipeOptions, emailCentral, accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [stagedFiles, setStagedFiles] = useState({});
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
@@ -1374,7 +1054,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
   const docsCount = DOCS_KEYS.filter(k => String(item[k] || '').toUpperCase() === 'TRUE').length;
   const checkGlobalColor = getProgressColor(docsCount);
-  const equipeOptions = equipe.map(e => e.Nome);
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
@@ -1754,7 +1433,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 // ==========================================
 // FORMULÁRIO DE NOVO PROCESSO
 // ==========================================
-function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth, showAlert }) {
+function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipeOptions, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth, showAlert }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
@@ -1841,7 +1520,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
     });
   };
 
-  const filteredEquipe = equipe.filter(p => p.Nome.toLowerCase().includes(busca.toLowerCase()));
+  const filteredEquipe = equipeOptions.filter(nome => nome.toLowerCase().includes(busca.toLowerCase()));
 
   if (successMode) {
     return (
@@ -1915,13 +1594,13 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
               </div>
               {showDropdown && (
                 <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] z-10 max-h-40 overflow-y-auto ${theme.cardBg}`} style={{ borderColor: accentColor }}>
-                  {filteredEquipe.map((p, idx) => (
+                  {filteredEquipe.map((nome, idx) => (
                     <div 
                       key={idx} 
-                      onClick={() => { setFormData({...formData, ARTICULADOR: p.Nome}); setBusca(p.Nome); setShowDropdown(false); }} 
+                      onClick={() => { setFormData({...formData, ARTICULADOR: nome}); setBusca(nome); setShowDropdown(false); }} 
                       className={`p-2 font-bold cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors border-b border-current opacity-60 hover:opacity-100`}
                     >
-                      {p.Nome}
+                      {nome}
                     </div>
                   ))}
                 </div>
@@ -2077,7 +1756,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
 // ==========================================
 function SettingsView({ 
   isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
-  webhookUtilidade, webhookEquipe, emailCentral, 
+  webhookUtilidade, emailCentral, 
   applyNetworkSettings, exportCSV, importCSV, 
   setView, theme, thick, med, accentColor, cycleAccent,
   masterPassword, setMasterPassword, EMERGENCY_PHRASE,
@@ -2089,7 +1768,6 @@ function SettingsView({
   const [focusedField, setFocusedField] = useState(null);
 
   const [draftUtilidade, setDraftUtilidade] = useState(webhookUtilidade);
-  const [draftEquipe, setDraftEquipe] = useState(webhookEquipe);
   const [draftEmail, setDraftEmail] = useState(emailCentral);
 
   const [currentPwd, setCurrentPwd] = useState('');
@@ -2103,7 +1781,7 @@ function SettingsView({
 
   const handleSaveNetwork = () => {
     showConfirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?", () => {
-        applyNetworkSettings(draftUtilidade, draftEquipe, draftEmail);
+        applyNetworkSettings(draftUtilidade, draftEmail);
         setSavedMessage('Configuração sobreposta localmente com sucesso!');
         setTimeout(() => setSavedMessage(''), 4000);
     });
@@ -2302,20 +1980,6 @@ function SettingsView({
                 onBlur={() => setFocusedField(null)} 
                 className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" 
                 style={{ borderColor: focusedField === 'WH1' ? accentColor : 'currentcolor' }} 
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Equipe (Opcional)</label>
-              <input 
-                type="text" 
-                value={draftEquipe} 
-                onChange={(e) => setDraftEquipe(e.target.value)} 
-                onFocus={() => handleFocus('WH2')} 
-                onBlur={() => setFocusedField(null)} 
-                placeholder="Cole aqui caso crie um script para a equipe..." 
-                className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" 
-                style={{ borderColor: focusedField === 'WH2' ? accentColor : 'currentcolor' }} 
               />
             </div>
 
