@@ -64,6 +64,18 @@ const DOCS_PREFIX_MAP = {
   '8 ESTATUTO': '007-ESTATUTO', '9 RELATÓRIO DE ATIVIDADES': '008-RELATORIO_ATIVIDADES'
 };
 
+// Dicionário de exigências para os Tooltips
+const DOCS_REQUIREMENTS = {
+  '1 ATA DE FUNDAÇÃO': 'Obrigatório: Apresentar ata da eleição e posse da diretoria em exercício com REGISTRO EM CARTÓRIO.',
+  '2 ATA DE ELEIÇÃO/POSSE': 'Obrigatório: Apresentar ata da eleição e posse da diretoria em exercício com REGISTRO EM CARTÓRIO.',
+  '3 CNPJ': 'Situação ATIVA. Constituída em SANTA CATARINA com data de emissão. Este documento não tem prazo.',
+  '4 DECLARAÇÃO NÃO OSCIP': 'Máximo 90 dias. Deve conter: nome do presidente, CPF, telefone, email, endereço. Declarar qualidade de presidente e que NÃO é OSCIP.',
+  '5 DECLARAÇÃO FUNCIONAMENTO': 'Máximo 180 dias. Atestar funcionamento contínuo nos 12 meses anteriores. Constar CNPJ e endereço com assinatura.',
+  '6 - 7 DECLARAÇÃO REMUNERAÇÃO': 'Máximo 180 dias. Declarar expressamente a remuneração ou ausência dela. Requer dados completos: Nome, RG, CPF, nacionalidade, estado civil, endereço.',
+  '8 ESTATUTO': 'Obrigatório: REGISTRO EM CARTÓRIO. Deve declarar expressamente se a entidade não remunera os cargos (se for o caso).',
+  '9 RELATÓRIO DE ATIVIDADES': 'Detalhado MÊS A MÊS sem faltar nenhum dos 12 meses anteriores. O relatório necessita DATA e tem validade de 180 dias.'
+};
+
 const DEFAULT_EQUIPE = [];
 
 const getStatusColor = (status) => {
@@ -71,11 +83,12 @@ const getStatusColor = (status) => {
   if (s.includes('aguardando')) return COLORS.crimson;
   if (s.includes('análise') || s.includes('analise')) return COLORS.mustard;
   if (s.includes('protocolado')) return COLORS.cyan;
+  if (s.includes('concluído') || s.includes('concluido')) return COLORS.black;
   return null;
 };
 
 const getTextColorForStatus = (statusColor) => {
-  if (statusColor === COLORS.crimson) return 'white';
+  if (statusColor === COLORS.crimson || statusColor === COLORS.black) return 'white';
   if (statusColor === COLORS.mustard || statusColor === COLORS.cyan) return 'black';
   return 'inherit';
 };
@@ -185,6 +198,7 @@ export default function App() {
   const [equipe, setEquipe] = useState(DEFAULT_EQUIPE);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
+  const [isGlobalManualOpen, setIsGlobalManualOpen] = useState(false);
   
   // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
@@ -251,11 +265,9 @@ export default function App() {
   useEffect(() => { localStorage.setItem('tabulum_master_pwd', masterPassword); }, [masterPassword]);
 
   useEffect(() => { 
-    // Carrega ambas as planilhas de forma segura na inicialização
     fetchFromWebhooks(webhookUtilidade, webhookEquipe); 
   }, []);
 
-  // MOTOR DE BUSCA EM PARALELO (PROMISE.ALL) SEM SENSIVILIDADE A BUGS ASSÍNCRONOS
   const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade, currentUrlEquipe = webhookEquipe) => {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
@@ -285,7 +297,6 @@ export default function App() {
         let parsedData = [];
         try {
           const jsonData = JSON.parse(text);
-          // Suporte flexível para JSON envelopado em 'data', 'rows' ou array puro
           parsedData = Array.isArray(jsonData) 
             ? jsonData 
             : (jsonData && typeof jsonData === 'object' && Array.isArray(jsonData.data) 
@@ -305,7 +316,9 @@ export default function App() {
         }
 
         if (Array.isArray(parsedData) && parsedData.length > 0) {
-          const formattedData = parsedData.map(item => {
+          const formattedData = parsedData
+            .filter(item => item && item.ENTIDADE && String(item.ENTIDADE).trim() !== '')
+            .map(item => {
             let newItem = {};
             for (let key in item) {
               let val = item[key];
@@ -365,7 +378,12 @@ export default function App() {
         }
 
         if (Array.isArray(parsedEquipe) && parsedEquipe.length > 0) {
-          const formattedEq = parsedEquipe.map(item => {
+          const formattedEq = parsedEquipe
+            .filter(item => {
+              const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
+              return chave && String(chave).trim() !== '';
+            })
+            .map(item => {
             const chave = item['Nome do Assessor'] || item['Nome Completo'] || item['Nome'] || Object.values(item)[0];
             return { ...item, Nome: String(chave || 'Desconhecido').trim() };
           });
@@ -724,137 +742,182 @@ export default function App() {
 
 function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticulatorClick }) {
   const [collapsedCols, setCollapsedCols] = useState({});
+  const [isConcluidoOpen, setIsConcluidoOpen] = useState(false);
+
   const toggleCol = (id) => setCollapsedCols(prev => ({ ...prev, [id]: !prev[id] }));
 
-  const columns = [
+  const activeColumns = [
     { id: 'Aguardando Documentos', label: 'Aguardando', color: COLORS.crimson, icon: <AlertCircle size={16}/> },
     { id: 'Em análise', label: 'Análise', color: COLORS.mustard, icon: <Clock size={16}/> },
-    { id: 'Protocolado', label: 'Protocolado', color: COLORS.cyan, icon: <CheckCircle2 size={16}/> }
+    { id: 'Protocolado', label: 'Protocolado', color: COLORS.cyan, icon: <FileText size={16}/> }
   ];
 
   const getColData = (status) => data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === status.toLowerCase());
+  
+  const concluidoData = data.filter(d => {
+    const s = String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase();
+    return s.includes('concluído') || s.includes('concluido');
+  });
+
+  const renderCard = (item, i, colColor) => {
+    let hasCount = 0;
+    const itemProgressBoxes = DOCS_KEYS.map(key => {
+      const hasDoc = (String(item[key] || '').toUpperCase() === 'TRUE');
+      if (hasDoc) hasCount++;
+      return { key, has: hasDoc };
+    });
+
+    return (
+      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer ${theme.bg}`}>
+        <h3 className="font-black mb-3 uppercase leading-tight" style={{ fontSize: '1.1em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
+        <div className="flex justify-between items-end gap-2">
+          <div className="flex flex-col">
+            <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest">Articulador</span>
+            <span onClick={(e) => { e.stopPropagation(); onArticulatorClick(item.ARTICULADOR); }} className={`font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer`} style={{ textDecorationColor: colColor || 'currentcolor' }}>{item.ARTICULADOR || '-'}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest block">Data</span>
+            <span className="font-bold text-[0.9em]">{item['DATA DA SOLICITAÇÃO'] || '-'}</span>
+          </div>
+        </div>
+
+        {/* LINK DE TRAMITAÇÃO KANBAN */}
+        {(item['LINK']) && (
+          <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: colColor || 'currentcolor' }} onClick={e => e.stopPropagation()}>
+            <ExternalLink size={14} /> Acompanhar tramitação
+          </a>
+        )}
+
+        <div className="mt-4 flex gap-1 h-3">
+          {itemProgressBoxes.map((box, bIdx) => {
+            const activeColor = box.has ? getProgressColor(hasCount) : null;
+            return (
+              <div 
+                key={bIdx} 
+                title={box.key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : box.key} 
+                className={`flex-1 transition-colors duration-500 ${box.has ? 'border-[2px] border-current' : 'bg-transparent border-[1px] border-current opacity-20'}`}
+                style={activeColor ? { backgroundColor: activeColor } : {}}
+              /> 
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 flex-1 items-stretch min-h-[500px]">
-      {columns.map((col) => {
-        const isCollapsed = collapsedCols[col.id];
-        const colData = getColData(col.id);
-        const headerTextColor = getTextColorForStatus(col.color) || (isDark ? 'white' : 'black');
+    <div className="flex flex-col gap-4 flex-1 min-h-[500px]">
+      {/* GAVETA DISCRETA: CONCLUÍDOS (ACIMA) */}
+      <div className={`border-[4px] transition-colors duration-300 ${isConcluidoOpen ? theme.cardBg : 'bg-transparent'} ${theme.border}`}>
+        <button 
+          onClick={() => setIsConcluidoOpen(!isConcluidoOpen)}
+          className={`w-full p-3 font-black uppercase tracking-widest flex items-center justify-between transition-colors ${isConcluidoOpen ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'}`}
+        >
+          <div className="flex items-center gap-3">
+            <CheckCircle2 size={18} />
+            <span className="text-sm md:text-base">Processos Concluídos ({concluidoData.length})</span>
+          </div>
+          <span className="text-2xl leading-none font-mono">{isConcluidoOpen ? '−' : '+'}</span>
+        </button>
         
-        return (
-          <div key={col.id} className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16 md:w-20' : 'flex-1'} ${thick} ${theme.cardBg}`}>
-            <div onClick={() => toggleCol(col.id)} className={`p-3 font-black flex items-center gap-2 uppercase tracking-wider border-b-[4px] cursor-pointer transition-colors ${theme.border}`} style={{ backgroundColor: col.color, color: headerTextColor }}>
-              {isCollapsed ? (
-                <div className="flex flex-col items-center w-full gap-4 py-4">
-                  {col.icon}
-                  <span className="writing-vertical-lr rotate-180 tracking-widest">{col.label}</span>
-                  <span className="bg-black text-white px-2 py-0.5 rounded-full mt-auto text-[0.8em]">{colData.length}</span>
+        {isConcluidoOpen && (
+          <div className="p-4 bg-black/5 dark:bg-white/5 border-t-[4px] border-current">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[50vh] overflow-y-auto pr-2">
+               {concluidoData.map((item, i) => renderCard(item, i, COLORS.black))}
+               {concluidoData.length === 0 && <div className="col-span-full text-center opacity-40 p-6 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.8em]">Nenhum processo concluído</div>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* KANBAN ATIVO (ABAIXO) */}
+      <div className="flex flex-col md:flex-row gap-4 flex-1 items-stretch">
+        {activeColumns.map((col) => {
+          const isCollapsed = collapsedCols[col.id];
+          const colData = getColData(col.id);
+          const headerTextColor = getTextColorForStatus(col.color) || (isDark ? 'white' : 'black');
+          
+          return (
+            <div key={col.id} className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16 md:w-20' : 'flex-1'} ${thick} ${theme.cardBg}`}>
+              <div onClick={() => toggleCol(col.id)} className={`p-3 font-black flex items-center gap-2 uppercase tracking-wider border-b-[4px] cursor-pointer transition-colors ${theme.border}`} style={{ backgroundColor: col.color, color: headerTextColor }}>
+                {isCollapsed ? (
+                  <div className="flex flex-col items-center w-full gap-4 py-4">
+                    {col.icon}
+                    <span className="writing-vertical-lr rotate-180 tracking-widest">{col.label}</span>
+                    <span className="bg-black text-white px-2 py-0.5 rounded-full mt-auto text-[0.8em]">{colData.length}</span>
+                  </div>
+                ) : (
+                  <>{col.icon}<span className="truncate">{col.label}</span><span className="ml-auto bg-black text-white px-2 py-0.5 rounded-full text-[0.8em]">{colData.length}</span></>
+                )}
+              </div>
+              
+              {!isCollapsed && (
+                <div className="p-3 flex flex-col gap-3 overflow-y-auto flex-1 min-h-[300px]">
+                  {colData.map((item, i) => renderCard(item, i, col.color))}
+                  {colData.length === 0 && <div className="text-center opacity-40 p-6 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.8em]">Vazio</div>}
                 </div>
-              ) : (
-                <>{col.icon}<span className="truncate">{col.label}</span><span className="ml-auto bg-black text-white px-2 py-0.5 rounded-full text-[0.8em]">{colData.length}</span></>
               )}
             </div>
-            
-            {!isCollapsed && (
-              <div className="p-3 flex flex-col gap-3 overflow-y-auto flex-1">
-                {colData.map((item, i) => {
-                  let hasCount = 0;
-                  const itemProgressBoxes = DOCS_KEYS.map(key => {
-                    const hasDoc = (String(item[key] || '').toUpperCase() === 'TRUE');
-                    if (hasDoc) hasCount++;
-                    return { key, has: hasDoc };
-                  });
-
-                  return (
-                    <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer ${theme.bg}`}>
-                      <h3 className="font-black mb-3 uppercase leading-tight" style={{ fontSize: '1.1em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
-                      <div className="flex justify-between items-end gap-2">
-                        <div className="flex flex-col">
-                          <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest">Articulador</span>
-                          <span onClick={(e) => { e.stopPropagation(); onArticulatorClick(item.ARTICULADOR); }} className={`font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer`} style={{ textDecorationColor: col.color }}>{item.ARTICULADOR || '-'}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest block">Data</span>
-                          <span className="font-bold text-[0.9em]">{item['DATA DA SOLICITAÇÃO'] || '-'}</span>
-                        </div>
-                      </div>
-
-                      {/* LINK DE TRAMITAÇÃO KANBAN */}
-                      {(item['LINK']) && (
-                        <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: col.color }} onClick={e => e.stopPropagation()}>
-                          <ExternalLink size={14} /> Acompanhar tramitação
-                        </a>
-                      )}
-
-                      <div className="mt-4 flex gap-1 h-3">
-                        {itemProgressBoxes.map((box, bIdx) => {
-                          const activeColor = box.has ? getProgressColor(hasCount) : null;
-                          return (
-                            <div 
-                              key={bIdx} 
-                              title={box.key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : box.key} 
-                              className={`flex-1 transition-colors duration-500 ${box.has ? 'border-[2px] border-current' : 'bg-transparent border-[1px] border-current opacity-20'}`}
-                              style={activeColor ? { backgroundColor: activeColor } : {}}
-                            /> 
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-                {colData.length === 0 && <div className="text-center opacity-40 p-6 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.8em]">Vazio</div>}
-              </div>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
 
 function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorClick, isDark }) {
   const total = data.length;
+  const aguardando = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('aguardando')).length;
+  const emAnalise = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('análise') || String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('analise')).length;
   const protocolados = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado').length;
-  const emAnalise = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'em análise').length;
+  const concluidos = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('concluído') || String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('concluido')).length;
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className={`md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4`}>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className={`lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4`}>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: 'currentcolor', borderTopWidth: '8px' }}>
           <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Total</span>
           <span className="text-5xl font-black mt-2">{total}</span>
-        </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.crimson, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span>
-          <span className="text-5xl font-black mt-2">{protocolados}</span>
         </div>
         <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
           <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Análise</span>
           <span className="text-5xl font-black mt-2">{emAnalise}</span>
         </div>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span>
+          <span className="text-5xl font-black mt-2">{protocolados}</span>
+        </div>
+        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.black, borderTopWidth: '8px' }}>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Concluído</span>
+          <span className="text-5xl font-black mt-2">{concluidos}</span>
+        </div>
       </div>
 
-      <div className={`md:col-span-1 p-4 ${thick} ${theme.cardBg} flex flex-col`}>
+      <div className={`lg:col-span-1 p-4 ${thick} ${theme.cardBg} flex flex-col`}>
         <h2 className="font-black uppercase tracking-widest border-b-[4px] border-current pb-2 mb-4 text-[0.9em]">Visão Geral</h2>
         <div className="flex-1 flex flex-col justify-end gap-2 h-40">
-          <div className="flex items-end gap-2 h-full">
-            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
+          <div className="flex items-end gap-1 h-full">
+            <div className="w-1/4 flex flex-col items-center gap-1 h-full justify-end">
+              <div className="w-full transition-all duration-500" style={{ height: `${(aguardando/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '3px solid currentcolor' }}></div>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Doc</span>
+            </div>
+            <div className="w-1/4 flex flex-col items-center gap-1 h-full justify-end">
               <div className="w-full transition-all duration-500" style={{ height: `${(emAnalise/total)*100 || 0}%`, backgroundColor: COLORS.mustard, border: '3px solid currentcolor' }}></div>
-              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Int</span>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Anál</span>
             </div>
-            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
-              <div className="w-full transition-all duration-500" style={{ height: `${((total-emAnalise-protocolados)/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '3px solid currentcolor' }}></div>
-              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Docs</span>
-            </div>
-            <div className="w-1/3 flex flex-col items-center gap-1 h-full justify-end">
+            <div className="w-1/4 flex flex-col items-center gap-1 h-full justify-end">
               <div className="w-full transition-all duration-500" style={{ height: `${(protocolados/total)*100 || 0}%`, backgroundColor: COLORS.cyan, border: '3px solid currentcolor' }}></div>
-              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Ext</span>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Prot</span>
+            </div>
+            <div className="w-1/4 flex flex-col items-center gap-1 h-full justify-end">
+              <div className="w-full transition-all duration-500" style={{ height: `${(concluidos/total)*100 || 0}%`, backgroundColor: COLORS.black, border: '3px solid currentcolor' }}></div>
+              <span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Fim</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className={`md:col-span-3 mt-4 ${thick} ${theme.cardBg} overflow-x-auto max-h-[500px]`}>
+      <div className={`lg:col-span-4 mt-4 ${thick} ${theme.cardBg} overflow-x-auto max-h-[500px]`}>
         <table className="w-full text-left border-collapse min-w-[600px]">
           <thead className="sticky top-0 z-10" style={{ backgroundColor: theme.cardBg === 'bg-white' ? 'white' : '#1a1a1a' }}>
             <tr className={`border-b-[6px] ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
@@ -885,7 +948,7 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
 }
 
 // ==========================================
-// LISTA COMPLETA DA EQUIPE
+// LISTA COMPLETA DA EQUIPE E FICHA
 // ==========================================
 function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }) {
   const [viewMode, setViewMode] = useState('list');
@@ -983,9 +1046,6 @@ function ListaEquipeView({ equipe, onMembroClick, onBack, theme, thick, isDark }
   );
 }
 
-// ==========================================
-// FICHA COMPLETA DO MEMBRO DA EQUIPE
-// ==========================================
 function FichaMembroEquipe({ membro, onClose, onUpdate, theme, thick, isDark, accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [saveLabel, setSaveLabel] = useState('Salvar Alterações');
   const keys = Object.keys(membro).filter(k => k !== 'Nome');
@@ -1058,8 +1118,10 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
   const [saveLabel, setSaveLabel] = useState('Salvar Ficha');
+  const [activeTooltip, setActiveTooltip] = useState(null);
 
   const statusColor = getStatusColor(item['STATUS DA ANÁLISE']);
+  let pressTimer;
 
   const handleManualSave = () => {
     if (document.activeElement instanceof HTMLElement) {
@@ -1094,6 +1156,14 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
     onUpdate({ [docKey]: currentVal ? 'FALSE' : 'TRUE' });
   };
 
+  const handleTouchStart = (key) => {
+    pressTimer = setTimeout(() => setActiveTooltip(key), 400); // 400ms delay for tooltip
+  };
+  const handleTouchEnd = () => {
+    clearTimeout(pressTimer);
+    setActiveTooltip(null);
+  };
+
   const docsCount = DOCS_KEYS.filter(k => String(item[k] || '').toUpperCase() === 'TRUE').length;
   const checkGlobalColor = getProgressColor(docsCount);
   const equipeOptions = equipe.map(e => e.Nome);
@@ -1109,7 +1179,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         <div className="flex flex-wrap gap-4 mt-3">
           <EditableSelect 
             value={item['STATUS DA ANÁLISE']} 
-            options={['Aguardando Documentos', 'Em análise', 'Protocolado']}
+            options={['Aguardando Documentos', 'Em análise', 'Protocolado', 'Concluído']}
             onSave={(val) => onUpdate({ 'STATUS DA ANÁLISE': val })}
             isDark={isDark}
             isStatus={true}
@@ -1196,18 +1266,46 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           </div>
           
           <div className="flex flex-col mt-4">
-            <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1">Checklist de Documentos (Toque p/ Marcar)</span>
+            <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1">Checklist de Documentos (Passe o mouse ou Segure)</span>
             {DOCS_KEYS.map((key, idx) => {
               const hasDoc = String(item[key] || '').toUpperCase() === 'TRUE';
               const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO/NÃO REMUNERADA' : key;
 
               return (
-                <div key={idx} onClick={() => requireAuth(() => toggleDoc(key))} className="group flex items-center gap-3 py-2 border-b-[2px] border-current opacity-90 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" title={isUnlocked ? "" : "Desbloqueie para marcar os documentos"}>
-                  <div className={`w-5 h-5 flex-shrink-0 border-[2px] border-current flex items-center justify-center transition-colors`} style={{ backgroundColor: hasDoc ? checkGlobalColor : 'transparent' }}>
+                <div 
+                  key={idx} 
+                  className="group relative flex items-center gap-3 py-2 border-b-[2px] border-current opacity-90 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" 
+                  title={isUnlocked ? "" : "Desbloqueie para marcar os documentos"}
+                  onMouseEnter={() => setActiveTooltip(key)}
+                  onMouseLeave={() => setActiveTooltip(null)}
+                  onTouchStart={() => handleTouchStart(key)}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchEnd}
+                >
+                  <div 
+                    onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleDoc(key)); }}
+                    className={`w-5 h-5 flex-shrink-0 border-[2px] border-current flex items-center justify-center transition-colors hover:scale-110`} 
+                    style={{ backgroundColor: hasDoc ? checkGlobalColor : 'transparent' }}
+                  >
                     {hasDoc && <CheckCircle2 size={14} className="text-black dark:text-white mix-blend-difference" />}
                   </div>
-                  <span className={`font-bold text-[0.85em] transition-opacity ${hasDoc ? 'opacity-100' : 'opacity-50 group-hover:opacity-80'}`}>{displayLabel}</span>
+                  <span 
+                    onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleDoc(key)); }}
+                    className={`font-bold text-[0.85em] flex-1 transition-opacity ${hasDoc ? 'opacity-100' : 'opacity-50 group-hover:opacity-80'}`}
+                  >
+                    {displayLabel}
+                  </span>
+                  
                   {!isUnlocked && <Lock size={12} className="ml-auto opacity-30 group-hover:opacity-100 text-crimson" />}
+
+                  {/* TOOLTIP DO DOCUMENTO */}
+                  {activeTooltip === key && (
+                    <div className={`absolute bottom-full mb-1 right-0 sm:left-6 z-50 w-[260px] p-3 text-xs leading-relaxed border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${isDark ? 'bg-gray-800 text-white border-white' : 'bg-white text-black border-black'} animate-in fade-in zoom-in-95 duration-200 pointer-events-none`}>
+                      <span className="font-black uppercase block mb-1 opacity-60 text-[9px] border-b-[2px] border-current pb-1">Exigências</span>
+                      {DOCS_REQUIREMENTS[key]}
+                      <div className={`absolute top-full left-4 border-[6px] border-transparent ${isDark ? 'border-t-white' : 'border-t-black'}`}></div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -1289,109 +1387,77 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 }
 
 // ==========================================
-// COMPONENTE: MANUAL DE REQUISITOS
+// COMPONENTE: MANUAL DE REQUISITOS (ATUALIZADO)
 // ==========================================
 function ManualModal({ onClose, theme, thick, isDark }) {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className={`w-full max-w-4xl p-6 md:p-10 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_currentColor] relative max-h-[95vh] overflow-hidden`}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform bg-black text-white dark:bg-white dark:text-black w-10 h-10 flex items-center justify-center">X</button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className={`w-full max-w-4xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_currentColor] relative max-h-[95vh] overflow-hidden`}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-xl font-black hover:scale-110 transition-transform border-[3px] border-current w-10 h-10 flex items-center justify-center">X</button>
         
-        <div className="border-b-[6px] border-current pb-4 pr-12 flex-shrink-0">
+        <div className="border-b-[4px] border-current pb-4 pr-12 flex-shrink-0">
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3">
-            <BookOpen size={32} /> Manual de Requisitos
+            <BookOpen size={28} /> Diretrizes e Requisitos
           </h2>
-          <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-2">Pedido de Utilidade Pública Estadual</p>
+          <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-2">Reconhecimento de Utilidade Pública Estadual</p>
         </div>
 
-        <div className="overflow-y-auto pr-2 space-y-6 flex-1 text-sm md:text-base font-bold opacity-90 leading-relaxed">
-          <section className={`p-4 border-[3px] border-current ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-            <p>O reconhecimento do Título de Utilidade Pública estadual é orientado pela <b>Lei nº 18.269 de 9 de dezembro de 2021</b>. Para isso os documentos originais ou cópias autenticadas estabelecidos no artigo 3º da Lei nº 18.269/2021 devem ser encaminhados para um dos Deputados por meio de requerimento.</p>
-            <p className="mt-3 text-crimson">É permitido realizar o protocolo de pedidos de Utilidade Pública mesmo que as DECLARAÇÕES ou o RELATÓRIO DE ATIVIDADES ainda não estejam completamente adequados. Contudo, a <b>ATA DE FUNDAÇÃO e o ESTATUTO devem estar obrigatoriamente corretos</b> e presentes no momento do protocolo.</p>
-            <p className="mt-3 text-[0.8em] opacity-80">A relação atualizada das entidades declaradas de Utilidade Pública estadual está consolidada no Anexo Único da Lei nº 18.278 de 20 de dezembro de 2021.</p>
+        <div className="overflow-y-auto pr-4 space-y-6 flex-1 text-sm font-medium leading-relaxed">
+          <section className="space-y-3 opacity-90">
+            <p>O reconhecimento do Título de Utilidade Pública Estadual é regido pela <b>Lei nº 18.269/2021</b>. Os documentos previstos no art. 3º devem ser encaminhados ao gabinete parlamentar para análise técnica.</p>
+            <p><b>Fluxo de Trabalho:</b> A Articulação coleta a documentação e envia à Assessoria responsável pela auditoria preliminar. É vedado o envio direto ao setor jurídico da ALESC. Caberá à Assessoria notificar a Articulação sobre pendências, devendo esta realizar a cobrança junto à entidade requerente.</p>
+            <p><b>Admissibilidade:</b> Autoriza-se o protocolo de processos que apresentem vícios sanáveis em Declarações ou Relatórios. Contudo, é expressamente obrigatório que a Ata de Fundação, Ata de Posse e o Estatuto Social estejam sem incorreções e devidamente registrados em cartório no ato do protocolo.</p>
           </section>
 
           <div>
-            <h3 className="text-lg font-black uppercase border-b-[3px] border-current pb-1 mb-4">Documentos que a ENTIDADE precisa entregar ao ARTICULADOR:</h3>
+            <h3 className="text-base font-black uppercase border-b-[2px] border-current pb-2 mb-4">Checklist Documental Exigido</h3>
             
             <div className="space-y-4">
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">001 Ata de Fundação</h4>
-                <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
+              <div className="pb-3 border-b border-current/20">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">001 e 002 - Atas de Fundação, Eleição e Posse</h4>
+                <p className="opacity-80">Apresentar atas de fundação e da diretoria executiva em exercício. <b>Requisito obrigatório:</b> Registro em Cartório.</p>
               </div>
 
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">002 Ata da eleição e posse da Diretoria Executiva</h4>
-                <p>Apresentar ata da eleição e posse da diretoria em exercício com <b>REGISTRO EM CARTÓRIO</b>.</p>
+              <div className="pb-3 border-b border-current/20">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">003 - Cadastro Nacional da Pessoa Jurídica (CNPJ)</h4>
+                <p className="opacity-80">Documento sem prazo de validade. Exige-se situação cadastral <b>ATIVA</b>, emissão datada e constituição da instituição no Estado de Santa Catarina.</p>
               </div>
 
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">003 Cadastro nacional da pessoa jurídica (CNPJ)</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>A entidade deve estar com a situação cadastral <b>ATIVA</b>.</li>
-                  <li>A instituição precisa ser constituída em <b>SANTA CATARINA</b> e o documento deve ter data de emissão.</li>
-                  <li>Este documento não tem prazo.</li>
+              <div className="pb-3 border-b border-current/20">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">004 - Declaração de Não Qualificação como OSCIP</h4>
+                <p className="opacity-80">Validade máxima de <b>90 dias</b> anteriores ao protocolo. Deve declarar expressamente a não qualificação como OSCIP. Informações obrigatórias: nome completo do presidente, CPF, telefone, e-mail, endereço residencial, além de local, data e assinatura.</p>
+              </div>
+
+              <div className="pb-3 border-b border-current/20">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">005 - Declaração de Funcionamento Contínuo</h4>
+                <p className="opacity-80">Validade máxima de <b>180 dias</b>. Atestar o funcionamento contínuo e regular nos 12 meses imediatamente anteriores. Deve constar: número do CNPJ, endereço da entidade, local, data e assinatura do presidente.</p>
+              </div>
+
+              <div className="pb-3 border-b border-current/20">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">006 ou 007 - Declaração de Remuneração de Dirigentes</h4>
+                <p className="opacity-80 mb-2">Validade máxima de <b>180 dias</b>. A entidade deve emitir declaração específica atestando se remunera ou não os cargos de diretoria e conselho.</p>
+                <ul className="list-disc pl-5 opacity-80 space-y-1">
+                  <li><b>Dados obrigatórios do declarante:</b> Nome, nacionalidade, estado civil, RG, CPF e endereço completo.</li>
+                  <li><b>Se remunerada:</b> Especificar os membros remunerados e a data de deliberação. Fundações exigem comprovação de ofício ao Ministério Público.</li>
                 </ul>
               </div>
 
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">004 Declaração de não qualificação OSCIP</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Esta declaração de não OSCIP deve ser datada no máximo <b>90 dias anteriores</b> ao protocolo do pedido.</li>
-                  <li>Informações obrigatórias incluem nome do presidente, CPF, telefone, email, e endereço de residência.</li>
-                  <li>Deve constar a qualidade de presidente o nome da associação e a declaração de que não é OSCIP em si.</li>
-                  <li>Necessário constar local, data, assinatura e o nome do presidente, conforme o modelo.</li>
-                </ul>
+              <div className="pb-3 border-b border-current/20">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">008 - Estatuto Social da Entidade</h4>
+                <p className="opacity-80"><b>Requisito obrigatório:</b> Registro em Cartório. Para entidades que não remuneram dirigentes, o estatuto deve conter cláusula expressa dessa condição (em conformidade com o inciso X do art. 3º).</p>
               </div>
 
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">005 Declaração de funcionamento</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Deve ser datado no máximo <b>180 dias antes</b> ao do protocolo do pedido.</li>
-                  <li>A entidade deve atestar o contínuo funcionamento nos 12 meses imediatamente anteriores à formulação do pedido por meio de declaração firmada pelo presidente da entidade.</li>
-                  <li>Devem constar o número do registro no CNPJ e o endereço da entidade com assinatura do presidente, conforme o modelo.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current" style={{ backgroundColor: 'rgba(255,219,88,0.2)', borderColor: COLORS.mustard }}>
-                <h4 className="font-black uppercase mb-1">006 Declaração de que não remunera Cargo de Dirigente</h4>
-                <ul className="list-disc pl-5 space-y-1 mb-3">
-                  <li>Declarar expressamente em seu estatuto social ou em documento subscrito por seu presidente que a entidade não remunera os cargos de diretoria ou conselho.</li>
-                  <li>Deve ter no máximo <b>180 dias antes</b> do protocolo.</li>
-                  <li>Necessário ter o nome, nacionalidade, estado civil, residência completa, RG e CPF.</li>
-                  <li>Deve constar que é presidente da associação o local da associação e a declaração com local data e assinatura do presidente, conforme o modelo.</li>
-                </ul>
-                <div className="font-black text-center my-2 text-xl">OU</div>
-                <h4 className="font-black uppercase mb-1">007 Declaração de remuneração</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>No caso das fundações além da cópia da ata deve ser comprovada também a comunicação ao Ministério Público sobre a deliberação pela remuneração.</li>
-                  <li>A entidade por seu representative legal deve declarar que os dirigentes são remunerados e atuam efetivamente na gestão executiva no caso de associações, fundações ou organizações da sociedade civil sem fins lucrativos.</li>
-                  <li>A declaração deve constar nome, nacionalidade, estado civil, endereço completo, RG e CPF, além da condition de presidente e os nomes dos dirigentes que recebem remuneração, com a data da reunião em que o valor foi deliberado, conforme o modelo.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">008 Estatuto da entidade</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Necessita <b>registro de cartório</b>.</li>
-                  <li>Caso não remunere os dirigentes, o estatuto deve declarar expressamente que a entidade não remunera os cargos de diretoria e ou conselho, conforme inciso X do artigo 3º.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 border-[2px] border-current">
-                <h4 className="font-black uppercase mb-1">009 Relatório de Atividades</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Deve demonstrar detalhado mês a mês sem faltar nenhum mês que promoveu atividades em benefício da comunidade nos <b>12 meses anteriores</b> à formulação do pedido.</li>
-                  <li>O relatório necessita DATA e tem validade de <b>180 dias anteriores</b> à data do protocolo do pedido.</li>
-                </ul>
+              <div className="pb-1">
+                <h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">009 - Relatório de Atividades</h4>
+                <p className="opacity-80">Validade máxima de <b>180 dias</b> até a data do protocolo. Deve demonstrar o detalhamento de atividades comunitárias, especificadas mês a mês, cobrindo integralmente os 12 meses anteriores. Exige-se data e assinatura responsável.</p>
               </div>
             </div>
           </div>
         </div>
         
         <div className="border-t-[4px] border-current pt-4 mt-2 flex-shrink-0">
-          <button onClick={onClose} className="w-full p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current shadow-[4px_4px_0px_currentColor]">
-            Entendido, Voltar.
+          <button onClick={onClose} className="w-full p-4 bg-transparent font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black">
+            Fechar Manual
           </button>
         </div>
       </div>
@@ -1404,7 +1470,10 @@ function ManualModal({ onClose, theme, thick, isDark }) {
 // ==========================================
 function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
   const procesos = data.filter(d => d.ARTICULADOR === nome);
-  const protocolados = procesos.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === 'protocolado');
+  const sucessos = procesos.filter(d => {
+    const s = String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase();
+    return s === 'protocolado' || s === 'concluído' || s === 'concluido';
+  });
 
   return (
     <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
@@ -1426,8 +1495,8 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
           <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Processos Assumidos</span>
         </div>
         <div className={`p-6 ${thick} flex flex-col items-center justify-center text-center`} style={{ backgroundColor: COLORS.cyan, color: 'black' }}>
-          <span className="text-5xl font-black leading-none">{protocolados.length}</span>
-          <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Sucessos (Protocolados)</span>
+          <span className="text-5xl font-black leading-none">{sucessos.length}</span>
+          <span className="text-[0.7em] uppercase font-black tracking-widest mt-2">Sucessos (Protoc./Concl.)</span>
         </div>
       </div>
 
@@ -1450,7 +1519,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
 }
 
 // ==========================================
-// FORMULÁRIO DE NOVO PROCESSO (COM BORDAS MÁGICAS)
+// FORMULÁRIO DE NOVO PROCESSO
 // ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipe, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
