@@ -431,7 +431,7 @@ export default function App() {
       setSyncStatus('Apagando registro no banco de dados...');
       try {
         await fetch(webhookUtilidade, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: 'delete', ENTIDADE: entidadeName })
         });
         setData(prevData => prevData.filter(d => d.ENTIDADE !== entidadeName));
@@ -452,7 +452,7 @@ export default function App() {
     if (webhookUtilidade) {
       try {
         await fetch(webhookUtilidade, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: 'update', ENTIDADE_ORIGINAL: originalName, newData: updatedFields })
         });
       } catch (error) { console.error("Erro ao atualizar", error); }
@@ -1506,7 +1506,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
         };
 
         await fetch(webhookUtilidade, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload)
         });
         await fetchFromWebhooks();
