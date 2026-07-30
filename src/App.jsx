@@ -48,11 +48,15 @@ const COLORS = {
   black: '#000000'
 };
 
-// Variável estrita para Vercel: se não achar a variável de ambiente, fica vazia (protegendo seus dados)
-const DEFAULT_WEBHOOK_UTILIDADE = (typeof process !== 'undefined' && process.env && process.env.VITE_WEBHOOK_URL) 
-  ? process.env.VITE_WEBHOOK_URL 
-  : "";
+// Segurança extrema no Vite para não dar "White Screen" caso a variável não esteja visível.
+let safeWebhookUrl = "";
+try {
+  safeWebhookUrl = import.meta.env.VITE_WEBHOOK_URL;
+} catch (e) {
+  // Se não existir "import.meta", ignora.
+}
 
+const DEFAULT_WEBHOOK_UTILIDADE = safeWebhookUrl || ""; 
 const EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
@@ -123,7 +127,10 @@ function EditableField({ value, onSave, multiline = false, textClass = "", accen
   
   const handleKeyDown = (e) => { 
     if (e.key === 'Enter' && !multiline) handleSave(); 
-    if (e.key === 'Escape') { setVal(value); setEditing(false); } 
+    if (e.key === 'Escape') { 
+      setVal(value); 
+      setEditing(false); 
+    } 
   };
 
   const handleEditClick = (e) => {
@@ -281,7 +288,7 @@ export default function App() {
     const noCache = `t=${new Date().getTime()}`;
     
     if (!webhookUtilidade) {
-      setSyncStatus('⚠️ URL de Utilidade Pública não configurada no Vercel Environment.');
+      setSyncStatus('⚠️ URL de Utilidade Pública não configurada no Vercel (VITE_WEBHOOK_URL).');
       setLoading(false);
       return;
     }
@@ -852,11 +859,10 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    setSaveLabel('Salvando...');
+    setSaveLabel('SALVANDO...');
     setTimeout(() => {
-      setSaveLabel('Salvo com sucesso!');
-      setTimeout(() => setSaveLabel('SALVAR'), 2000);
-    }, 500);
+      setSaveLabel('SALVAR');
+    }, 1500);
   };
 
   const toggleDoc = (docKey) => {
@@ -1047,7 +1053,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
         <button 
           onClick={() => requireAuth(handleManualSave)} 
-          className={`flex items-center justify-center gap-2 px-8 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current transition-all w-full sm:w-auto hover:-translate-y-1 ${saveLabel === 'Salvo com sucesso!' ? 'theme-cyan shadow-[4px_4px_0px_currentColor]' : 'bg-black text-white hover:bg-gray-800 shadow-[4px_4px_0px_black]'}`}
+          className={`flex items-center justify-center gap-2 px-8 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current transition-all w-full sm:w-auto hover:-translate-y-1 bg-black text-white hover:bg-gray-800 shadow-[4px_4px_0px_black]`}
         >
           {isUnlocked ? <Save size={16} /> : <Lock size={16} />} {saveLabel}
         </button>
@@ -1179,7 +1185,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
 }
 
 function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOptions, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth, showAlert }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', LIDERANÇA: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
+  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
   const [docs, setDocs] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
@@ -1211,7 +1217,7 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
       try {
         const payload = {
           "action": "add",
-          "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": formData.LIDERANÇA, "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
+          "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": "", "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
           "ARTICULADOR": formData.ARTICULADOR, "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'),
           "MANUAL/MODELOS ENVIADOS": "FALSE",
           "1 ATA DE FUNDAÇÃO": docs['1 ATA DE FUNDAÇÃO'] ? "TRUE" : "FALSE",
@@ -1297,20 +1303,6 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
                 className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} 
                 style={{ borderColor: focusedField === 'ENTIDADE' ? accentColor : 'currentcolor' }} 
                 placeholder="Ex: Associação de Moradores..." 
-              />
-            </div>
-            
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Liderança / Presidente</label>
-              <input 
-                type="text" 
-                value={formData.LIDERANÇA} 
-                onChange={e => setFormData({...formData, LIDERANÇA: e.target.value})} 
-                onFocus={() => handleFocus('LIDERANÇA')} 
-                onBlur={() => setFocusedField(null)} 
-                className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} 
-                style={{ borderColor: focusedField === 'LIDERANÇA' ? accentColor : 'currentcolor' }} 
-                placeholder="Nome do líder..." 
               />
             </div>
 
