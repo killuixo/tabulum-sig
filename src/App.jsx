@@ -18,32 +18,27 @@ const Icon = ({ path, className = "w-6 h-6", onClick, size = 24, style }) => (
 
 const LayoutDashboard = (p) => <Icon {...p} path={<><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></>} />;
 const Kanban = (p) => <Icon {...p} path={<><path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/></>} />;
-const Settings = (p) => <Icon {...p} path={<><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></>} />;
-const Sun = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></>} />;
-const Moon = (p) => <Icon {...p} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
-const Type = (p) => <Icon {...p} path={<><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></>} />;
-const RefreshCw = (p) => <Icon {...p} path={<><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></>} />;
 const CheckCircle2 = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>} />;
 const Clock = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>} />;
 const AlertCircle = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></>} />;
-const Database = (p) => <Icon {...p} path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />;
-const Download = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></>} />;
-const Upload = (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></>} />;
 const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
-const ChevronLeft = (p) => <Icon {...p} path={<path d="m15 18-6-6 6-6"/>} />;
 const SearchIcon = (p) => <Icon {...p} path={<><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></>} />;
 const Trash2 = (p) => <Icon {...p} path={<><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></>} />;
 const Mail = (p) => <Icon {...p} path={<><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></>} />;
-const DownloadCloud = (p) => <Icon {...p} path={<><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></>} />;
-const Folder = (p) => <Icon {...p} path={<><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></>} />;
 const FileText = (p) => <Icon {...p} path={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></>} />;
 const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
-const Users = (p) => <Icon {...p} path={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
 const ExternalLink = (p) => <Icon {...p} path={<><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></>} />;
 const Lock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
 const Unlock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></>} />;
-const Key = (p) => <Icon {...p} path={<><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></>} />;
+
+const ColoredSpinner = ({ size = 48 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" className="animate-spin mb-4">
+    <path d="M 50 10 A 40 40 0 0 1 84.6 30" fill="none" stroke="#00b7eb" strokeWidth="10" strokeLinecap="round" />
+    <path d="M 88.6 42 A 40 40 0 0 1 63.6 87.5" fill="none" stroke="#FFDB58" strokeWidth="10" strokeLinecap="round" />
+    <path d="M 47.5 90 A 40 40 0 0 1 12 55" fill="none" stroke="#DC143C" strokeWidth="10" strokeLinecap="round" />
+  </svg>
+);
 
 const COLORS = {
   mustard: '#FFDB58', 
@@ -55,25 +50,15 @@ const COLORS = {
   darkCard: '#1a1a1a'
 };
 
-const DEFAULT_WEBHOOK_UTILIDADE = (typeof process !== 'undefined' && process.env ? process.env.VITE_WEBHOOK_URL : "") || "";
-const DEFAULT_EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
+// VITE/VERCEL SAFE VARIABLE: Em Vercel com Vite, se process.env falhar, o build injetará a variável correta.
+const DEFAULT_WEBHOOK_UTILIDADE = typeof process !== 'undefined' && process.env ? process.env.VITE_WEBHOOK_URL : ""; 
+const EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
   '1 ATA DE FUNDAÇÃO', '2 ATA DE ELEIÇÃO/POSSE', '3 CNPJ', 
   '4 DECLARAÇÃO NÃO OSCIP', '5 DECLARAÇÃO FUNCIONAMENTO', 
   '6 - 7 DECLARAÇÃO REMUNERAÇÃO', '8 ESTATUTO', '9 RELATÓRIO DE ATIVIDADES'
 ];
-
-const DOCS_PREFIX_MAP = {
-  '1 ATA DE FUNDAÇÃO': '001-ATA_DE_FUNDACAO', 
-  '2 ATA DE ELEIÇÃO/POSSE': '002-ATA_ELEICAO_POSSE',
-  '3 CNPJ': '003-CNPJ', 
-  '4 DECLARAÇÃO NÃO OSCIP': '004-DEC_NAO_OSCIP',
-  '5 DECLARAÇÃO FUNCIONAMENTO': '005-DEC_FUNCIONAMENTO', 
-  '6 - 7 DECLARAÇÃO REMUNERAÇÃO': '006-DEC_REMUNERACAO',
-  '8 ESTATUTO': '007-ESTATUTO', 
-  '9 RELATÓRIO DE ATIVIDADES': '008-RELATORIO_ATIVIDADES'
-};
 
 const DOCS_REQUIREMENTS = {
   '1 ATA DE FUNDAÇÃO': 'Obrigatório: Apresentar ata da eleição e posse da diretoria em exercício com REGISTRO EM CARTÓRIO.',
@@ -280,13 +265,8 @@ export default function App() {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
   });
-  const [fontSizeLevel, setFontSizeLevel] = useState(() => {
-    const saved = localStorage.getItem('tabulum_font');
-    return saved !== null ? parseInt(saved) : 2;
-  });
-
-  const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
-  const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
+  
+  const webhookUtilidade = DEFAULT_WEBHOOK_UTILIDADE; 
 
   const EMERGENCY_PHRASE = "Nada resiste ao bem e ao amor.";
   const [masterPassword, setMasterPassword] = useState(() => localStorage.getItem('tabulum_master_pwd') || 'admin');
@@ -325,29 +305,26 @@ export default function App() {
   };
 
   useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
-  useEffect(() => { localStorage.setItem('tabulum_font', fontSizeLevel.toString()); }, [fontSizeLevel]);
-  useEffect(() => { localStorage.setItem('tabulum_wh_utilidade', webhookUtilidade); }, [webhookUtilidade]);
-  useEffect(() => { localStorage.setItem('tabulum_email', emailCentral); }, [emailCentral]);
   useEffect(() => { localStorage.setItem('tabulum_master_pwd', masterPassword); }, [masterPassword]);
 
   useEffect(() => { 
-    fetchFromWebhooks(webhookUtilidade); 
+    fetchFromWebhooks(); 
   }, []);
 
-  const fetchFromWebhooks = async (currentUrlUtilidade = webhookUtilidade) => {
+  const fetchFromWebhooks = async () => {
     setLoading(true); 
     setSyncStatus('Sincronizando Banco Central...');
     
     const noCache = `t=${new Date().getTime()}`;
     
-    if (!currentUrlUtilidade) {
-      setSyncStatus('⚠️ URL de Utilidade Pública não configurada.');
+    if (!webhookUtilidade) {
+      setSyncStatus('⚠️ URL de Utilidade Pública não configurada no Vercel Environment.');
       setLoading(false);
       return;
     }
 
     try {
-      const urlUtilidade = currentUrlUtilidade + (currentUrlUtilidade.includes('?') ? '&' : '?') + noCache;
+      const urlUtilidade = webhookUtilidade + (webhookUtilidade.includes('?') ? '&' : '?') + noCache;
       const response = await fetch(urlUtilidade, { method: 'GET', redirect: 'follow' });
       const text = await response.text();
       
@@ -404,12 +381,6 @@ export default function App() {
     }
   };
 
-  const applyNetworkSettings = (newUtilidade, newEmail) => {
-    setWebhookUtilidade(newUtilidade); 
-    setEmailCentral(newEmail);
-    fetchFromWebhooks(newUtilidade);
-  };
-
   const deleteItem = (entidadeName) => {
     if (!webhookUtilidade) return;
     
@@ -445,57 +416,6 @@ export default function App() {
     }
   };
 
-  const exportCSV = () => {
-    if (data.length === 0) { 
-      showAlert("Nenhum dado para exportar."); 
-      return; 
-    }
-    const headers = Object.keys(data[0]);
-    const csvRows = [];
-    csvRows.push(headers.join(','));
-    
-    for (const row of data) {
-      const values = headers.map(header => {
-        const val = row[header] === null || row[header] === undefined ? '' : String(row[header]);
-        let escaped = val.replace(/"/g, '""');
-        if (escaped.search(/("|,|\n)/g) >= 0) escaped = `"${escaped}"`;
-        return escaped;
-      });
-      csvRows.push(values.join(','));
-    }
-    const csvString = csvRows.join('\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a'); 
-    link.href = url; 
-    link.download = `Tabulum_Backup_${new Date().toISOString().slice(0,10)}.csv`;
-    link.style.display = 'none'; 
-    document.body.appendChild(link); 
-    link.click(); 
-    document.body.removeChild(link);
-  };
-
-  const importCSV = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setLoading(true);
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      setData(parseCSV(evt.target.result));
-      setLoading(false); 
-      setSyncStatus('Backup carregado na tela atual!');
-      setTimeout(() => setSyncStatus(''), 5000);
-    };
-    reader.onerror = () => { 
-      setLoading(false); 
-      setSyncStatus('Erro ao ler arquivo.'); 
-    };
-    reader.readAsText(file); 
-    e.target.value = '';
-  };
-
-  const fontSizes = { 1: 'text-[10px] leading-tight', 2: 'text-xs', 3: 'text-sm', 4: 'text-base', 5: 'text-lg' };
-
   const themeConfig = {
     bg: isDark ? 'bg-[#0f0f0f]' : 'bg-[#f4f4f0]', 
     text: isDark ? 'text-gray-100' : 'text-gray-900',
@@ -525,7 +445,7 @@ export default function App() {
   `;
 
   return (
-    <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} ${fontSizes[fontSizeLevel]} transition-colors duration-300 flex flex-col`}>
+    <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} text-xs transition-colors duration-300 flex flex-col`}>
       <style>{mondrianStyles}</style>
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
@@ -534,7 +454,7 @@ export default function App() {
             className="cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-3"
             title="Ir para o Kanban"
           >
-            <img src="https://raw.githubusercontent.com/killuixo/tabulum-sig/refs/heads/main/icon-192.png" alt="TABULUM Icon" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/killuixo/tabulum-sig/refs/heads/main/icon-192.png" alt="TABULUM Icon" className="w-10 h-10 md:w-12 md:h-12 object-contain shadow-md border-[2px] border-current bg-white" style={{ borderColor: isDark ? 'white' : 'black' }} />
             <div>
               <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
               <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-1">Sist. Integrado de Gestão • Dep. Marquito</p>
@@ -567,22 +487,13 @@ export default function App() {
           >
             +
           </button>
-          
-          <button 
-            onClick={() => {setView('settings'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}}
-            className={`flex items-center justify-center w-12 h-12 transition-all duration-300 flex-shrink-0 ${view === 'settings' && !isFormOpen ? 'border-[4px]' : 'border-[2px] border-transparent hover:border-current opacity-50 hover:opacity-100'}`}
-            style={view === 'settings' && !isFormOpen ? { borderColor: accentColor, color: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, zIndex: 10 } : { color: 'inherit' }}
-            title="Ajustes do Sistema"
-          >
-            <Settings size={24} />
-          </button>
         </nav>
       </header>
 
       <main className="p-4 md:p-6 flex-1 flex flex-col relative">
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
-            <RefreshCw className="animate-spin mb-4" size={48} style={{ color: COLORS.cyan }} />
+            <ColoredSpinner size={48} />
             <p className="font-black uppercase tracking-widest animate-pulse text-center leading-relaxed" style={{ color: (syncStatus.includes('Erro') || syncStatus.includes('Falha') || syncStatus.includes('⚠️')) ? COLORS.crimson : 'inherit' }}>
               {syncStatus.split('<br/>').map((line, i) => <React.Fragment key={i}>{line}{i < syncStatus.split('<br/>').length - 1 ? <br/> : ''}</React.Fragment>)}
             </p>
@@ -594,15 +505,14 @@ export default function App() {
                 onClose={() => setIsFormOpen(false)} 
                 theme={themeConfig} thick={bThick} isDark={isDark} 
                 fetchFromWebhooks={() => fetchFromWebhooks()} equipeOptions={articuladoresUnicos} 
-                webhookUtilidade={webhookUtilidade} emailCentral={emailCentral} 
-                accentColor={accentColor} cycleAccent={cycleAccent} requireAuth={requireAuth} 
+                webhookUtilidade={webhookUtilidade} accentColor={accentColor} cycleAccent={cycleAccent} requireAuth={requireAuth} 
                 showAlert={showAlert}
               />
             )}
             
             {!isFormOpen && view === 'entity_details' && activeFicha && (
               <FichaEntidade 
-                item={activeFicha} equipeOptions={articuladoresUnicos} emailCentral={emailCentral}
+                item={activeFicha} equipeOptions={articuladoresUnicos}
                 onClose={() => {setActiveFicha(null); setView('kanban'); cycleAccent();}} 
                 onArticuladorClick={handleArticulatorClick}
                 onDelete={() => deleteItem(activeFicha.ENTIDADE)}
@@ -627,23 +537,10 @@ export default function App() {
             {!isFormOpen && view === 'dashboard' && (
               <DashboardView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} isDark={isDark} />
             )}
-            
-            {!isFormOpen && view === 'settings' && (
-              <SettingsView 
-                isDark={isDark} setIsDark={setIsDark} 
-                fontSizeLevel={fontSizeLevel} setFontSizeLevel={setFontSizeLevel}
-                webhookUtilidade={webhookUtilidade} emailCentral={emailCentral}
-                applyNetworkSettings={applyNetworkSettings} exportCSV={exportCSV} importCSV={importCSV}
-                setView={setView} theme={themeConfig} thick={bThick} med={bMedium} accentColor={accentColor} cycleAccent={cycleAccent}
-                masterPassword={masterPassword} setMasterPassword={setMasterPassword} EMERGENCY_PHRASE={EMERGENCY_PHRASE}
-                showAlert={showAlert} showConfirm={showConfirm}
-              />
-            )}
           </>
         )}
       </main>
 
-      { }
       {authModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
            <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} ${themeConfig.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
@@ -974,9 +871,7 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
   );
 }
 
-function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipeOptions, emailCentral, accentColor, cycleAccent, isUnlocked, requireAuth }) {
-  const [stagedFiles, setStagedFiles] = useState({});
-  const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
+function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipeOptions, accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [isManualOpen, setIsManualOpen] = useState(false);
   const [saveLabel, setSaveLabel] = useState('Salvar Ficha');
   const [activeTooltip, setActiveTooltip] = useState(null);
@@ -993,28 +888,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
       setSaveLabel('Salvo com sucesso!');
       setTimeout(() => setSaveLabel('Salvar Ficha'), 2000);
     }, 500);
-  };
-
-  const handleFileStage = (docKey, event) => {
-    const file = event.target.files[0];
-    if (file) setStagedFiles(prev => ({ ...prev, [docKey]: file }));
-  };
-
-  const handleDownloadStandard = (docKey) => {
-    const file = stagedFiles[docKey];
-    if (!file) return;
-    const ext = file.name.split('.').pop();
-    const safeEntidade = (item.ENTIDADE || 'ENTIDADE').replace(/[^a-zA-Z0-9 -]/g, "").trim().toUpperCase();
-    const standardName = `${DOCS_PREFIX_MAP[docKey]} - ${safeEntidade}.${ext}`;
-    
-    const url = URL.createObjectURL(file);
-    const a = document.createElement('a'); 
-    a.href = url; 
-    a.download = standardName;
-    document.body.appendChild(a); 
-    a.click(); 
-    document.body.removeChild(a); 
-    URL.revokeObjectURL(url);
   };
 
   const toggleDoc = (docKey) => {
@@ -1158,6 +1031,13 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           </div>
           
           <div className="flex flex-col mt-4">
+            <a 
+              href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${item.ENTIDADE}`)}`} 
+              className={`mb-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800'} hover-cyan`}
+            >
+              <Mail size={18} /> Enviar Documentos por E-mail
+            </a>
+
             <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1">Checklist de Documentos (Passe o mouse ou Segure)</span>
             {DOCS_KEYS.map((key, idx) => {
               const hasDoc = String(item[key] || '').toUpperCase() === 'TRUE';
@@ -1200,70 +1080,8 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                 </div>
               );
             })}
-            
-            <a 
-              href={`mailto:${emailCentral}?subject=${encodeURIComponent(`[DOCUMENTOS] Utilidade Pública - ${item.ENTIDADE}`)}&body=${encodeURIComponent(`Atenção, Arquivo Central.\n\nSeguem em anexo os documentos padronizados para o processo de Utilidade Pública da entidade:\n\n* ${item.ENTIDADE}\n\nArticulador Responsável: ${item.ARTICULADOR}\n\n[DICA: Arraste aqui os PDFs que acabaram de ser baixados no seu computador]\n\nAtenciosamente.`)}`} 
-              className={`mt-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black' : 'bg-black text-white'} hover-cyan`}
-            >
-              <Mail size={18} /> Enviar Malote por E-mail
-            </a>
           </div>
         </div>
-      </div>
-
-      <div className={`mt-8 border-[6px] shadow-[6px_6px_0px_rgba(0,0,0,0.2)] transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`} style={{ borderColor: isPadronizadorOpen ? accentColor : (isDark ? '#4b5563' : '#000') }}>
-        <button onClick={() => { setIsPadronizadorOpen(!isPadronizadorOpen); cycleAccent(); }} className="w-full p-6 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-          <div className="flex items-center gap-3">
-            <Folder className="w-8 h-8" />
-            <h3 className="text-xl font-black uppercase tracking-widest">Padronizador Local</h3>
-          </div>
-          <span className="text-3xl leading-none font-mono">{isPadronizadorOpen ? '−' : '+'}</span>
-        </button>
-        
-        {isPadronizadorOpen && (
-          <div className="p-6 pt-0 border-t-[4px] border-current mt-2">
-            <div className="mb-6 mt-4 p-4 border-l-[4px] text-black dark:text-gray-200" style={{ backgroundColor: 'rgba(255,219,88,0.2)', borderColor: COLORS.mustard }}>
-              <p className="text-[12px] font-bold leading-relaxed">
-                ⚠️ <b>Aviso Importante:</b> Esta ferramenta <u>apenas renomeia o nome do arquivo</u> (ex: 001-ATA.pdf) para seu computador.
-                É estritamente necessário que o Assessor verifique manualmente o conteúdo do documento para garantir que atenda às exigências legais.
-                <br/>
-                <button onClick={() => setIsManualOpen(true)} className="underline font-black mt-2 opacity-70 hover:opacity-100 text-sm">Consulte o Manual de Requisitos aqui.</button>
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              {DOCS_KEYS.map((key, idx) => {
-                const stagedFile = stagedFiles[key];
-                const safeEntidade = (item.ENTIDADE || 'ENTIDADE').replace(/[^a-zA-Z0-9 -]/g, "").trim().toUpperCase();
-                const previewName = stagedFile ? `${DOCS_PREFIX_MAP[key]} - ${safeEntidade}.${stagedFile.name.split('.').pop()}` : '';
-
-                return (
-                  <div key={idx} className={`flex flex-col md:flex-row md:items-center justify-between p-3 border-[3px] border-current transition-colors ${stagedFile ? (isDark ? 'bg-white/10' : 'bg-black/5') : 'bg-transparent'}`}>
-                    <div className="flex-1 pr-4 mb-2 md:mb-0">
-                      <span className="font-black uppercase tracking-widest text-[0.75em] opacity-70 block mb-1">{key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO/NÃO REMUNERADA' : key}</span>
-                      {stagedFile ? <span className="font-mono text-[0.8em] font-bold truncate block">{previewName}</span> : <span className="font-bold text-[0.8em] italic opacity-50">Nenhum arquivo anexado.</span>}
-                    </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      {!stagedFile ? (
-                        <label className="cursor-pointer px-4 py-2 border-[2px] border-current font-black uppercase tracking-widest text-[0.7em] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center gap-2">
-                          <FileText className="w-4 h-4" /> Anexar
-                          <input type="file" className="hidden" onChange={(e) => handleFileStage(key, e)} />
-                        </label>
-                      ) : (
-                        <>
-                          <button onClick={() => handleDownloadStandard(key)} className="px-4 py-2 bg-black text-white dark:bg-white dark:text-black border-[2px] border-current font-black uppercase tracking-widest text-[0.7em] hover:-translate-y-1 transition-transform flex items-center gap-2 hover-cyan">
-                            <DownloadCloud className="w-4 h-4" /> Salvar Formatado
-                          </button>
-                          <button onClick={() => setStagedFiles(prev => {const newObj = {...prev}; delete newObj[key]; return newObj;})} className="px-3 py-2 border-[2px] border-current text-[0.7em] transition-colors hover-crimson" title="Remover">X</button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center mt-4 border-t-[4px] border-current pt-4 gap-4">
@@ -1413,9 +1231,9 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
   );
 }
 
-function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipeOptions, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth, showAlert }) {
+function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipeOptions, webhookUtilidade, accentColor, cycleAccent, requireAuth, showAlert }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', LIDERANÇA: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'DOCUMENTOS NO DRIVE': '' });
-  const [stagedFiles, setStagedFiles] = useState({});
+  const [docs, setDocs] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
   const [busca, setBusca] = useState('');
@@ -1423,40 +1241,19 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
   const [focusedField, setFocusedField] = useState(null);
   
   const [isManualOpen, setIsManualOpen] = useState(false);
-  const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
 
   const handleFocus = (fieldName) => { 
     setFocusedField(fieldName); 
     if(cycleAccent) cycleAccent(); 
   };
   
-  const handleFileChange = (docKey, e) => {
-    const file = e.target.files[0];
-    if (file) setStagedFiles(prev => ({ ...prev, [docKey]: file }));
-  };
-
-  const executeDownloads = () => {
-    const safeEntidade = (formData.ENTIDADE || 'ENTIDADE').replace(/[^a-zA-Z0-9 -]/g, "").trim().toUpperCase();
-    Object.keys(stagedFiles).forEach(key => {
-      const file = stagedFiles[key];
-      const ext = file.name.split('.').pop();
-      const standardName = `${DOCS_PREFIX_MAP[key]} - ${safeEntidade}.${ext}`;
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a'); 
-      a.href = url; 
-      a.download = standardName;
-      document.body.appendChild(a); 
-      a.click(); 
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    });
-  };
+  const toggleDoc = (key) => setDocs(prev => ({...prev, [key]: !prev[key]}));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     requireAuth(async () => {
       if (!webhookUtilidade) { 
-        showAlert("Erro de Sistema: Webhook Central Ausente. Verifique os Ajustes."); 
+        showAlert("Erro de Sistema: Webhook Central Ausente."); 
         return; 
       }
       if (!formData.ENTIDADE.trim()) { 
@@ -1471,14 +1268,14 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": formData.LIDERANÇA, "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
           "ARTICULADOR": formData.ARTICULADOR, "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'),
           "MANUAL/MODELOS ENVIADOS": "FALSE",
-          "1 ATA DE FUNDAÇÃO": stagedFiles['1 ATA DE FUNDAÇÃO'] ? "TRUE" : "FALSE",
-          "2 ATA DE ELEIÇÃO/POSSE": stagedFiles['2 ATA DE ELEIÇÃO/POSSE'] ? "TRUE" : "FALSE",
-          "3 CNPJ": stagedFiles['3 CNPJ'] ? "TRUE" : "FALSE",
-          "4 DECLARAÇÃO NÃO OSCIP": stagedFiles['4 DECLARAÇÃO NÃO OSCIP'] ? "TRUE" : "FALSE",
-          "5 DECLARAÇÃO FUNCIONAMENTO": stagedFiles['5 DECLARAÇÃO FUNCIONAMENTO'] ? "TRUE" : "FALSE",
-          "6 - 7 DECLARAÇÃO REMUNERAÇÃO": stagedFiles['6 - 7 DECLARAÇÃO REMUNERAÇÃO'] ? "TRUE" : "FALSE",
-          "8 ESTATUTO": stagedFiles['8 ESTATUTO'] ? "TRUE" : "FALSE",
-          "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
+          "1 ATA DE FUNDAÇÃO": docs['1 ATA DE FUNDAÇÃO'] ? "TRUE" : "FALSE",
+          "2 ATA DE ELEIÇÃO/POSSE": docs['2 ATA DE ELEIÇÃO/POSSE'] ? "TRUE" : "FALSE",
+          "3 CNPJ": docs['3 CNPJ'] ? "TRUE" : "FALSE",
+          "4 DECLARAÇÃO NÃO OSCIP": docs['4 DECLARAÇÃO NÃO OSCIP'] ? "TRUE" : "FALSE",
+          "5 DECLARAÇÃO FUNCIONAMENTO": docs['5 DECLARAÇÃO FUNCIONAMENTO'] ? "TRUE" : "FALSE",
+          "6 - 7 DECLARAÇÃO REMUNERAÇÃO": docs['6 - 7 DECLARAÇÃO REMUNERAÇÃO'] ? "TRUE" : "FALSE",
+          "8 ESTATUTO": docs['8 ESTATUTO'] ? "TRUE" : "FALSE",
+          "9 RELATÓRIO DE ATIVIDADES": docs['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
           "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
           "ESTÁGIO ATUAL": "", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
           "LINK": "",
@@ -1655,6 +1452,35 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                 style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'currentcolor' }}
               />
             </div>
+
+            <div className="flex flex-col gap-2 mt-2">
+              <a 
+                href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${formData.ENTIDADE || '[NOME DA ENTIDADE]'}`)}`} 
+                className={`p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800'} hover-cyan`}
+              >
+                <Mail size={18} /> Enviar Documentos por E-mail
+              </a>
+
+              <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1 mt-4">Checklist de Documentos</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {DOCS_KEYS.map((key, idx) => {
+                  const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
+                  return (
+                    <div key={idx} className={`p-2 border-[2px] border-current flex items-center gap-3 transition-colors ${docs[key] ? (isDark ? 'bg-white/10' : 'bg-black/5') : 'bg-transparent'}`}>
+                      <input 
+                        type="checkbox" 
+                        id={`doc-${idx}`}
+                        checked={!!docs[key]} 
+                        onChange={() => toggleDoc(key)}
+                        className="w-5 h-5 cursor-pointer accent-current"
+                        style={{ accentColor: accentColor }}
+                      />
+                      <label htmlFor={`doc-${idx}`} className="font-black uppercase tracking-widest text-[9px] cursor-pointer flex-1 truncate">{displayLabel}</label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <button 
@@ -1665,324 +1491,11 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           >
             <Lock size={20}/> {sending ? 'Salvando...' : 'Desbloquear e Salvar Ficha Oficial'}
           </button>
-
-          <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: isPadronizadorOpen ? accentColor : 'currentcolor' }}>
-             <button 
-               type="button" 
-               onClick={() => {setIsPadronizadorOpen(!isPadronizadorOpen); cycleAccent();}} 
-               className="w-full p-4 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-             >
-               <h3 className="font-black uppercase tracking-widest text-[12px] flex items-center gap-2">
-                 <Folder size={18} /> Padronização de Anexos (Opcional)
-               </h3>
-               <span className="text-xl leading-none font-mono">{isPadronizadorOpen ? '−' : '+'}</span>
-             </button>
-
-             {isPadronizadorOpen && (
-               <div className="p-4 border-t-[3px]" style={{ borderColor: accentColor }}>
-                 <div className="mb-4 p-3 border-l-[4px] text-black dark:text-gray-200" style={{ backgroundColor: 'rgba(255,219,88,0.2)', borderColor: COLORS.mustard }}>
-                   <p className="text-[10px] font-bold leading-relaxed">
-                     ⚠️ <b>Aviso:</b> Esta ferramenta apenas renomeia o arquivo para a taxonomia correta para baixar. É indispensável verificar manualmente se atende aos requisitos legais antes de anexar.
-                     <br/>
-                     <button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="underline font-black mt-1 opacity-70 hover:opacity-100">Verifique os requisitos no Manual aqui.</button>
-                   </p>
-                 </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                   {DOCS_KEYS.map((key, idx) => {
-                     const file = stagedFiles[key];
-                     const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
-                     return (
-                       <div key={idx} className={`p-2 border-[2px] border-current flex items-center justify-between transition-colors ${file ? (isDark ? 'bg-white/10' : 'bg-black/5') : 'bg-transparent'}`}>
-                         <div className="flex-1 overflow-hidden pr-2">
-                            <span className="font-black uppercase tracking-widest text-[9px] block mb-0.5 opacity-80 truncate">{displayLabel}</span>
-                            {file ? <span className="font-mono text-[9px] font-bold truncate block">{file.name}</span> : <span className="font-bold text-[9px] italic opacity-40">Nenhum</span>}
-                         </div>
-                         <div className="flex-shrink-0">
-                           {!file ? (
-                             <label className="cursor-pointer px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex items-center gap-1">
-                               <FileText className="w-3 h-3"/> Anexar 
-                               <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" className="hidden" onChange={(e) => handleFileChange(key, e)} />
-                             </label>
-                           ) : (
-                             <button type="button" onClick={() => setStagedFiles(prev => {const n = {...prev}; delete n[key]; return n;})} className="px-2 py-1 border-[2px] border-current font-black uppercase text-[8px] transition-colors hover-crimson">X</button>
-                           )}
-                         </div>
-                       </div>
-                     );
-                   })}
-                 </div>
-                 
-                 <button 
-                     type="button" 
-                     onClick={executeDownloads} 
-                     disabled={Object.keys(stagedFiles).length === 0}
-                     className={`w-full p-3 font-black uppercase tracking-widest text-[10px] border-[2px] border-current transition-transform flex items-center justify-center gap-2 mt-2 ${Object.keys(stagedFiles).length > 0 ? 'bg-black text-white dark:bg-white dark:text-black hover:-translate-y-1 cursor-pointer hover-cyan' : 'opacity-40 cursor-not-allowed grayscale'}`}
-                 >
-                     <DownloadCloud size={16} /> Baixar Documentos Formatados
-                 </button>
-               </div>
-             )}
-          </div>
         </form>
       </div>
       {showDropdown && <div className="fixed inset-0 z-0" onClick={() => setShowDropdown(false)}></div>}
     </div>
     </>
-  );
-}
-
-function SettingsView({ 
-  isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
-  webhookUtilidade, emailCentral, 
-  applyNetworkSettings, exportCSV, importCSV, 
-  setView, theme, thick, med, accentColor, cycleAccent,
-  masterPassword, setMasterPassword, EMERGENCY_PHRASE,
-  showAlert, showConfirm
-}) {
-  const [openSection, setOpenSection] = useState('aparencia'); 
-  const [openNetwork, setOpenNetwork] = useState(false);
-  const [savedMessage, setSavedMessage] = useState('');
-  const [focusedField, setFocusedField] = useState(null);
-
-  const [draftUtilidade, setDraftUtilidade] = useState(webhookUtilidade);
-  const [draftEmail, setDraftEmail] = useState(emailCentral);
-
-  const [currentPwd, setCurrentPwd] = useState('');
-  const [newPwd, setNewPwd] = useState('');
-
-  const handleFocus = (fieldName) => { setFocusedField(fieldName); if(cycleAccent) cycleAccent(); };
-
-  const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section);
-  };
-
-  const handleSaveNetwork = () => {
-    showConfirm("⚠️ ATENÇÃO ARQUIVISTA:\n\nTem certeza que deseja alterar os endereços do sistema?\n\nUma configuração incorreta irá desconectar a sua máquina do banco de dados central.\n\nDeseja realmente prosseguir?", () => {
-        applyNetworkSettings(draftUtilidade, draftEmail);
-        setSavedMessage('Configuração sobreposta localmente com sucesso!');
-        setTimeout(() => setSavedMessage(''), 4000);
-    });
-  };
-
-  const handleSavePassword = () => {
-    if (currentPwd === masterPassword || currentPwd.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) {
-      if (newPwd.trim().length > 0) {
-        setMasterPassword(newPwd);
-        showAlert("✔️ Senha alterada com sucesso!");
-        setCurrentPwd('');
-        setNewPwd('');
-      } else {
-        showAlert("A nova senha não pode ser vazia.");
-      }
-    } else {
-      showAlert("❌ Acesso Negado: Senha atual incorreta.");
-    }
-  };
-
-  return (
-    <div className={`max-w-3xl mx-auto flex flex-col gap-4 w-full p-6 md:p-8 ${thick} ${theme.cardBg}`}>
-      <h2 className="font-black uppercase tracking-widest text-2xl border-b-[6px] border-current pb-4 flex items-center gap-3">
-        <Settings size={28}/> Ajustes do Sistema
-      </h2>
-
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'seguranca' ? accentColor : 'currentcolor' }}>
-        <button 
-          onClick={() => { toggleSection('seguranca'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Key size={18} /> Segurança e Controle de Acesso</span>
-          <span className="text-xl leading-none font-mono">{openSection === 'seguranca' ? '−' : '+'}</span>
-        </button>
-        
-        {openSection === 'seguranca' && (
-          <div className="p-4 border-t-[4px] flex flex-col gap-4" style={{ borderColor: accentColor }}>
-            <p className="font-bold text-sm opacity-80 leading-relaxed mb-2">
-              Apenas quem possuir a senha pode editar registros. Ao definir uma nova senha, a equipe precisará utilizá-la para realizar alterações. A senha inicial é <b>admin</b>.
-            </p>
-            
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Senha Atual ou Frase de Emergência</label>
-              <input 
-                type="password" 
-                value={currentPwd} 
-                onChange={(e) => setCurrentPwd(e.target.value)}
-                onFocus={() => handleFocus('CURRENTPWD')} onBlur={() => setFocusedField(null)}
-                className={`w-full p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} 
-                style={{ borderColor: focusedField === 'CURRENTPWD' ? accentColor : 'currentcolor' }}
-                placeholder="Insira a senha atual..."
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Nova Senha</label>
-              <input 
-                type="password" 
-                value={newPwd} 
-                onChange={(e) => setNewPwd(e.target.value)}
-                onFocus={() => handleFocus('NEWPWD')} onBlur={() => setFocusedField(null)}
-                className={`w-full p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} 
-                style={{ borderColor: focusedField === 'NEWPWD' ? accentColor : 'currentcolor' }}
-                placeholder="Insira a nova senha desejada..."
-              />
-            </div>
-
-            <button 
-              onClick={handleSavePassword}
-              className="mt-2 p-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-[12px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 hover-cyan"
-            >
-              <Lock size={16} /> Confirmar Alteração de Senha
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'aparencia' ? accentColor : 'currentcolor' }}>
-        <button 
-          onClick={() => { toggleSection('aparencia'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Sun size={18} /> Aparência e Leitura</span>
-          <span className="text-xl leading-none font-mono">{openSection === 'aparencia' ? '−' : '+'}</span>
-        </button>
-        
-        {openSection === 'aparencia' && (
-          <div className="p-4 border-t-[4px] flex flex-col gap-6" style={{ borderColor: accentColor }}>
-            <div className="flex flex-col gap-3">
-              <label className="font-bold uppercase tracking-wider opacity-80">Modo de Exibição</label>
-              <div className="flex gap-4">
-                <button 
-                  onClick={() => { setIsDark(false); cycleAccent(); }}
-                  className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-2 uppercase font-bold transition-all hover:-translate-y-1 bg-white text-black`}
-                  style={!isDark ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}` } : { borderColor: 'black' }}
-                >
-                  <Sun size={20} /> Claro
-                </button>
-                <button 
-                  onClick={() => { setIsDark(true); cycleAccent(); }}
-                  className={`flex-1 p-4 border-[3px] flex items-center justify-center gap-2 uppercase font-bold transition-all hover:-translate-y-1 bg-black text-white`}
-                  style={isDark ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}` } : { borderColor: 'transparent' }}
-                >
-                  <Moon size={20} /> Escuro
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <label className="font-bold uppercase tracking-wider opacity-80 flex items-center gap-2">
-                <Type size={18}/> Tamanho da Fonte
-              </label>
-              <div className={`flex items-center justify-between p-2 border-[3px] ${theme.border}`}>
-                {[1, 2, 3, 4, 5].map(level => (
-                  <button
-                    key={level}
-                    onClick={() => { setFontSizeLevel(level); cycleAccent(); }}
-                    className={`w-12 h-12 flex items-center justify-center font-bold border-[3px] transition-colors ${fontSizeLevel === level ? (isDark ? 'bg-white text-black' : 'bg-black text-white') : 'hover:bg-gray-500/20'}`}
-                    style={fontSizeLevel === level ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}` } : { borderColor: 'currentcolor' }}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
-        <button 
-          onClick={() => { toggleSection('backup'); cycleAccent(); }}
-          className="w-full p-4 flex justify-between items-center text-sm font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <span className="flex items-center gap-2"><Save size={18} /> Backup e Restauração (.CSV)</span>
-          <span className="text-xl leading-none font-mono">{openSection === 'backup' ? '−' : '+'}</span>
-        </button>
-        
-        {openSection === 'backup' && (
-          <div className="p-4 border-t-[4px] flex flex-col gap-3" style={{ borderColor: accentColor }}>
-            <p className="opacity-80 font-bold" style={{ fontSize: '0.9em' }}>
-              Baixe os dados atuais para preservação ou carregue um arquivo CSV de backup para visualização imediata no Kanban.
-            </p>
-            <div className="flex flex-col md:flex-row gap-4 mt-2">
-              <button 
-                onClick={exportCSV}
-                className={`flex-1 p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest transition-colors hover-cyan`}
-                style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}
-              >
-                <Download size={20} /> Baixar CSV
-              </button>
-              
-              <div className="flex-1 relative">
-                <input 
-                  type="file" 
-                  accept=".csv"
-                  onChange={importCSV}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  title="Carregar Backup CSV"
-                />
-                <div className={`p-4 ${med} flex items-center justify-center gap-2 uppercase font-black tracking-widest pointer-events-none`}
-                     style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor), opacity: 0.8 }}>
-                  <Upload size={20} /> Restaurar CSV
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
-        <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
-          <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
-          <span className="text-sm leading-none font-mono">{openNetwork ? '−' : '+'}</span>
-        </button>
-
-        {openNetwork && (
-          <div className="mt-4 p-5 flex flex-col gap-6 bg-black/5 dark:bg-white/5 border-[2px] transition-colors duration-300" style={{ borderColor: accentColor }}>
-            <div className="p-3 border-l-[4px] text-black dark:text-gray-200" style={{ borderColor: COLORS.crimson }}>
-              <p className="text-[10px] font-bold leading-relaxed uppercase tracking-widest text-crimson">
-                ⚠️ <b>Atenção:</b> Alterações aqui afetam apenas o seu navegador. Cuidado ao editar estes links, pois podem desconectar você do Banco de Dados Central.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">Webhook Utilidade Pública</label>
-              <input 
-                type="text" 
-                value={draftUtilidade} 
-                onChange={(e) => setDraftUtilidade(e.target.value)} 
-                onFocus={() => handleFocus('WH1')} 
-                onBlur={() => setFocusedField(null)} 
-                className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" 
-                style={{ borderColor: focusedField === 'WH1' ? accentColor : 'currentcolor' }} 
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="font-black uppercase tracking-widest opacity-80 text-[10px]">E-mail do Arquivo Central</label>
-              <input 
-                type="text" 
-                value={draftEmail} 
-                onChange={(e) => setDraftEmail(e.target.value)} 
-                onFocus={() => handleFocus('EMAIL')} 
-                onBlur={() => setFocusedField(null)} 
-                className="w-full p-3 border-[2px] outline-none font-mono text-[10px] bg-white text-black dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300" 
-                style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} 
-              />
-            </div>
-
-            <button 
-              onClick={handleSaveNetwork} 
-              className="mt-2 w-full p-4 text-white font-black uppercase tracking-widest text-[10px] border-[3px] border-current hover:-translate-y-1 transition-transform flex items-center justify-center gap-2 hover-cyan" 
-              style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}
-            >
-              <RefreshCw size={14} /> Salvar Localmente e Sincronizar
-            </button>
-            {savedMessage && <p className="font-black text-center uppercase tracking-widest text-[10px]" style={{ color: accentColor }}>{savedMessage}</p>}
-          </div>
-        )}
-      </div>
-
-    </div>
   );
 }
 
