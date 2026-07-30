@@ -32,6 +32,15 @@ const ExternalLink = (p) => <Icon {...p} path={<><path d="M18 13v6a2 2 0 0 1-2 2
 const Lock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
 const Unlock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></>} />;
 
+// Spinner Customizado com as Cores Mondrian 
+const ColoredSpinner = ({ size = 48 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" className="animate-spin mb-4">
+    <path d="M 50 10 A 40 40 0 0 1 84.6 30" fill="none" stroke="#00b7eb" strokeWidth="10" strokeLinecap="round" />
+    <path d="M 88.6 42 A 40 40 0 0 1 63.6 87.5" fill="none" stroke="#FFDB58" strokeWidth="10" strokeLinecap="round" />
+    <path d="M 47.5 90 A 40 40 0 0 1 12 55" fill="none" stroke="#DC143C" strokeWidth="10" strokeLinecap="round" />
+  </svg>
+);
+
 const COLORS = {
   mustard: '#FFDB58', 
   cyan: '#00b7eb',    
@@ -42,29 +51,8 @@ const COLORS = {
   darkCard: '#1a1a1a'
 };
 
-const MondrianSpinner = () => (
-  <div className="w-12 h-12 rounded-full animate-spin mb-4" 
-       style={{ 
-         borderWidth: '6px',
-         borderStyle: 'solid',
-         borderTopColor: COLORS.cyan,
-         borderRightColor: COLORS.mustard,
-         borderBottomColor: COLORS.crimson,
-         borderLeftColor: 'transparent'
-       }}>
-  </div>
-);
-
-let envUrl = "";
-try {
-  envUrl = import.meta.env.VITE_WEBHOOK_URL;
-} catch(e) {
-  if (typeof process !== 'undefined' && process.env) {
-    envUrl = process.env.VITE_WEBHOOK_URL;
-  }
-}
-const webhookUtilidade = envUrl || ""; 
-
+// URL Oculta do Vercel e Email Hardcoded Limpo
+const DEFAULT_WEBHOOK_UTILIDADE = typeof process !== 'undefined' && process.env ? process.env.VITE_WEBHOOK_URL : ""; 
 const EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
 const DOCS_KEYS = [
@@ -123,6 +111,7 @@ const parseCSV = (str) => {
   return result;
 };
 
+// Componente de Edição em Bloco (Apenas para campos autorizados)
 function EditableField({ value, onSave, multiline = false, isDark, textClass = "", accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || '');
@@ -149,7 +138,7 @@ function EditableField({ value, onSave, multiline = false, isDark, textClass = "
     });
   };
 
-  const startPress = (e) => {
+  const startPress = () => {
     pressTimer = setTimeout(() => { 
       requireAuth(() => {
         setEditing(true); 
@@ -264,23 +253,28 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
   );
 }
 
+// -------------------------------------------------------------------------------------------------
+// APLICATIVO PRINCIPAL
+// -------------------------------------------------------------------------------------------------
+
 export default function App() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
   
   const [dialog, setDialog] = useState({ isOpen: false, type: 'alert', message: '', onConfirm: null });
-
   const showAlert = (message) => setDialog({ isOpen: true, type: 'alert', message, onConfirm: null });
   const showConfirm = (message, onConfirm) => setDialog({ isOpen: true, type: 'confirm', message, onConfirm });
 
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark] = useState(() => {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
   });
+  
+  const webhookUtilidade = DEFAULT_WEBHOOK_UTILIDADE; 
 
   const EMERGENCY_PHRASE = "Nada resiste ao bem e ao amor.";
-  const [masterPassword, setMasterPassword] = useState(() => localStorage.getItem('tabulum_master_pwd') || 'admin');
+  const [masterPassword] = useState(() => localStorage.getItem('tabulum_master_pwd') || 'admin');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
@@ -315,9 +309,6 @@ export default function App() {
     setView('articulator_details');
   };
 
-  useEffect(() => { localStorage.setItem('tabulum_dark', JSON.stringify(isDark)); }, [isDark]);
-  useEffect(() => { localStorage.setItem('tabulum_master_pwd', masterPassword); }, [masterPassword]);
-
   useEffect(() => { 
     fetchFromWebhooks(); 
   }, []);
@@ -329,7 +320,7 @@ export default function App() {
     const noCache = `t=${new Date().getTime()}`;
     
     if (!webhookUtilidade) {
-      setSyncStatus('⚠️ URL de Utilidade Pública não configurada no Vercel Environment.');
+      setSyncStatus('⚠️ URL de Webhook ausente no Ambiente (Vercel).');
       setLoading(false);
       return;
     }
@@ -340,7 +331,7 @@ export default function App() {
       const text = await response.text();
       
       if (text.toLowerCase().includes('<!doctype html>') || text.toLowerCase().includes('<html')) {
-        throw new Error('Retornou página HTML. Verifique permissões como "Qualquer pessoa".');
+        throw new Error('Script retornou HTML. Verifique as permissões.');
       }
 
       let parsedData = [];
@@ -382,11 +373,11 @@ export default function App() {
         setSyncStatus('Sincronizado!');
         setTimeout(() => setSyncStatus(''), 5000);
       } else {
-        throw new Error('Nenhum registro válido encontrado.');
+        throw new Error('Nenhum registro encontrado.');
       }
     } catch (error) { 
       console.error("Erro Entidades:", error); 
-      setSyncStatus(`⚠️ Utilidade Pública: ${error.message || 'Erro de conexão/CORS.'}`);
+      setSyncStatus(`⚠️ Utilidade Pública: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -504,7 +495,7 @@ export default function App() {
       <main className="p-4 md:p-6 flex-1 flex flex-col relative">
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
-            <MondrianSpinner />
+            <ColoredSpinner size={48} />
             <p className="font-black uppercase tracking-widest animate-pulse text-center leading-relaxed" style={{ color: (syncStatus.includes('Erro') || syncStatus.includes('Falha') || syncStatus.includes('⚠️')) ? COLORS.crimson : 'inherit' }}>
               {syncStatus.split('<br/>').map((line, i) => <React.Fragment key={i}>{line}{i < syncStatus.split('<br/>').length - 1 ? <br/> : ''}</React.Fragment>)}
             </p>
@@ -930,11 +921,8 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           <EditableField value={item.ENTIDADE} onSave={(val) => onUpdate({ ENTIDADE: val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
         </h2>
         <div className="flex flex-wrap gap-4 mt-3">
-          <span 
-             className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] transition-colors duration-500" 
-             style={{ backgroundColor: statusColor || 'transparent', color: getTextColorForStatus(statusColor) || (isDark ? 'white' : 'black'), borderColor: statusColor || 'currentcolor' }}
-          >
-             {item['STATUS DA ANÁLISE'] || 'Sem Status'}
+          <span className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] transition-colors duration-500" style={{ backgroundColor: statusColor || 'transparent', color: getTextColorForStatus(statusColor) || (isDark ? 'white' : 'black'), borderColor: statusColor || 'currentcolor' }}>
+             {item['STATUS DA ANÁLISE'] || 'Pendente'}
           </span>
           <span className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current opacity-70">
             {item['DATA DA SOLICITAÇÃO'] || 'Sem data'}
@@ -988,7 +976,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
         <div className="flex flex-col gap-4">
           <div className={`p-4 border-[4px] transition-colors duration-500`} style={{ borderColor: statusColor || 'currentcolor' }}>
-            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC (Sincronizado via Monitor)</span>
+            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC (Sincronizado)</span>
             <div className="grid grid-cols-2 gap-3 font-bold w-full">
               <div className="flex flex-col items-start">
                 <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Data Envio:</span> 
