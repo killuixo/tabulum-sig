@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 const Icon = ({ path, className = "w-6 h-6", onClick, size = 24, style }) => (
@@ -48,7 +47,7 @@ const COLORS = {
   black: '#000000'
 };
 
-// Segurança Extrema Vite (Cega no Preview para não expor a string)
+// Segurança Vite
 let safeWebhookUrl = "";
 try { safeWebhookUrl = import.meta.env.VITE_WEBHOOK_URL; } catch (e) {}
 
@@ -321,10 +320,9 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} text-xs transition-colors duration-300 flex flex-col`}>
       <style>{mondrianStyles}</style>
-      <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border}`}>
+      <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border} bg-white`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} className="cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-3" title="Ir para o Kanban">
-            {/* Logo Transparente com Truque CSS */}
             <img src="https://raw.githubusercontent.com/killuixo/tabulum-sig/refs/heads/main/icon-192.png" alt="TABULUM Icon" className="w-10 h-10 md:w-12 md:h-12 object-contain" style={{ mixBlendMode: 'multiply' }} />
             <div>
               <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
@@ -341,7 +339,7 @@ export default function App() {
           </div>
         </div>
 
-        <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto ${themeConfig.cardBg} items-center md:justify-center`}>
+        <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto bg-white items-center md:justify-center`}>
           <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" accentColor={accentColor} />
           <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" accentColor={accentColor} />
           <button onClick={() => requireAuth(() => { setIsFormOpen(true); cycleAccent(); })} className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 bg-white text-black hover:bg-black hover:text-white`} style={isFormOpen ? { borderColor: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, backgroundColor: 'black', color: 'white', transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'currentColor' }} title="Adicionar Novo Pedido">
@@ -360,7 +358,7 @@ export default function App() {
           </div>
         ) : (
           <>
-            {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} fetchFromWebhooks={() => fetchFromWebhooks()} equipeOptions={articuladoresUnicos} webhookUtilidade={webhookUtilidade} accentColor={accentColor} cycleAccent={cycleAccent} requireAuth={requireAuth} showAlert={showAlert} />}
+            {isFormOpen && <FormNovoPedido onClose={() => setIsFormOpen(false)} theme={themeConfig} thick={bThick} fetchFromWebhooks={() => fetchFromWebhooks()} equipeOptions={articuladoresUnicos} webhookUtilidade={webhookUtilidade} accentColor={accentColor} cycleAccent={cycleAccent} requireAuth={requireAuth} showAlert={showAlert} setActiveFicha={(ficha) => {setActiveFicha(ficha); setView('entity_details'); setIsFormOpen(false);}} data={data} />}
             {!isFormOpen && view === 'entity_details' && activeFicha && <FichaEntidade item={activeFicha} equipeOptions={articuladoresUnicos} onClose={() => {setActiveFicha(null); setView('kanban'); cycleAccent();}} onArticuladorClick={handleArticulatorClick} onDelete={() => deleteItem(activeFicha.ENTIDADE)} onUpdate={(fields) => handleUpdateEntity(activeFicha.ENTIDADE, fields)} theme={themeConfig} thick={bThick} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />}
             {!isFormOpen && view === 'articulator_details' && activeArticulador && <PainelArticulador nome={activeArticulador} data={data} onClose={() => {setActiveArticulador(null); setView('kanban'); cycleAccent();}} onEntidadeClick={handleEntityClick} theme={themeConfig} thick={bThick} />}
             {!isFormOpen && view === 'kanban' && <KanbanView data={data} theme={themeConfig} thick={bThick} med={bMedium} onEntityClick={handleEntityClick} onArticulatorClick={handleArticulatorClick} />}
@@ -371,20 +369,20 @@ export default function App() {
 
       {authModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
-           <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} ${themeConfig.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
+           <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
               <div className="flex items-center gap-3 border-b-[4px] border-current pb-2">
                  <Lock size={24} className="text-crimson" />
                  <h2 className="text-xl font-black uppercase tracking-widest text-crimson">Acesso Restrito</h2>
               </div>
-              <p className="text-sm font-bold opacity-80 leading-relaxed">
+              <p className="text-sm font-bold opacity-80 leading-relaxed text-black">
                  Insira a senha mestra para habilitar edições.
               </p>
-              <input type="password" autoFocus placeholder="Senha..." className={`w-full p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${themeConfig.inputBg}`} style={{ borderColor: 'currentcolor' }}
+              <input type="password" autoFocus placeholder="Senha..." className={`w-full p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-gray-100 text-black`} style={{ borderColor: 'currentcolor' }}
                  onKeyDown={(e) => { if (e.key === 'Enter') { const val = e.target.value; if (val === masterPassword || val.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) { setIsUnlocked(true); setAuthModalOpen(false); if (pendingAction) pendingAction(); } else { showAlert('Senha Incorreta.'); } } }} id="auth_pwd_input"
               />
               <div className="flex gap-2 mt-2">
-                 <button onClick={() => { const val = document.getElementById('auth_pwd_input').value; if (val === masterPassword || val.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) { setIsUnlocked(true); setAuthModalOpen(false); if (pendingAction) pendingAction(); } else { showAlert('Senha Incorreta.'); } }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current hover:-translate-y-1 transition-transform">Desbloquear</button>
-                 <button onClick={() => { setAuthModalOpen(false); setPendingAction(null); }} className="flex-1 p-3 bg-transparent font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current hover:-translate-y-1 transition-transform hover-crimson">Cancelar</button>
+                 <button onClick={() => { const val = document.getElementById('auth_pwd_input').value; if (val === masterPassword || val.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) { setIsUnlocked(true); setAuthModalOpen(false); if (pendingAction) pendingAction(); } else { showAlert('Senha Incorreta.'); } }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform">Desbloquear</button>
+                 <button onClick={() => { setAuthModalOpen(false); setPendingAction(null); }} className="flex-1 p-3 bg-transparent text-black font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform hover-crimson">Cancelar</button>
               </div>
            </div>
         </div>
@@ -392,15 +390,15 @@ export default function App() {
 
       {dialog.isOpen && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
-          <div className={`w-full max-w-sm p-6 flex flex-col gap-4 border-[4px] ${themeConfig.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.5)]`} style={{ borderColor: dialog.type === 'confirm' ? COLORS.mustard : COLORS.crimson }}>
-            <div className="flex items-center gap-3 border-b-[4px] border-current pb-2">
+          <div className={`w-full max-w-sm p-6 flex flex-col gap-4 border-[4px] bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.5)]`} style={{ borderColor: dialog.type === 'confirm' ? COLORS.mustard : COLORS.crimson }}>
+            <div className="flex items-center gap-3 border-b-[4px] border-black pb-2">
               <AlertCircle size={24} className={dialog.type === 'confirm' ? "text-mustard" : "text-crimson"} />
               <h2 className={`text-xl font-black uppercase tracking-widest ${dialog.type === 'confirm' ? 'text-mustard' : 'text-crimson'}`}>{dialog.type === 'confirm' ? 'Atenção' : 'Aviso'}</h2>
             </div>
-            <p className="text-sm font-bold opacity-90 leading-relaxed whitespace-pre-wrap">{dialog.message}</p>
+            <p className="text-sm font-bold opacity-90 leading-relaxed whitespace-pre-wrap text-black">{dialog.message}</p>
             <div className="flex gap-2 mt-2">
-              {dialog.type === 'confirm' && <button onClick={() => { setDialog({ isOpen: false }); dialog.onConfirm(); }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current hover:-translate-y-1 transition-transform">Confirmar</button>}
-              <button onClick={() => setDialog({ isOpen: false })} className="flex-1 p-3 bg-transparent font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current hover:-translate-y-1 transition-transform hover-crimson">{dialog.type === 'confirm' ? 'Cancelar' : 'OK'}</button>
+              {dialog.type === 'confirm' && <button onClick={() => { setDialog({ isOpen: false }); dialog.onConfirm(); }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform">Confirmar</button>}
+              <button onClick={() => setDialog({ isOpen: false })} className="flex-1 p-3 bg-transparent text-black font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform hover-crimson">{dialog.type === 'confirm' ? 'Cancelar' : 'OK'}</button>
             </div>
           </div>
         </div>
@@ -431,7 +429,7 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
     const itemProgressBoxes = DOCS_KEYS.map(key => { const hasDoc = (String(item[key] || '').toUpperCase() === 'TRUE'); if (hasDoc) hasCount++; return { key, has: hasDoc }; });
 
     return (
-      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer ${theme.bg}`}>
+      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer bg-[#f4f4f0] text-black`}>
         <h3 className="font-black mb-3 uppercase leading-tight" style={{ fontSize: '1.1em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
         <div className="flex justify-between items-end gap-2">
           <div className="flex flex-col">
@@ -459,7 +457,7 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
 
   return (
     <div className="flex flex-col gap-4 flex-1 min-h-[500px]">
-      <div className={`border-[4px] transition-colors duration-300 ${isConcluidoOpen ? theme.cardBg : 'bg-transparent'} ${theme.border}`}>
+      <div className={`border-[4px] transition-colors duration-300 ${isConcluidoOpen ? 'bg-white' : 'bg-transparent'} ${theme.border}`}>
         <button onClick={() => setIsConcluidoOpen(!isConcluidoOpen)} className={`w-full p-3 font-black uppercase tracking-widest flex items-center justify-between transition-colors ${isConcluidoOpen ? 'bg-black text-white' : 'opacity-60 hover:opacity-100 hover:bg-black/5'}`}>
           <div className="flex items-center gap-3"><CheckCircle2 size={18} /><span className="text-sm md:text-base">Processos Concluídos ({concluidoData.length})</span></div>
           <span className="text-2xl leading-none font-mono">{isConcluidoOpen ? '−' : '+'}</span>
@@ -480,7 +478,7 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
           const colData = getColData(col.id);
           const headerTextColor = getTextColorForStatus(col.color) || 'black';
           return (
-            <div key={col.id} className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16 md:w-20' : 'flex-1'} ${thick} ${theme.cardBg}`}>
+            <div key={col.id} className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16 md:w-20' : 'flex-1'} ${thick} bg-white`}>
               <div onClick={() => toggleCol(col.id)} className={`p-3 font-black flex items-center gap-2 uppercase tracking-wider border-b-[4px] cursor-pointer transition-colors ${theme.border}`} style={{ backgroundColor: col.color, color: headerTextColor }}>
                 {isCollapsed ? (
                   <div className="flex flex-col items-center w-full gap-4 py-4">
@@ -514,20 +512,20 @@ function DashboardView({ data, theme, thick, onEntityClick, onArticulatorClick }
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <div className={`lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4`}>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: 'currentcolor', borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: 'currentcolor', borderTopWidth: '8px' }}>
           <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Total</span><span className="text-5xl font-black mt-2">{total}</span>
         </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
           <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Análise</span><span className="text-5xl font-black mt-2">{emAnalise}</span>
         </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
           <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span><span className="text-5xl font-black mt-2">{protocolados}</span>
         </div>
-        <div className={`p-4 ${thick} ${theme.cardBg} flex flex-col justify-between`} style={{ borderTopColor: COLORS.black, borderTopWidth: '8px' }}>
+        <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: COLORS.black, borderTopWidth: '8px' }}>
           <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Concluído</span><span className="text-5xl font-black mt-2">{concluidos}</span>
         </div>
       </div>
-      <div className={`lg:col-span-1 p-4 ${thick} ${theme.cardBg} flex flex-col`}>
+      <div className={`lg:col-span-1 p-4 ${thick} bg-white flex flex-col`}>
         <h2 className="font-black uppercase tracking-widest border-b-[4px] border-current pb-2 mb-4 text-[0.9em]">Visão Geral</h2>
         <div className="flex-1 flex flex-col justify-end gap-2 h-40">
           <div className="flex items-end gap-1 h-full">
@@ -538,7 +536,7 @@ function DashboardView({ data, theme, thick, onEntityClick, onArticulatorClick }
           </div>
         </div>
       </div>
-      <div className={`lg:col-span-4 mt-4 ${thick} ${theme.cardBg} overflow-x-auto max-h-[500px]`}>
+      <div className={`lg:col-span-4 mt-4 ${thick} bg-white overflow-x-auto max-h-[500px]`}>
         <table className="w-full text-left border-collapse min-w-[600px]">
           <thead className="sticky top-0 z-10 bg-white">
             <tr className={`border-b-[6px] ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
@@ -577,23 +575,14 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const toggleDoc = (docKey) => {
     const currentVal = String(item[docKey] || '').toUpperCase() === 'TRUE';
     const newDocsState = { ...item, [docKey]: currentVal ? 'FALSE' : 'TRUE' };
-    
-    // Auto-calculo Inteligente do STATUS DA ANÁLISE
     let countTrue = 0;
     DOCS_KEYS.forEach(k => { if(String(newDocsState[k]).toUpperCase() === 'TRUE') countTrue++; });
     
     let newStatus = newDocsState['STATUS DA ANÁLISE'] || 'Aguardando Documentos';
-    if (countTrue === 8 && newStatus.toLowerCase().includes('aguardando')) {
-        newStatus = 'Em análise';
-    } else if (countTrue < 8 && newStatus.toLowerCase().includes('análise')) {
-        newStatus = 'Aguardando Documentos';
-    }
+    if (countTrue === 8 && newStatus.toLowerCase().includes('aguardando')) newStatus = 'Em análise';
+    else if (countTrue < 8 && newStatus.toLowerCase().includes('análise')) newStatus = 'Aguardando Documentos';
 
-    onUpdate({ 
-      [docKey]: newDocsState[docKey],
-      'STATUS DA ANÁLISE': newStatus,
-      'ÚLTIMA ATUALIZAÇÃO': `Checklist atualizado em ${new Date().toLocaleDateString('pt-BR')}`
-    });
+    onUpdate({ [docKey]: newDocsState[docKey], 'STATUS DA ANÁLISE': newStatus, 'ÚLTIMA ATUALIZAÇÃO': `Checklist atualizado em ${new Date().toLocaleDateString('pt-BR')}` });
   };
 
   const handleTouchStart = (key) => { pressTimer = setTimeout(() => setActiveTooltip(key), 400); };
@@ -603,7 +592,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const checkGlobalColor = getProgressColor(docsCount);
 
   return (
-    <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
+    <div className={`p-6 md:p-8 ${thick} bg-white flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
       <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
       
       <div className="pr-10 border-b-[6px] border-current pb-4">
@@ -611,7 +600,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           <EditableField value={item.ENTIDADE} onSave={(val) => onUpdate({ ENTIDADE: val })} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
         </h2>
         <div className="flex flex-wrap gap-4 mt-3">
-          {/* CAMPOS ESTRITAMENTE INFORMATIVOS (BLOQUEADOS PARA EDIÇÃO DO USUÁRIO) */}
           <span className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] transition-colors duration-500 cursor-not-allowed" style={{ backgroundColor: statusColor || 'transparent', color: getTextColorForStatus(statusColor) || 'black', borderColor: statusColor || 'currentcolor' }}>
             {item['STATUS DA ANÁLISE'] || 'Aguardando Documentos'}
           </span>
@@ -633,20 +621,20 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
             <EditableSelect value={item.ARTICULADOR} options={equipeOptions} onSave={(val) => onUpdate({ ARTICULADOR: val })} textClass="text-xl font-black hover:underline decoration-4 underline-offset-4 cursor-pointer truncate max-w-[200px]" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className={`p-4 border-[2px] border-current ${theme.bg} flex flex-col items-start w-full`}>
+            <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] flex flex-col items-start w-full`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Liderança</span>
               <EditableField value={item.LIDERANÇA} onSave={(val) => onUpdate({ LIDERANÇA: val })} textClass="font-bold break-words max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
             </div>
-            <div className={`p-4 border-[2px] border-current ${theme.bg} flex flex-col items-start w-full`}>
+            <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] flex flex-col items-start w-full`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Telefone</span>
               <EditableField value={item.TELEFONE} onSave={(val) => onUpdate({ TELEFONE: val })} textClass="font-bold break-words max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
             </div>
-            <div className={`p-4 border-[2px] border-current ${theme.bg} col-span-2 flex flex-col items-start w-full`}>
+            <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] col-span-2 flex flex-col items-start w-full`}>
               <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">E-mail</span>
               <EditableField value={item.EMAIL} onSave={(val) => onUpdate({ EMAIL: val })} textClass="font-bold break-all max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
             </div>
           </div>
-          <div className={`p-4 border-[2px] border-current ${theme.bg} flex flex-col items-start w-full`}>
+          <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] flex flex-col items-start w-full`}>
             <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Observações</span>
             <EditableField value={item.OBSERVAÇÕES} onSave={(val) => onUpdate({ OBSERVAÇÕES: val })} multiline textClass="font-bold whitespace-pre-wrap leading-relaxed max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
           </div>
@@ -655,7 +643,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
         <div className="flex flex-col gap-4">
           <div className={`p-4 border-[4px] transition-colors duration-500`} style={{ borderColor: statusColor || 'currentcolor' }}>
             <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC (Sincronizado)</span>
-            <div className="grid grid-cols-2 gap-3 font-bold w-full cursor-not-allowed">
+            <div className="grid grid-cols-2 gap-3 font-bold w-full cursor-not-allowed text-black">
               <div className="flex flex-col items-start">
                 <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Data Envio:</span> 
                 <span className="mt-1 text-sm">{item['DATA DO ENVIO ALESC'] || '-'}</span>
@@ -739,7 +727,7 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 function ManualModal({ onClose, theme, thick }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className={`w-full max-w-4xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_currentColor] relative max-h-[95vh] overflow-hidden`}>
+      <div className={`w-full max-w-4xl p-6 md:p-8 flex flex-col gap-6 ${thick} bg-white shadow-[8px_8px_0px_currentColor] relative max-h-[95vh] overflow-hidden`}>
         <button onClick={onClose} className="absolute top-4 right-4 text-xl font-black hover:scale-110 transition-transform border-[3px] border-current w-10 h-10 flex items-center justify-center">X</button>
         
         <div className="border-b-[4px] border-current pb-4 pr-12 flex-shrink-0">
@@ -747,7 +735,7 @@ function ManualModal({ onClose, theme, thick }) {
           <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-2">Reconhecimento de Utilidade Pública Estadual</p>
         </div>
 
-        <div className="overflow-y-auto pr-4 space-y-6 flex-1 text-sm font-medium leading-relaxed">
+        <div className="overflow-y-auto pr-4 space-y-6 flex-1 text-sm font-medium leading-relaxed text-black">
           <section className="space-y-3 opacity-90">
             <p>O reconhecimento do Título de Utilidade Pública Estadual é regido pela <b>Lei nº 18.269/2021</b>. Os documentos previstos no art. 3º devem ser encaminhados ao gabinete parlamentar para análise técnica.</p>
             <p><b>Fluxo de Trabalho:</b> A Articulação coleta a documentação e envia à Assessoria responsável pela auditoria preliminar. É vedado o envio direto ao setor jurídico da ALESC. Caberá à Assessoria notificar a Articulação sobre pendências, devendo esta realizar a cobrança junto à entidade requerente.</p>
@@ -782,7 +770,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
   });
 
   return (
-    <div className={`p-6 md:p-8 ${thick} ${theme.cardBg} flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
+    <div className={`p-6 md:p-8 ${thick} bg-white flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
       <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform">X</button>
       
       <div className="pr-10 border-b-[6px] border-current pb-4 flex items-center gap-4">
@@ -802,7 +790,7 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
       <div className="mt-4 flex flex-col gap-3">
         <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
         {procesos.map((p, i) => (
-          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all ${theme.bg}`}>
+          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all bg-[#f4f4f0] text-black`}>
             <div>
               <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
               <span className="font-bold opacity-70 text-[0.8em]">{p['DATA DA SOLICITAÇÃO']}</span>
@@ -817,17 +805,23 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
   );
 }
 
-function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOptions, webhookUtilidade, accentColor, cycleAccent, requireAuth, showAlert }) {
-  // LIDERANÇA INCLUÍDA EXATAMENTE AQUI NOS DADOS DO FORMULÁRIO. LINK REMOVIDO DA INSERÇÃO.
+function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOptions, webhookUtilidade, accentColor, cycleAccent, requireAuth, showAlert, setActiveFicha, data }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', LIDERANÇA: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'DOCUMENTOS NO DRIVE': '' });
+  const [docs, setDocs] = useState({});
   const [sending, setSending] = useState(false);
-  const [successMode, setSuccessMode] = useState(false);
   const [busca, setBusca] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [isManualOpen, setIsManualOpen] = useState(false);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => { if (e.key === 'Escape' && !isManualOpen && !showDropdown) onClose(); };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, isManualOpen, showDropdown]);
+
   const handleFocus = (fieldName) => { setFocusedField(fieldName); if(cycleAccent) cycleAccent(); };
+  const toggleDoc = (key) => setDocs(prev => ({...prev, [key]: !prev[key]}));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -837,103 +831,105 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
 
       setSending(true);
       try {
+        let countTrue = 0;
+        DOCS_KEYS.forEach(k => { if(docs[k]) countTrue++; });
+        const autoStatus = countTrue === 8 ? "Em análise" : "Aguardando Documentos";
+
         const payload = {
           "action": "add",
           "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": formData.LIDERANÇA, "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
           "ARTICULADOR": formData.ARTICULADOR, "OBSERVAÇÕES": formData.OBSERVAÇÕES, "DOCUMENTOS NO DRIVE": formData['DOCUMENTOS NO DRIVE'],
-          "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'),
-          "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "", "ESTÁGIO ATUAL": "", "LINK": "",
-          "1 ATA DE FUNDAÇÃO": "FALSE", "2 ATA DE ELEIÇÃO/POSSE": "FALSE", "3 CNPJ": "FALSE", "4 DECLARAÇÃO NÃO OSCIP": "FALSE", "5 DECLARAÇÃO FUNCIONAMENTO": "FALSE", "6 - 7 DECLARAÇÃO REMUNERAÇÃO": "FALSE", "8 ESTATUTO": "FALSE", "9 RELATÓRIO DE ATIVIDADES": "FALSE"
+          "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'), "STATUS DA ANÁLISE": autoStatus, 
+          "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "", "ESTÁGIO ATUAL": "", "LINK": "",
+          "ÚLTIMA ATUALIZAÇÃO": `Processo criado em ${new Date().toLocaleDateString('pt-BR')}`
         };
+        
+        DOCS_KEYS.forEach(k => { payload[k] = docs[k] ? "TRUE" : "FALSE"; });
         await fetch(webhookUtilidade, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
         await fetchFromWebhooks();
-        setSuccessMode(true); 
-      } catch (error) { 
-        console.error(error); showAlert("Erro ao comunicar com o Arquivo Central."); 
-      } finally { setSending(false); }
+        
+        const newEntityToOpen = { ...payload };
+        setActiveFicha(newEntityToOpen);
+
+      } catch (error) { console.error(error); showAlert("Erro ao comunicar com o Arquivo Central."); } 
+      finally { setSending(false); }
     });
   };
 
   const filteredEquipe = equipeOptions.filter(nome => nome.toLowerCase().includes(busca.toLowerCase()));
 
-  if (successMode) {
-    return (
-      <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-300">
-        <div className={`w-full max-w-lg p-8 flex flex-col gap-6 text-center ${thick} ${theme.cardBg} shadow-[8px_8px_0px_currentColor] border-[3px]`} style={{ borderColor: COLORS.cyan }}>
-          <CheckCircle2 className="w-20 h-20 mx-auto text-cyan" />
-          <h2 className="text-2xl font-black uppercase tracking-widest">Processo Registrado!</h2>
-          <p className="font-bold opacity-80 leading-relaxed text-sm">Os dados da entidade foram inseridos com sucesso.<br/>Para editar os checkboxes, acesse a Ficha Institucional.</p>
-          <button onClick={onClose} className="mt-4 p-4 border-[4px] border-current font-black uppercase tracking-widest hover:-translate-y-1 transition-transform">Concluir e Voltar</button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
     {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} />}
-    
     <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} ${theme.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.3)] relative overflow-y-auto max-h-[90vh]`}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
-        
+      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.3)] relative overflow-y-auto max-h-[90vh]`}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform z-10" title="Pressione ESC para fechar">X</button>
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b-[4px] border-current pb-2 pr-8 gap-4">
           <h2 className="text-2xl font-black uppercase tracking-widest">Abertura de Processo</h2>
           <button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="flex items-center gap-2 px-3 py-2 bg-black text-white font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-[2px_2px_0px_currentColor]">
             <BookOpen size={16} /> Consultar Manual de Requisitos
           </button>
         </div>
-        
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <div className={`p-4 border-[3px] border-current ${theme.bg} flex flex-col gap-4`}>
+          <div className={`p-4 border-[3px] border-current bg-[#f4f4f0] flex flex-col gap-4`}>
             <h3 className="font-black uppercase tracking-widest text-[12px] opacity-70 mb-2 border-b-[2px] border-current pb-1">1. Metadados Essenciais</h3>
-            
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Nome da Entidade *</label>
-              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} onFocus={() => handleFocus('ENTIDADE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'ENTIDADE' ? accentColor : 'currentcolor' }} placeholder="Ex: Associação de Moradores..." />
+              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} onFocus={() => handleFocus('ENTIDADE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'ENTIDADE' ? accentColor : 'currentcolor' }} placeholder="Ex: Associação de Moradores..." />
             </div>
-
             <div className="flex flex-col gap-1 relative">
               <label className="font-black uppercase tracking-widest text-[10px]">Articulador Responsável</label>
               <div className="relative">
-                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => {setShowDropdown(true); handleFocus('ARTICULADOR');}} onBlur={() => setTimeout(()=>setFocusedField(null), 200)} className={`w-full p-3 border-[3px] outline-none font-bold pr-10 transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'ARTICULADOR' ? accentColor : 'currentcolor' }} placeholder="Busque ou digite o nome..." />
+                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => {setShowDropdown(true); handleFocus('ARTICULADOR');}} onBlur={() => setTimeout(()=>setFocusedField(null), 200)} className={`w-full p-3 border-[3px] outline-none font-bold pr-10 transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'ARTICULADOR' ? accentColor : 'currentcolor' }} placeholder="Busque ou digite o nome..." />
                 <SearchIcon className="absolute right-3 top-3 opacity-50" />
               </div>
               {showDropdown && (
-                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] z-10 max-h-40 overflow-y-auto ${theme.cardBg}`} style={{ borderColor: accentColor }}>
+                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] z-10 max-h-40 overflow-y-auto bg-white`} style={{ borderColor: accentColor }}>
                   {filteredEquipe.map((nome, idx) => <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: nome}); setBusca(nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-black/10 transition-colors border-b border-current opacity-60 hover:opacity-100`}>{nome}</div>)}
                 </div>
               )}
             </div>
-
+            <div className="flex flex-col gap-1">
+              <label className="font-black uppercase tracking-widest text-[10px]">Liderança / Presidente</label>
+              <input type="text" value={formData.LIDERANÇA} onChange={e => setFormData({...formData, LIDERANÇA: e.target.value})} onFocus={() => handleFocus('LIDERANÇA')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'LIDERANÇA' ? accentColor : 'currentcolor' }} placeholder="Nome do líder..." />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <label className="font-black uppercase tracking-widest text-[10px]">E-mail de Contato</label>
-                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} />
+                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="font-black uppercase tracking-widest text-[10px]">Telefone</label>
-                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} onFocus={() => handleFocus('TELEFONE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'currentcolor' }} />
+                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} onFocus={() => handleFocus('TELEFONE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'currentcolor' }} />
               </div>
             </div>
-
-            {/* LIDERANÇA / PRESIDENTE (DE VOLTA AO APP) */}
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Liderança / Presidente</label>
-              <input type="text" value={formData.LIDERANÇA} onChange={e => setFormData({...formData, LIDERANÇA: e.target.value})} onFocus={() => handleFocus('LIDERANÇA')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'LIDERANÇA' ? accentColor : 'currentcolor' }} placeholder="Nome da Liderança..." />
-            </div>
-
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Documentos no Drive (Link da Pasta)</label>
-              <input type="url" value={formData['DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'currentcolor' }} placeholder="https://drive.google.com/..." />
+              <input type="url" value={formData['DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'currentcolor' }} placeholder="https://drive.google.com/..." />
             </div>
-
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Observações</label>
-              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} onFocus={() => handleFocus('OBSERVAÇÕES')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold resize-none transition-colors duration-300 ${theme.inputBg}`} style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'currentcolor' }} />
+              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} onFocus={() => handleFocus('OBSERVAÇÕES')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold resize-none transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'currentcolor' }} />
+            </div>
+            
+            <div className="flex flex-col gap-2 mt-2">
+              <a href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${formData.ENTIDADE || '[NOME DA ENTIDADE]'}`)}`} className={`p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 bg-black text-white hover-cyan`}>
+                <Mail size={18} /> Enviar Documentos por E-mail
+              </a>
+              <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1 mt-4">Checklist de Documentos</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {DOCS_KEYS.map((key, idx) => {
+                  const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
+                  return (
+                    <div key={idx} className={`p-2 border-[2px] border-current flex items-center gap-3 transition-colors ${docs[key] ? 'bg-black/5' : 'bg-transparent'}`}>
+                      <input type="checkbox" id={`doc-${idx}`} checked={!!docs[key]} onChange={() => toggleDoc(key)} className="w-5 h-5 cursor-pointer accent-current" style={{ accentColor: accentColor }} />
+                      <label htmlFor={`doc-${idx}`} className="font-black uppercase tracking-widest text-[9px] cursor-pointer flex-1 truncate">{displayLabel}</label>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-
           <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_currentColor] flex items-center justify-center gap-3 ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
             <Lock size={20}/> {sending ? 'SALVANDO...' : 'SALVAR'}
           </button>
@@ -946,7 +942,7 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
 }
 
 function NavButton({ active, onClick, icon, label, accentColor }) {
-  const activeStyle = active ? { borderColor: accentColor, boxShadow: `0 4px 0 ${accentColor}`, backgroundColor: 'black', color: 'white', transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'rgba(128,128,128,0.3)' };
+  const activeStyle = active ? { borderColor: accentColor, boxShadow: `0 4px 0 ${accentColor}`, backgroundColor: 'black', color: 'white', transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'rgba(0,0,0,0.3)' };
   const activeClass = active ? '' : 'hover:border-current opacity-80 hover:opacity-100 hover:scale-[1.02]';
   return (
     <button onClick={onClick} className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`} style={{ fontSize: '1.05em', minWidth: '150px', ...activeStyle }}>
