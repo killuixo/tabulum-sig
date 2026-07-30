@@ -23,7 +23,6 @@ const Sun = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="4"/><path d="
 const Moon = (p) => <Icon {...p} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
 const Type = (p) => <Icon {...p} path={<><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></>} />;
 const RefreshCw = (p) => <Icon {...p} path={<><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></>} />;
-
 const CheckCircle2 = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>} />;
 const Clock = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>} />;
 const AlertCircle = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></>} />;
@@ -46,7 +45,6 @@ const Lock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="1
 const Unlock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></>} />;
 const Key = (p) => <Icon {...p} path={<><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></>} />;
 
-// --- CORES TEMA MONDRIAN E MATRIZES ---
 const COLORS = {
   mustard: '#FFDB58', 
   cyan: '#00b7eb',    
@@ -127,9 +125,6 @@ const parseCSV = (str) => {
   return result;
 };
 
-// ==========================================
-// COMPONENTES DE EDIÇÃO INLINE MÁGICA
-// ==========================================
 function EditableField({ value, onSave, multiline = false, isDark, textClass = "", accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value || '');
@@ -271,22 +266,16 @@ function EditableSelect({ value, options, onSave, isDark, textClass = "", isStat
   );
 }
 
-// ==========================================
-// APLICATIVO PRINCIPAL
-// ==========================================
 export default function App() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('kanban'); 
-  const [isGlobalManualOpen, setIsGlobalManualOpen] = useState(false);
   
-  // Custom Global Alerts to replace native alert() and confirm()
   const [dialog, setDialog] = useState({ isOpen: false, type: 'alert', message: '', onConfirm: null });
 
   const showAlert = (message) => setDialog({ isOpen: true, type: 'alert', message, onConfirm: null });
   const showConfirm = (message, onConfirm) => setDialog({ isOpen: true, type: 'confirm', message, onConfirm });
 
-  // Ajustes Locais (Navegador)
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('tabulum_dark');
     return saved !== null ? JSON.parse(saved) : true;
@@ -296,11 +285,9 @@ export default function App() {
     return saved !== null ? parseInt(saved) : 2;
   });
 
-  // URLs de Rede (Memória Local vs Matriz Global)
   const [webhookUtilidade, setWebhookUtilidade] = useState(() => localStorage.getItem('tabulum_wh_utilidade') || DEFAULT_WEBHOOK_UTILIDADE);
   const [emailCentral, setEmailCentral] = useState(() => localStorage.getItem('tabulum_email') || DEFAULT_EMAIL_CENTRAL);
 
-  // Sistema de Segurança Global
   const EMERGENCY_PHRASE = "Nada resiste ao bem e ao amor.";
   const [masterPassword, setMasterPassword] = useState(() => localStorage.getItem('tabulum_master_pwd') || 'admin');
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -312,7 +299,6 @@ export default function App() {
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // MOTOR CÍCLICO MONDRIAN (A Magia da Seleção)
   const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson];
   const [accentIndex, setAccentIndex] = useState(0);
   const accentColor = accentColors[accentIndex];
@@ -545,11 +531,14 @@ export default function App() {
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div 
             onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
+            className="cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-3"
             title="Ir para o Kanban"
           >
-            <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
-            <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-1">Sist. Integrado de Gestão • Dep. Marquito</p>
+            <img src="https://raw.githubusercontent.com/killuixo/tabulum-sig/refs/heads/main/icon-192.png" alt="TABULUM Icon" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
+            <div>
+              <h1 className="font-black uppercase tracking-widest text-2xl md:text-3xl leading-none">TABULUM</h1>
+              <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-1">Sist. Integrado de Gestão • Dep. Marquito</p>
+            </div>
           </div>
           <div className="hidden md:flex gap-2 items-center">
             <button 
@@ -654,6 +643,7 @@ export default function App() {
         )}
       </main>
 
+      { }
       {authModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
            <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} ${themeConfig.cardBg} shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
@@ -711,7 +701,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL GLOBAL DE AVISOS E CONFIRMAÇÕES (Substitui alert/confirm nativos) */}
       {dialog.isOpen && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
           <div 
@@ -749,10 +738,6 @@ export default function App() {
     </div>
   );
 }
-
-// ==========================================
-// COMPONENTES DE VISUALIZAÇÃO
-// ==========================================
 
 function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticulatorClick }) {
   const [collapsedCols, setCollapsedCols] = useState({});
@@ -805,7 +790,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
           </div>
         </div>
 
-        {/* LINK DE TRAMITAÇÃO KANBAN */}
         {(item['LINK']) && (
           <a 
             href={item['LINK']} 
@@ -838,7 +822,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
 
   return (
     <div className="flex flex-col gap-4 flex-1 min-h-[500px]">
-      {/* GAVETA DISCRETA: CONCLUÍDOS (ACIMA) */}
       <div className={`border-[4px] transition-colors duration-300 ${isConcluidoOpen ? theme.cardBg : 'bg-transparent'} ${theme.border}`}>
         <button 
           onClick={() => setIsConcluidoOpen(!isConcluidoOpen)}
@@ -861,7 +844,6 @@ function KanbanView({ data, theme, thick, med, isDark, onEntityClick, onArticula
         )}
       </div>
 
-      {/* KANBAN ATIVO (ABAIXO) */}
       <div className="flex flex-col md:flex-row gap-4 flex-1 items-stretch">
         {activeColumns.map((col) => {
           const isCollapsed = collapsedCols[col.id];
@@ -992,9 +974,6 @@ function DashboardView({ data, theme, thick, med, onEntityClick, onArticulatorCl
   );
 }
 
-// ==========================================
-// FICHA COMPLETA COM EDIÇÃO INLINE MÁGICA
-// ==========================================
 function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, theme, thick, isDark, equipeOptions, emailCentral, accentColor, cycleAccent, isUnlocked, requireAuth }) {
   const [stagedFiles, setStagedFiles] = useState({});
   const [isPadronizadorOpen, setIsPadronizadorOpen] = useState(false);
@@ -1040,7 +1019,10 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
   const toggleDoc = (docKey) => {
     const currentVal = String(item[docKey] || '').toUpperCase() === 'TRUE';
-    onUpdate({ [docKey]: currentVal ? 'FALSE' : 'TRUE' });
+    onUpdate({ 
+      [docKey]: currentVal ? 'FALSE' : 'TRUE',
+      'ÚLTIMA ATUALIZAÇÃO': `Checklist atualizado em ${new Date().toLocaleDateString('pt-BR')}`
+    });
   };
 
   const handleTouchStart = (key) => {
@@ -1067,19 +1049,24 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           <EditableSelect 
             value={item['STATUS DA ANÁLISE']} 
             options={['Aguardando Documentos', 'Em análise', 'Protocolado', 'Concluído']}
-            onSave={(val) => onUpdate({ 'STATUS DA ANÁLISE': val })}
+            onSave={(val) => {
+               const updates = { 
+                 'STATUS DA ANÁLISE': val, 
+                 'ÚLTIMA ATUALIZAÇÃO': `Status alterado para ${val} em ${new Date().toLocaleDateString('pt-BR')}` 
+               };
+               if (val.toLowerCase() === 'protocolado' && !item['DATA DO ENVIO ALESC']) {
+                  updates['DATA DO ENVIO ALESC'] = new Date().toLocaleDateString('pt-BR');
+               }
+               onUpdate(updates);
+            }}
             isDark={isDark}
             isStatus={true}
             textClass="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] transition-colors duration-500"
             accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth}
           />
-          <EditableField 
-            value={item['DATA DA SOLICITAÇÃO']} 
-            onSave={(val) => onUpdate({ 'DATA DA SOLICITAÇÃO': val })}
-            isDark={isDark}
-            textClass="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current opacity-70"
-            accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth}
-          />
+          <span className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current opacity-70">
+            {item['DATA DA SOLICITAÇÃO'] || 'Sem data'}
+          </span>
           {(item['LINK']) && (
              <a 
                href={item['LINK']} 
@@ -1129,28 +1116,31 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 
         <div className="flex flex-col gap-4">
           <div className={`p-4 border-[4px] transition-colors duration-500`} style={{ borderColor: statusColor || 'currentcolor' }}>
-            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC</span>
-            <div className="grid grid-cols-2 gap-2 font-bold w-full">
+            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC (Sincronizado)</span>
+            <div className="grid grid-cols-2 gap-3 font-bold w-full">
               <div className="flex flex-col items-start">
-                <span className="opacity-70 text-[0.8em]">Data Envio:</span> 
-                <EditableField value={item['DATA DO ENVIO ALESC']} onSave={(val) => onUpdate({ 'DATA DO ENVIO ALESC': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Data Envio:</span> 
+                <span className="mt-1 text-sm">{item['DATA DO ENVIO ALESC'] || '-'}</span>
               </div>
               <div className="flex flex-col items-start">
-                <span className="opacity-70 text-[0.8em]">Processo:</span> 
-                <EditableField value={item['Nº DO PROCESSO ALESC']} onSave={(val) => onUpdate({ 'Nº DO PROCESSO ALESC': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Processo:</span> 
+                <span className="mt-1 text-sm">{item['Nº DO PROCESSO ALESC'] || '-'}</span>
               </div>
-              <div className="col-span-2 mt-2 flex flex-col items-start">
-                <span className="opacity-70 text-[0.8em]">Estágio:</span> 
-                <EditableSelect value={item['ESTÁGIO ATUAL']} options={['Gabinete', 'Protocolo', 'CCJ', 'Plenário', 'Sancionado']} onSave={(val) => onUpdate({ 'ESTÁGIO ATUAL': val })} isDark={isDark} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+              <div className="col-span-2 mt-1 flex flex-col items-start">
+                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Estágio:</span> 
+                <span className="mt-1 text-sm">{item['ESTÁGIO ATUAL'] || '-'}</span>
               </div>
-              <div className="col-span-2 mt-2 flex flex-col items-start">
-                <span className="opacity-70 text-[0.8em]">Acompanhar Tramitação (Link):</span>
-                <EditableField value={item['LINK']} onSave={(val) => onUpdate({ 'LINK': val })} isDark={isDark} textClass="font-bold break-all max-w-full underline decoration-current/50 hover:decoration-current transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
-                {(item['LINK']) && (
-                   <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline opacity-70 hover:opacity-100 transition-opacity">
-                     <ExternalLink size={12}/> Abrir Link do Processo
+              <div className="col-span-2 mt-1 flex flex-col items-start">
+                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Acompanhar (Link):</span>
+                {item['LINK'] ? (
+                   <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="text-[0.8em] font-black uppercase mt-1 flex items-center gap-1 hover:underline opacity-70 hover:opacity-100 transition-opacity break-all">
+                     <ExternalLink size={12}/> Abrir Link ALESC
                    </a>
-                )}
+                ) : <span className="text-sm mt-1">-</span>}
+              </div>
+              <div className="col-span-2 mt-1 flex flex-col items-start">
+                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Última Atualização:</span> 
+                <span className="mt-1 text-[0.85em] opacity-80 italic font-medium">{item['ÚLTIMA ATUALIZAÇÃO'] || '-'}</span>
               </div>
             </div>
           </div>
@@ -1200,7 +1190,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
                   
                   {!isUnlocked && <Lock size={12} className="ml-auto opacity-30 group-hover:opacity-100 text-crimson" />}
 
-                  {/* TOOLTIP DO DOCUMENTO */}
                   {activeTooltip === key && (
                     <div className={`absolute bottom-full mb-1 right-0 sm:left-6 z-50 w-[260px] p-3 text-xs leading-relaxed border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${isDark ? 'bg-gray-800 text-white border-white' : 'bg-white text-black border-black'} animate-in fade-in zoom-in-95 duration-200 pointer-events-none`}>
                       <span className="font-black uppercase block mb-1 opacity-60 text-[9px] border-b-[2px] border-current pb-1">Exigências</span>
@@ -1298,9 +1287,6 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   );
 }
 
-// ==========================================
-// COMPONENTE: MANUAL DE REQUISITOS
-// ==========================================
 function ManualModal({ onClose, theme, thick, isDark }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -1377,9 +1363,6 @@ function ManualModal({ onClose, theme, thick, isDark }) {
   );
 }
 
-// ==========================================
-// PAINEL DO ARTICULADOR E DASHBOARD
-// ==========================================
 function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick, isDark }) {
   const procesos = data.filter(d => d.ARTICULADOR === nome);
   const sucessos = procesos.filter(d => {
@@ -1430,11 +1413,8 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick,
   );
 }
 
-// ==========================================
-// FORMULÁRIO DE NOVO PROCESSO
-// ==========================================
 function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equipeOptions, webhookUtilidade, emailCentral, accentColor, cycleAccent, requireAuth, showAlert }) {
-  const [formData, setFormData] = useState({ ENTIDADE: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'LINK': '', 'DOCUMENTOS NO DRIVE': '' });
+  const [formData, setFormData] = useState({ ENTIDADE: '', LIDERANÇA: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'DOCUMENTOS NO DRIVE': '' });
   const [stagedFiles, setStagedFiles] = useState({});
   const [sending, setSending] = useState(false);
   const [successMode, setSuccessMode] = useState(false);
@@ -1488,7 +1468,7 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
       try {
         const payload = {
           "action": "add",
-          "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": "", "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
+          "ENTIDADE": formData.ENTIDADE, "LIDERANÇA": formData.LIDERANÇA, "TELEFONE": formData.TELEFONE, "EMAIL": formData.EMAIL,
           "ARTICULADOR": formData.ARTICULADOR, "DATA DA SOLICITAÇÃO": new Date().toLocaleDateString('pt-BR'),
           "MANUAL/MODELOS ENVIADOS": "FALSE",
           "1 ATA DE FUNDAÇÃO": stagedFiles['1 ATA DE FUNDAÇÃO'] ? "TRUE" : "FALSE",
@@ -1500,9 +1480,10 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
           "8 ESTATUTO": stagedFiles['8 ESTATUTO'] ? "TRUE" : "FALSE",
           "9 RELATÓRIO DE ATIVIDADES": stagedFiles['9 RELATÓRIO DE ATIVIDADES'] ? "TRUE" : "FALSE",
           "STATUS DA ANÁLISE": "Aguardando Documentos", "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "",
-          "ESTÁGIO ATUAL": "Gabinete", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
-          "LINK": formData['LINK'],
-          "DOCUMENTOS NO DRIVE": formData['DOCUMENTOS NO DRIVE']
+          "ESTÁGIO ATUAL": "", "OBSERVAÇÕES": formData.OBSERVAÇÕES,
+          "LINK": "",
+          "DOCUMENTOS NO DRIVE": formData['DOCUMENTOS NO DRIVE'],
+          "ÚLTIMA ATUALIZAÇÃO": `Processo criado em ${new Date().toLocaleDateString('pt-BR')}`
         };
 
         await fetch(webhookUtilidade, {
@@ -1576,6 +1557,20 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                 placeholder="Ex: Associação de Moradores..." 
               />
             </div>
+            
+            <div className="flex flex-col gap-1">
+              <label className="font-black uppercase tracking-widest text-[10px]">Liderança / Presidente</label>
+              <input 
+                type="text" 
+                value={formData.LIDERANÇA} 
+                onChange={e => setFormData({...formData, LIDERANÇA: e.target.value})} 
+                onFocus={() => handleFocus('LIDERANÇA')} 
+                onBlur={() => setFocusedField(null)} 
+                className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} 
+                style={{ borderColor: focusedField === 'LIDERANÇA' ? accentColor : 'currentcolor' }} 
+                placeholder="Nome do líder..." 
+              />
+            </div>
 
             <div className="flex flex-col gap-1 relative">
               <label className="font-black uppercase tracking-widest text-[10px]">Articulador Responsável</label>
@@ -1632,20 +1627,6 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
                   style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'currentcolor' }} 
                 />
               </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="font-black uppercase tracking-widest text-[10px]">Acompanhar tramitação (Link do Processo)</label>
-              <input 
-                type="url" 
-                value={formData['LINK']} 
-                onChange={e => setFormData({...formData, 'LINK': e.target.value})} 
-                onFocus={() => handleFocus('LINK')} 
-                onBlur={() => setFocusedField(null)} 
-                className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 ${theme.inputBg}`} 
-                style={{ borderColor: focusedField === 'LINK' ? accentColor : 'currentcolor' }} 
-                placeholder="https://..." 
-              />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -1751,9 +1732,6 @@ function FormNovoPedido({ onClose, theme, thick, isDark, fetchFromWebhooks, equi
   );
 }
 
-// ==========================================
-// AJUSTES LOCAIS (SALA DE MÁQUINAS RASCUNHO E EQUIPE)
-// ==========================================
 function SettingsView({ 
   isDark, setIsDark, fontSizeLevel, setFontSizeLevel, 
   webhookUtilidade, emailCentral, 
@@ -1808,7 +1786,6 @@ function SettingsView({
         <Settings size={28}/> Ajustes do Sistema
       </h2>
 
-      {/* BLOCO 0: SEGURANÇA E ACESSO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'seguranca' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('seguranca'); cycleAccent(); }}
@@ -1860,7 +1837,6 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 1: APARÊNCIA E LEITURA */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'aparencia' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('aparencia'); cycleAccent(); }}
@@ -1913,7 +1889,6 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 3: BACKUP E RECUPERAÇÃO */}
       <div className={`border-[3px] transition-colors duration-300 ${theme.bg}`} style={{ borderColor: openSection === 'backup' ? accentColor : 'currentcolor' }}>
         <button 
           onClick={() => { toggleSection('backup'); cycleAccent(); }}
@@ -1955,7 +1930,6 @@ function SettingsView({
         )}
       </div>
 
-      {/* BLOCO 4: SISTEMA (AVANÇADO) */}
       <div className="mt-8 pt-4 border-t-[2px] border-dashed opacity-40 hover:opacity-100 transition-colors duration-300" style={{ borderTopColor: openNetwork ? accentColor : 'currentcolor' }}>
         <button onClick={() => { setOpenNetwork(!openNetwork); cycleAccent(); }} className="w-full py-2 flex items-center justify-between text-left">
           <h3 className="font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><Database size={14} /> Configurações de Rede (Avançado)</h3>
@@ -2012,7 +1986,6 @@ function SettingsView({
   );
 }
 
-// Utilitário de Botão de Navegação
 function NavButton({ active, onClick, icon, label, isDark, accentColor }) {
   const activeStyle = active 
     ? { 
