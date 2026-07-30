@@ -48,10 +48,10 @@ const COLORS = {
   black: '#000000'
 };
 
-// Variável Segura para Vercel: tenta process.env primeiro, se não existir assume a URL padrão da sua planilha
+// Variável estrita para Vercel: se não achar a variável de ambiente, fica vazia (protegendo seus dados)
 const DEFAULT_WEBHOOK_UTILIDADE = (typeof process !== 'undefined' && process.env && process.env.VITE_WEBHOOK_URL) 
   ? process.env.VITE_WEBHOOK_URL 
-  : "https://script.google.com/macros/s/AKfycbwHevz7Ty5n-VLtecvLz9qabQ1N-gr_g0G33z5GPlyvLocfyw0KlIuFKTQvSTnIp1zW/exec";
+  : "";
 
 const EMAIL_CENTRAL = "mandatoagroecologicodados@gmail.com"; 
 
