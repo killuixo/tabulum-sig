@@ -47,7 +47,6 @@ const COLORS = {
   black: '#000000'
 };
 
-// Segurança Vite
 let safeWebhookUrl = "";
 try { safeWebhookUrl = import.meta.env.VITE_WEBHOOK_URL; } catch (e) {}
 
@@ -235,7 +234,7 @@ export default function App() {
     setSyncStatus('Sincronizando Banco Central...');
     const noCache = `t=${new Date().getTime()}`;
     if (!webhookUtilidade) {
-      setSyncStatus('⚠️ URL de Utilidade Pública não configurada no Vercel (VITE_WEBHOOK_URL).');
+      setSyncStatus('⚠️ URL de Utilidade Pública não configurada (VITE_WEBHOOK_URL).');
       setLoading(false);
       return;
     }
@@ -268,7 +267,7 @@ export default function App() {
       } else throw new Error('Nenhum registro válido encontrado.');
     } catch (error) { 
       console.error(error); 
-      setSyncStatus(`⚠️ Utilidade Pública: ${error.message}`);
+      setSyncStatus(`⚠️ Sincronização: ${error.message}`);
     } finally { setLoading(false); }
   };
 
@@ -363,7 +362,6 @@ export default function App() {
         )}
       </main>
 
-      {}
       {authModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
            <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
@@ -404,9 +402,6 @@ export default function App() {
   );
 }
 
-// ==========================================
-// COMPONENTES DE VISUALIZAÇÃO
-// ==========================================
 function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick }) {
   const [collapsedCols, setCollapsedCols] = useState({});
   const [isConcluidoOpen, setIsConcluidoOpen] = useState(false);
@@ -420,6 +415,36 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
 
   const getColData = (status) => data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase() === status.toLowerCase());
   const concluidoData = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('concluído') || String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('concluido'));
+
+  const renderConcluidoCard = (item, i) => {
+    return (
+      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer bg-white text-black border-[3px] border-black flex flex-col gap-2`}>
+        <div className="flex justify-between items-start gap-2 border-b-[2px] border-black pb-2">
+          <h3 className="font-black uppercase leading-tight text-sm">{item.ENTIDADE || 'Sem Nome'}</h3>
+        </div>
+        <div className="flex justify-between items-center mt-1">
+          <div className="flex flex-col">
+            <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest">Articulador</span>
+            <span onClick={(e) => { e.stopPropagation(); onArticulatorClick(item.ARTICULADOR); }} className="font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer text-xs">{item.ARTICULADOR || '-'}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest block">Aprovação</span>
+            <span className="font-bold text-[0.8em]">
+              {item['ÚLTIMA ATUALIZAÇÃO'] ? item['ÚLTIMA ATUALIZAÇÃO'].replace(/[^0-9/]/g, '').trim() || item['DATA DA SOLICITAÇÃO'] : item['DATA DA SOLICITAÇÃO'] || '-'}
+            </span>
+          </div>
+        </div>
+        <div className="mt-2 flex items-center justify-between">
+           <span className="px-2 py-1 bg-black text-white font-black uppercase tracking-widest text-[0.65em]">LEI APROVADA</span>
+           {item['LINK DA LEI'] && (
+             <a href={item['LINK DA LEI']} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[0.7em] font-black uppercase tracking-widest text-cyan hover:underline transition-all" onClick={e => e.stopPropagation()}>
+               <ExternalLink size={14} /> Abrir Lei
+             </a>
+           )}
+        </div>
+      </div>
+    );
+  };
 
   const renderCard = (item, i, colColor) => {
     let hasCount = 0;
@@ -462,7 +487,7 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
         {isConcluidoOpen && (
           <div className="p-4 bg-black/5 border-t-[4px] border-current">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[50vh] overflow-y-auto pr-2">
-               {concluidoData.map((item, i) => renderCard(item, i, COLORS.black))}
+               {concluidoData.map((item, i) => renderConcluidoCard(item, i))}
                {concluidoData.length === 0 && <div className="col-span-full text-center opacity-40 p-6 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.8em]">Nenhum processo concluído</div>}
             </div>
           </div>
