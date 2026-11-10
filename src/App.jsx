@@ -29,6 +29,9 @@ const BookOpen = (p) => <Icon {...p} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 
 const Edit2 = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>} />;
 const ExternalLink = (p) => <Icon {...p} path={<><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></>} />;
 const Lock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
+const Save = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>} />;
+const Bell = (p) => <Icon {...p} path={<><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></>} />;
+const ChevronDown = (p) => <Icon {...p} path={<polyline points="6 9 12 15 18 9"/>} />;
 const Unlock = (p) => <Icon {...p} path={<><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></>} />;
 
 const MondrianSpinner = ({ size = 48 }) => (
@@ -90,6 +93,93 @@ const getProgressColor = (count) => {
   if (count <= 3) return COLORS.crimson;
   if (count <= 7) return COLORS.mustard;
   return COLORS.cyan;
+};
+
+
+// ============================================================
+// AVISOS / CONTATO COM ENTIDADE
+// ============================================================
+const COL_CONTATO = 'ÚLTIMO CONTATO COM ENTIDADE';
+const ORANGE = '#FF8A1F';
+const CONTATO_SUGESTOES = ['Relatório de atividades', 'Novos documentos', 'Atualização do andamento', 'Resposta à diligência', 'Primeiro contato'];
+const DOCS_SHORT = {
+  '1 ATA DE FUNDAÇÃO': 'Ata de fundação', '2 ATA DE ELEIÇÃO/POSSE': 'Ata de eleição/posse', '3 CNPJ': 'CNPJ',
+  '4 DECLARAÇÃO NÃO OSCIP': 'Decl. não OSCIP', '5 DECLARAÇÃO FUNCIONAMENTO': 'Decl. funcionamento',
+  '6 - 7 DECLARAÇÃO REMUNERAÇÃO': 'Decl. remuneração', '8 ESTATUTO': 'Estatuto', '9 RELATÓRIO DE ATIVIDADES': 'Relatório de atividades'
+};
+
+const norm = (v) => String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+const isConcluido = (item) => norm(item['STATUS DA ANÁLISE']).includes('conclu');
+const isDiligencia = (item) => !isConcluido(item) && norm(item['ESTÁGIO ATUAL']).includes('diligenc');
+const isTrue = (v) => String(v || '').toUpperCase() === 'TRUE';
+const missingDocs = (item) => DOCS_KEYS.filter(k => !isTrue(item[k]));
+
+const pad2 = (n) => String(n).padStart(2, '0');
+const formatBR = (d) => `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+const todayInputValue = () => { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+
+const parseBRDate = (str) => {
+  const m = String(str || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (!m) return null;
+  let y = parseInt(m[3], 10); if (y < 100) y += 2000;
+  const d = new Date(y, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+  return isNaN(d.getTime()) ? null : d;
+};
+
+const daysSince = (date) => {
+  const now = new Date();
+  const a = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const b = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.max(0, Math.round((a - b) / 86400000));
+};
+
+// Lê "DD/MM/AAAA | o que foi pedido" (ou só a data) da coluna X
+const parseContato = (item) => {
+  const raw = String(item[COL_CONTATO] || '').trim();
+  if (!raw) return null;
+  const date = parseBRDate(raw);
+  if (!date) return { date: null, days: null, texto: raw, level: 0 };
+  const texto = raw.replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*[|\-–—:]?\s*/, '').trim();
+  const days = daysSince(date);
+  return { date, days, texto, level: contatoLevel(days) };
+};
+
+// 0 = em dia | 1 = +1 semana | 2 = +15 dias | 3 = +1 mês (urgente)
+const contatoLevel = (days) => (days >= 30 ? 3 : days >= 15 ? 2 : days >= 7 ? 1 : 0);
+const LEVEL_INFO = {
+  0: { label: 'EM DIA', bg: COLORS.white, fg: COLORS.black, border: COLORS.black },
+  1: { label: '+1 SEMANA', bg: COLORS.mustard, fg: COLORS.black, border: COLORS.black },
+  2: { label: '+15 DIAS', bg: ORANGE, fg: COLORS.black, border: COLORS.black },
+  3: { label: 'URGENTE · +1 MÊS', bg: COLORS.crimson, fg: COLORS.white, border: COLORS.black }
+};
+const daysLabel = (d) => (d === 0 ? 'hoje' : d === 1 ? 'há 1 dia' : `há ${d} dias`);
+
+const computeAlerts = (data) => {
+  const ativos = data.filter(d => !isConcluido(d));
+  const withContato = ativos.map(item => ({ item, contato: parseContato(item) }));
+
+  const diligencias = withContato.filter(x => isDiligencia(x.item))
+    .sort((a, b) => (b.contato?.days ?? 9999) - (a.contato?.days ?? 9999));
+
+  const contatos = withContato.filter(x => x.contato && x.contato.level > 0)
+    .sort((a, b) => b.contato.days - a.contato.days);
+
+  const documentos = withContato.map(x => ({ ...x, faltam: missingDocs(x.item) })).filter(x => x.faltam.length > 0)
+    .sort((a, b) => a.faltam.length - b.faltam.length);
+
+  const lacunas = withContato.map(x => {
+    const it = x.item; const gaps = [];
+    if (!String(it.ARTICULADOR || '').trim()) gaps.push('Sem articulador');
+    if (!String(it.EMAIL || '').trim() && !String(it.TELEFONE || '').trim()) gaps.push('Sem e-mail nem telefone');
+    if (!String(it['DOCUMENTOS NO DRIVE'] || '').trim()) gaps.push('Sem pasta no Drive');
+    if (!isTrue(it['MANUAL/MODELOS ENVIADOS']) && norm(it['STATUS DA ANÁLISE']).includes('aguardando')) gaps.push('Manual/modelos não enviados');
+    if (norm(it['STATUS DA ANÁLISE']) === 'protocolado' && !String(it['Nº DO PROCESSO ALESC'] || '').trim()) gaps.push('Protocolado sem nº do processo');
+    if (norm(it['STATUS DA ANÁLISE']) === 'protocolado' && !String(it['LINK'] || '').trim()) gaps.push('Sem link da ALESC');
+    if ((isDiligencia(it) || norm(it['STATUS DA ANÁLISE']).includes('aguardando')) && !x.contato) gaps.push('Pendência sem contato registrado');
+    return { ...x, gaps };
+  }).filter(x => x.gaps.length > 0);
+
+  return { diligencias, contatos, documentos, lacunas };
 };
 
 const parseCSV = (str) => {
@@ -211,6 +301,7 @@ export default function App() {
   const [activeFicha, setActiveFicha] = useState(null);
   const [activeArticulador, setActiveArticulador] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [openAlert, setOpenAlert] = useState(null);
 
   const accentColors = [COLORS.mustard, COLORS.cyan, COLORS.crimson];
   const [accentIndex, setAccentIndex] = useState(0);
@@ -256,7 +347,7 @@ export default function App() {
             let newItem = {};
             for (let key in item) {
               let val = item[key];
-              if (typeof val === 'string' && val.includes('T') && val.includes('Z') && val.length > 15) val = new Date(val).toLocaleDateString('pt-BR');
+              if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(val)) val = new Date(val).toLocaleDateString('pt-BR');
               newItem[key] = val;
             }
             return newItem;
@@ -296,6 +387,10 @@ export default function App() {
   const themeConfig = { bg: 'bg-[#f4f4f0]', text: 'text-gray-900', border: 'border-black', cardBg: 'bg-white', inputBg: 'bg-gray-100' };
   const bThick = `border-[4px] ${themeConfig.border}`; 
   const bMedium = `border-[2px] ${themeConfig.border}`;
+  const alerts = computeAlerts(data);
+  const urgentes = alerts.contatos.filter(x => x.contato.level === 3).length;
+  const goToEntity = (item) => { setOpenAlert(null); setIsFormOpen(false); setActiveArticulador(null); handleEntityClick(item); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  useEffect(() => { const h = (e) => { if (e.key === 'Escape') setOpenAlert(null); }; window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h); }, []);
   const articuladoresUnicos = Array.from(new Set(data.map(d => String(d.ARTICULADOR || '').trim()).filter(Boolean)));
 
   const mondrianStyles = `
@@ -312,7 +407,10 @@ export default function App() {
 
   return (
     <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} text-xs transition-colors duration-300 flex flex-col`}>
-      <style>{mondrianStyles}</style>
+      <style>{mondrianStyles}{`@keyframes tabPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(220,20,60,.7); } 50% { box-shadow: 0 0 0 7px rgba(220,20,60,0); } } .tab-pulse { animation: tabPulse 1.6s infinite; }`}</style>
+      {!loading && data.length > 0 && (
+        <AlertBar alerts={alerts} urgentes={urgentes} openAlert={openAlert} setOpenAlert={setOpenAlert} onItemClick={goToEntity} />
+      )}
       <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border} bg-white`}>
         <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
           <div onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} className="cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-4" title="Ir para o Kanban">
@@ -448,10 +546,13 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
 
   const renderCard = (item, i, colColor) => {
     let hasCount = 0;
+    const cardContato = parseContato(item);
+    const cardDilig = isDiligencia(item);
     const itemProgressBoxes = DOCS_KEYS.map(key => { const hasDoc = (String(item[key] || '').toUpperCase() === 'TRUE'); if (hasDoc) hasCount++; return { key, has: hasDoc }; });
 
     return (
-      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer bg-[#f4f4f0] text-black`}>
+      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer bg-[#f4f4f0] text-black`} style={cardContato && cardContato.level === 3 ? { borderColor: COLORS.crimson, borderWidth: '4px' } : (cardDilig ? { borderColor: COLORS.crimson } : {})}>
+        {cardDilig && <div className="-mx-3 -mt-3 md:-mx-4 md:-mt-4 mb-3 px-3 py-1 theme-crimson font-black uppercase tracking-widest text-[0.65em] flex items-center gap-2"><AlertCircle size={13} /> Diligência em aberto</div>}
         <h3 className="font-black mb-3 uppercase leading-tight" style={{ fontSize: '1.1em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
         <div className="flex justify-between items-end gap-2">
           <div className="flex flex-col">
@@ -468,6 +569,12 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
           <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: colColor || 'currentcolor' }} onClick={e => e.stopPropagation()}>
             <ExternalLink size={14} /> Acompanhar tramitação
           </a>
+        )}
+
+        {cardContato ? (
+          <div className="mt-3"><ContatoTag contato={cardContato} /></div>
+        ) : (cardDilig || norm(item['STATUS DA ANÁLISE']).includes('aguardando')) && (
+          <div className="mt-3 inline-block px-2 py-1 border-[2px] border-dashed border-black font-black uppercase tracking-wider text-[0.6em] opacity-60">Sem contato registrado</div>
         )}
 
         <div className="mt-4 flex gap-1 h-3">
@@ -559,10 +666,10 @@ function DashboardView({ data, theme, thick, onEntityClick, onArticulatorClick }
         </div>
       </div>
       <div className={`lg:col-span-4 mt-4 ${thick} bg-white overflow-x-auto max-h-[500px]`}>
-        <table className="w-full text-left border-collapse min-w-[600px]">
+        <table className="w-full text-left border-collapse min-w-[760px]">
           <thead className="sticky top-0 z-10 bg-white">
             <tr className={`border-b-[6px] ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
-              <th className="p-4 border-r-[4px] border-current">Entidade</th><th className="p-4 border-r-[4px] border-current">Articulador</th><th className="p-4 border-r-[4px] border-current">Status</th><th className="p-4">Solicitação</th>
+              <th className="p-4 border-r-[4px] border-current">Entidade</th><th className="p-4 border-r-[4px] border-current">Articulador</th><th className="p-4 border-r-[4px] border-current">Status</th><th className="p-4 border-r-[4px] border-current">Último contato</th><th className="p-4">Solicitação</th>
             </tr>
           </thead>
           <tbody>
@@ -571,6 +678,7 @@ function DashboardView({ data, theme, thick, onEntityClick, onArticulatorClick }
                 <td className="p-4 border-r-[4px] border-current font-bold cursor-pointer hover:underline decoration-2" onClick={() => onEntityClick(row)}>{row.ENTIDADE}</td>
                 <td className="p-4 border-r-[4px] border-current font-bold opacity-80 cursor-pointer hover:underline decoration-2" onClick={() => onArticulatorClick(row.ARTICULADOR)}>{row.ARTICULADOR}</td>
                 <td className="p-4 border-r-[4px] border-current"><span className="px-2 py-1 font-black uppercase text-[0.75em] tracking-widest" style={{ backgroundColor: getStatusColor(row['STATUS DA ANÁLISE']) || 'black', color: getTextColorForStatus(getStatusColor(row['STATUS DA ANÁLISE'])) || 'black' }}>{row['STATUS DA ANÁLISE'] || '-'}</span></td>
+                <td className="p-4 border-r-[4px] border-current">{isConcluido(row) ? <span className="opacity-40 font-bold">-</span> : (parseContato(row) ? <ContatoTag contato={parseContato(row)} compact /> : <span className="opacity-40 font-bold">-</span>)}</td>
                 <td className="p-4 font-bold opacity-80">{row['DATA DA SOLICITAÇÃO'] || '-'}</td>
               </tr>
             ))}
@@ -635,6 +743,8 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           )}
         </div>
       </div>
+
+      <ContatoBloco item={item} onUpdate={onUpdate} isUnlocked={isUnlocked} requireAuth={requireAuth} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="flex flex-col gap-4">
@@ -829,6 +939,9 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
 
 function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOptions, webhookUtilidade, accentColor, cycleAccent, requireAuth, showAlert, setActiveFicha, data }) {
   const [formData, setFormData] = useState({ ENTIDADE: '', LIDERANÇA: '', ARTICULADOR: '', EMAIL: '', TELEFONE: '', OBSERVAÇÕES: '', 'DOCUMENTOS NO DRIVE': '' });
+  const [contatoFeito, setContatoFeito] = useState(false);
+  const [contatoData, setContatoData] = useState(todayInputValue());
+  const [contatoTexto, setContatoTexto] = useState('');
   const [docs, setDocs] = useState({});
   const [sending, setSending] = useState(false);
   const [busca, setBusca] = useState('');
@@ -865,6 +978,10 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
           "DATA DO ENVIO ALESC": "", "Nº DO PROCESSO ALESC": "", "ESTÁGIO ATUAL": "", "LINK": "",
           "ÚLTIMA ATUALIZAÇÃO": `Processo criado em ${new Date().toLocaleDateString('pt-BR')}`
         };
+        if (contatoFeito && contatoData) {
+          const [cy, cm, cd] = contatoData.split('-');
+          payload[COL_CONTATO] = `${cd}/${cm}/${cy} | ${contatoTexto.trim() || 'Contato registrado'}`;
+        }
         
         DOCS_KEYS.forEach(k => { payload[k] = docs[k] ? "TRUE" : "FALSE"; });
         await fetch(webhookUtilidade, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
@@ -934,6 +1051,19 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
               <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} onFocus={() => handleFocus('OBSERVAÇÕES')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold resize-none transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'currentcolor' }} />
             </div>
             
+            <div className="p-3 border-[3px] border-current bg-white flex flex-col gap-3">
+              <label className="flex items-center gap-3 cursor-pointer font-black uppercase tracking-widest text-[10px]">
+                <input type="checkbox" checked={contatoFeito} onChange={e => setContatoFeito(e.target.checked)} className="w-5 h-5" style={{ accentColor: accentColor }} />
+                Já entrei em contato com a entidade
+              </label>
+              {contatoFeito && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input type="date" value={contatoData} onChange={e => setContatoData(e.target.value)} className="p-3 border-[3px] border-current outline-none font-bold bg-white text-black" />
+                  <input type="text" value={contatoTexto} onChange={e => setContatoTexto(e.target.value)} placeholder="O que pedi? Ex: ata de eleição e CNPJ" className="md:col-span-2 p-3 border-[3px] border-current outline-none font-bold bg-white text-black" />
+                </div>
+              )}
+            </div>
+
             <div className="flex flex-col gap-2 mt-2">
               <a href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${formData.ENTIDADE || '[NOME DA ENTIDADE]'}`)}`} className={`p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 bg-black text-white hover-cyan`}>
                 <Mail size={18} /> Enviar Documentos por E-mail
@@ -960,6 +1090,191 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
       {showDropdown && <div className="fixed inset-0 z-0" onClick={() => setShowDropdown(false)}></div>}
     </div>
     </>
+  );
+}
+
+
+function ContatoTag({ contato, compact = false }) {
+  if (!contato) return null;
+  const info = LEVEL_INFO[contato.level];
+  return (
+    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 px-2 py-1 border-[2px] font-black uppercase tracking-wider text-[0.65em] leading-tight"
+      style={{ backgroundColor: info.bg, color: info.fg, borderColor: info.border }}>
+      <Mail size={11} />
+      <span>{contato.days === null ? 'Contato' : `Contato ${daysLabel(contato.days)}`}</span>
+      {contato.level > 0 && <span className="px-1 bg-black text-white">{info.label}</span>}
+      {!compact && contato.texto && <span className="normal-case tracking-normal font-bold opacity-90 basis-full">Pedido: {contato.texto}</span>}
+    </span>
+  );
+}
+
+function AlertBar({ alerts, urgentes, openAlert, setOpenAlert, onItemClick }) {
+  const { diligencias, contatos, documentos, lacunas } = alerts;
+  const toggle = (id) => setOpenAlert(prev => (prev === id ? null : id));
+
+  const tabs = [
+    { id: 'diligencias', label: 'Diligências', count: diligencias.length, bg: COLORS.crimson, fg: COLORS.white, hot: diligencias.length > 0, big: true },
+    { id: 'contatos', label: 'Cobranças', count: contatos.length, bg: urgentes > 0 ? COLORS.crimson : contatos.length > 0 ? COLORS.mustard : '#2a2a2a', fg: urgentes > 0 ? COLORS.white : contatos.length > 0 ? COLORS.black : COLORS.white, hot: urgentes > 0, extra: urgentes > 0 ? `${urgentes} urgente${urgentes > 1 ? 's' : ''}` : null },
+    { id: 'documentos', label: 'Documentos', count: documentos.length, bg: documentos.length ? COLORS.mustard : '#2a2a2a', fg: documentos.length ? COLORS.black : COLORS.white },
+    { id: 'lacunas', label: 'Lacunas', count: lacunas.length, bg: lacunas.length ? COLORS.cyan : '#2a2a2a', fg: lacunas.length ? COLORS.black : COLORS.white }
+  ];
+
+  const Row = ({ item, children, right }) => (
+    <button onClick={() => onItemClick(item)} className="w-full text-left p-3 border-b-[2px] border-black hover:bg-black/5 transition-colors flex flex-col gap-1.5">
+      <div className="flex items-start justify-between gap-3">
+        <span className="font-black uppercase leading-tight text-[0.9em] break-words">{item.ENTIDADE}</span>
+        {right}
+      </div>
+      {children}
+    </button>
+  );
+
+  const Empty = ({ txt }) => <div className="p-6 text-center font-black uppercase tracking-widest opacity-40 text-[0.8em]">{txt}</div>;
+  const Group = ({ title, color, fg = 'black', children }) => (
+    <div>
+      <div className="px-3 py-1.5 font-black uppercase tracking-widest text-[0.7em] border-b-[2px] border-black" style={{ backgroundColor: color, color: fg }}>{title}</div>
+      {children}
+    </div>
+  );
+  const Chip = ({ children, bg = COLORS.black, fg = COLORS.white }) => <span className="px-1.5 py-0.5 font-black uppercase tracking-wider text-[0.62em]" style={{ backgroundColor: bg, color: fg }}>{children}</span>;
+  const who = (item) => item.ARTICULADOR ? <span className="text-[0.7em] font-bold opacity-60 uppercase tracking-widest whitespace-nowrap">{item.ARTICULADOR}</span> : null;
+
+  const renderPanel = () => {
+    if (openAlert === 'diligencias') {
+      if (!diligencias.length) return <Empty txt="Nenhuma diligência em aberto ✓" />;
+      return diligencias.map(({ item, contato }) => (
+        <Row key={item.ENTIDADE} item={item} right={who(item)}>
+          <div className="flex flex-wrap gap-1.5 items-center">
+            <Chip bg={COLORS.crimson}>Diligência</Chip>
+            {contato ? <ContatoTag contato={contato} /> : <span className="px-2 py-1 border-[2px] border-dashed border-black font-black uppercase tracking-wider text-[0.65em] text-crimson">Nenhum contato registrado — cobrar entidade</span>}
+          </div>
+        </Row>
+      ));
+    }
+    if (openAlert === 'contatos') {
+      if (!contatos.length) return <Empty txt="Nenhum contato com prazo vencido ✓" />;
+      const g = (lvl) => contatos.filter(x => x.contato.level === lvl);
+      return (
+        <>
+          {[[3, 'Urgente · mais de 1 mês sem retorno', COLORS.crimson, 'white'], [2, '15 dias ou mais', ORANGE, 'black'], [1, '1 semana ou mais', COLORS.mustard, 'black']].map(([lvl, title, color, fg]) => g(lvl).length > 0 && (
+            <Group key={lvl} title={`${title} (${g(lvl).length})`} color={color} fg={fg}>
+              {g(lvl).map(({ item, contato }) => (
+                <Row key={item.ENTIDADE} item={item} right={who(item)}>
+                  <ContatoTag contato={contato} />
+                </Row>
+              ))}
+            </Group>
+          ))}
+        </>
+      );
+    }
+    if (openAlert === 'documentos') {
+      if (!documentos.length) return <Empty txt="Nenhum documento faltando ✓" />;
+      return documentos.map(({ item, faltam, contato }) => (
+        <Row key={item.ENTIDADE} item={item} right={<Chip bg={COLORS.mustard} fg="black">{faltam.length} faltando</Chip>}>
+          <span className="text-[0.75em] font-bold opacity-80 leading-snug">{faltam.map(k => DOCS_SHORT[k] || k).join(' · ')}</span>
+          {contato ? <ContatoTag contato={contato} compact /> : <span className="text-[0.65em] font-black uppercase tracking-wider opacity-50">Sem cobrança registrada</span>}
+        </Row>
+      ));
+    }
+    if (openAlert === 'lacunas') {
+      if (!lacunas.length) return <Empty txt="Nenhuma lacuna encontrada ✓" />;
+      return lacunas.map(({ item, gaps }) => (
+        <Row key={item.ENTIDADE} item={item} right={who(item)}>
+          <div className="flex flex-wrap gap-1">{gaps.map(gp => <Chip key={gp} bg={COLORS.cyan} fg="black">{gp}</Chip>)}</div>
+        </Row>
+      ));
+    }
+    return null;
+  };
+
+  const panelTitle = { diligencias: 'Pedidos de diligência em aberto', contatos: 'Cobranças às entidades por prazo', documentos: 'Documentos faltantes', lacunas: 'Outras lacunas e pendências' };
+
+  return (
+    <div className="sticky top-0 z-[120]">
+      {openAlert && <div className="fixed inset-0 z-[-1]" onClick={() => setOpenAlert(null)} />}
+      <div className="bg-black text-white border-b-[4px] border-black flex flex-wrap items-stretch gap-2 px-3 py-2">
+        <div className="hidden sm:flex items-center gap-2 pr-2 font-black uppercase tracking-widest text-[0.7em] opacity-70"><Bell size={16} /> Avisos</div>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => toggle(t.id)}
+            className={`flex items-center gap-2 px-3 ${t.big ? 'py-2' : 'py-1.5'} font-black uppercase tracking-widest text-[0.7em] md:text-[0.75em] border-[3px] transition-transform hover:-translate-y-0.5 ${t.hot ? 'tab-pulse' : ''}`}
+            style={{ backgroundColor: t.bg, color: t.fg, borderColor: openAlert === t.id ? '#fff' : t.bg }}>
+            <span>{t.label}</span>
+            <span className="px-1.5 min-w-[1.6em] text-center" style={{ backgroundColor: t.fg, color: t.bg }}>{t.count}</span>
+            {t.extra && <span className="hidden md:inline px-1.5 bg-white text-black">{t.extra}</span>}
+            <ChevronDown size={12} className={`transition-transform ${openAlert === t.id ? 'rotate-180' : ''}`} />
+          </button>
+        ))}
+      </div>
+      {openAlert && (
+        <div className="absolute left-0 right-0 md:left-3 md:right-auto md:w-[min(560px,calc(100vw-24px))] bg-white text-black border-[4px] border-black shadow-[8px_8px_0px_rgba(0,0,0,0.4)] max-h-[70vh] overflow-y-auto">
+          <div className="sticky top-0 z-10 bg-black text-white px-3 py-2 flex items-center justify-between font-black uppercase tracking-widest text-[0.7em]">
+            <span>{panelTitle[openAlert]}</span>
+            <button onClick={() => setOpenAlert(null)} className="text-base leading-none hover:scale-110 transition-transform">X</button>
+          </div>
+          {renderPanel()}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ContatoBloco({ item, onUpdate, isUnlocked, requireAuth }) {
+  const [data, setData] = useState(todayInputValue());
+  const [texto, setTexto] = useState('');
+  const contato = parseContato(item);
+  const diligencia = isDiligencia(item);
+  const info = contato ? LEVEL_INFO[contato.level] : null;
+  const accent = contato && contato.level > 0 ? info.bg : (diligencia ? COLORS.crimson : 'currentcolor');
+
+  const registrar = () => {
+    const [y, m, d] = data.split('-');
+    if (!y || !m || !d) return;
+    const dataBR = `${d}/${m}/${y}`;
+    onUpdate({ [COL_CONTATO]: `${dataBR} | ${texto.trim() || 'Contato registrado'}` });
+    setTexto('');
+  };
+  const limpar = () => onUpdate({ [COL_CONTATO]: '' });
+
+  return (
+    <div className="border-[4px] flex flex-col" style={{ borderColor: accent }}>
+      <div className="px-4 py-2 flex flex-wrap items-center justify-between gap-2 font-black uppercase tracking-widest text-[0.75em]" style={{ backgroundColor: accent === 'currentcolor' ? '#000' : accent, color: contato && contato.level > 0 ? info.fg : (accent === COLORS.crimson ? '#fff' : '#fff') }}>
+        <span className="flex items-center gap-2"><Mail size={16} /> Último contato com a entidade</span>
+        {contato && contato.level > 0 && <span className="px-2 bg-black text-white">{info.label}</span>}
+      </div>
+      <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
+          {diligencia && <div className="px-3 py-2 theme-crimson font-black uppercase tracking-widest text-[0.7em] flex items-center gap-2"><AlertCircle size={16} /> Requerimento de diligência em aberto</div>}
+          {contato ? (
+            <>
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-black leading-none">{contato.days === null ? '—' : contato.days}</span>
+                <span className="font-black uppercase tracking-widest text-[0.7em] opacity-70">{contato.days === null ? 'data não reconhecida' : contato.days === 1 ? 'dia sem retorno' : 'dias sem retorno'}</span>
+              </div>
+              <div className="text-[0.85em] font-bold">{contato.date ? formatBR(contato.date) : ''}</div>
+              <div className="p-2 bg-[#f4f4f0] border-[2px] border-current text-[0.85em] font-bold leading-snug"><span className="block text-[0.7em] uppercase font-black opacity-60 tracking-widest">Pedido feito</span>{contato.texto || '—'}</div>
+              <button onClick={() => requireAuth(limpar)} className="self-start flex items-center gap-2 px-3 py-1.5 border-[2px] border-current font-black uppercase tracking-widest text-[0.65em] opacity-60 hover:opacity-100 hover-cyan transition-all">
+                {!isUnlocked && <Lock size={11} />} Entidade respondeu — limpar alerta
+              </button>
+            </>
+          ) : (
+            <div className="p-3 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.7em] opacity-60">Nenhum contato registrado ainda</div>
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <span className="font-black uppercase tracking-widest text-[0.65em] opacity-70">Registrar novo contato</span>
+          <input type="date" value={data} onChange={e => setData(e.target.value)} className="p-2 border-[3px] border-current font-bold bg-white text-black outline-none" />
+          <input type="text" value={texto} onChange={e => setTexto(e.target.value)} placeholder="O que foi pedido? Ex: relatório de atividades" className="p-2 border-[3px] border-current font-bold bg-white text-black outline-none"
+            onKeyDown={e => { if (e.key === 'Enter') requireAuth(registrar); }} />
+          <div className="flex flex-wrap gap-1">
+            {CONTATO_SUGESTOES.map(sug => <button key={sug} type="button" onClick={() => setTexto(sug)} className="px-2 py-1 border-[2px] border-current font-black uppercase tracking-wider text-[0.6em] hover:bg-black hover:text-white transition-colors">{sug}</button>)}
+          </div>
+          <button onClick={() => requireAuth(registrar)} className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white font-black uppercase tracking-widest text-[0.75em] border-[3px] border-black hover:-translate-y-1 transition-transform shadow-[3px_3px_0px_currentColor]">
+            {isUnlocked ? <Save size={14} /> : <Lock size={14} />} Registrar contato
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
