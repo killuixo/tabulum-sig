@@ -228,12 +228,12 @@ function EditableField({ value, onSave, multiline = false, textClass = "", accen
   if (editing) {
     return multiline ? (
       <textarea autoFocus value={val} onChange={e => setVal(e.target.value)} onBlur={handleSave} onKeyDown={handleKeyDown} 
-        className={`w-full p-2 border-[2px] outline-none resize-y transition-colors duration-300 bg-white text-black`} 
+        className={`w-full p-2 border outline-none resize-y transition-colors duration-300 bg-white text-black`} 
         style={{ borderColor: accentColor }} rows={4} 
       />
     ) : (
       <input autoFocus type="text" value={val} onChange={e => setVal(e.target.value)} onBlur={handleSave} onKeyDown={handleKeyDown} 
-        className={`w-full p-1 border-b-[2px] outline-none transition-colors duration-300 bg-transparent text-black`} 
+        className={`w-full p-1 border-b outline-none transition-colors duration-300 bg-transparent text-black`} 
         style={{ borderColor: accentColor }} 
       />
     );
@@ -259,7 +259,7 @@ function EditableSelect({ value, options, onSave, textClass = "", accentColor, c
   if (editing) {
     return (
       <select autoFocus value={value || ''} onChange={e => { setEditing(false); if(e.target.value !== value) onSave(e.target.value); }} onBlur={() => setEditing(false)} 
-        className={`p-1 border-[2px] outline-none transition-colors duration-300 bg-white text-black`} style={{ borderColor: accentColor }}
+        className={`p-1 border outline-none transition-colors duration-300 bg-white text-black`} style={{ borderColor: accentColor }}
       >
         <option value="">Selecione...</option>
         {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -384,9 +384,9 @@ export default function App() {
     }
   };
 
-  const themeConfig = { bg: 'bg-[#f4f4f0]', text: 'text-gray-900', border: 'border-black', cardBg: 'bg-white', inputBg: 'bg-gray-100' };
-  const bThick = `border-[4px] ${themeConfig.border}`; 
-  const bMedium = `border-[2px] ${themeConfig.border}`;
+  const themeConfig = { bg: 'bg-[#f4f4f0]', text: 'text-gray-900', border: 'border-black/25', cardBg: 'bg-white', inputBg: 'bg-gray-100' };
+  const bThick = `border border-black/20 rounded-xl`; 
+  const bMedium = `border border-black/15 rounded-lg`;
   const alerts = computeAlerts(data);
   const urgentes = alerts.contatos.filter(x => x.contato.level === 3).length;
   const goToEntity = (item) => { setOpenAlert(null); setIsFormOpen(false); setActiveArticulador(null); handleEntityClick(item); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -394,6 +394,10 @@ export default function App() {
   const articuladoresUnicos = Array.from(new Set(data.map(d => String(d.ARTICULADOR || '').trim()).filter(Boolean)));
 
   const mondrianStyles = `
+    button, input, select, textarea { border-radius: 8px; }
+    .font-black { font-weight: 700 !important; }
+    .tracking-widest { letter-spacing: 0.05em !important; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.2); border-radius: 8px; }
     .theme-crimson { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
     .hover-crimson:hover { background-color: ${COLORS.crimson} !important; color: white !important; border-color: ${COLORS.crimson} !important; }
     .text-crimson { color: ${COLORS.crimson} !important; }
@@ -406,42 +410,38 @@ export default function App() {
   `;
 
   return (
-    <div className={`min-h-screen font-sans ${themeConfig.bg} ${themeConfig.text} text-xs transition-colors duration-300 flex flex-col`}>
+    <div className={`h-screen overflow-hidden font-sans ${themeConfig.bg} ${themeConfig.text} text-[13px] transition-colors duration-300 flex flex-col`}>
       <style>{mondrianStyles}{`@keyframes tabPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(220,20,60,.7); } 50% { box-shadow: 0 0 0 7px rgba(220,20,60,0); } } .tab-pulse { animation: tabPulse 1.6s infinite; }`}</style>
+      <header className="flex-shrink-0 flex items-center gap-3 px-3 md:px-4 py-2 bg-white border-b border-black/10">
+        <div onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} className="cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-2.5" title="Ir para o Kanban">
+          <img src="https://raw.githubusercontent.com/killuixo/tabulum-sig/refs/heads/main/icon-192.png" alt="TABULUM" className="w-9 h-9 object-contain" style={{ mixBlendMode: 'multiply' }} />
+          <div className="leading-none">
+            <h1 className="font-bold uppercase tracking-[0.22em] text-lg">TABULUM</h1>
+            <span className="hidden sm:block text-[9px] uppercase opacity-50 tracking-wider mt-0.5">Gestão de Utilidade Pública</span>
+          </div>
+        </div>
+        <nav className="flex items-center gap-2 ml-2 md:ml-6">
+          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" accentColor={accentColor} />
+          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" accentColor={accentColor} />
+          <button onClick={() => requireAuth(() => { setIsFormOpen(true); cycleAccent(); })} className="flex items-center gap-1.5 px-3 py-1.5 font-bold uppercase tracking-wider text-[0.8em] border-2 transition-all" style={isFormOpen ? { backgroundColor: '#000', color: '#fff', borderColor: '#000', boxShadow: `inset 0 -3px 0 ${accentColor}` } : { backgroundColor: accentColor, color: getTextColorForStatus(accentColor), borderColor: accentColor }} title="Adicionar Novo Pedido">
+            <span className="text-base leading-none">+</span> Novo
+          </button>
+        </nav>
+        <div className="ml-auto flex items-center gap-2">
+          {syncStatus && <span className="hidden md:block text-[0.7em] font-bold opacity-60">{syncStatus}</span>}
+          <button onClick={() => isUnlocked ? setIsUnlocked(false) : requireAuth()} className={`p-2 transition-all opacity-60 hover:opacity-100 ${isUnlocked ? 'text-cyan' : 'text-current'}`} title={isUnlocked ? "Sessão Desbloqueada" : "Sessão Bloqueada"}>
+            {isUnlocked ? <Unlock size={18} /> : <Lock size={18} />}
+          </button>
+          <div className="hidden md:flex gap-1 items-center">
+            <div className="w-3.5 h-3.5" style={{ backgroundColor: COLORS.cyan }}></div><div className="w-3.5 h-3.5" style={{ backgroundColor: COLORS.mustard }}></div><div className="w-3.5 h-3.5" style={{ backgroundColor: COLORS.crimson }}></div>
+          </div>
+        </div>
+      </header>
       {!loading && data.length > 0 && (
         <AlertBar alerts={alerts} urgentes={urgentes} openAlert={openAlert} setOpenAlert={setOpenAlert} onItemClick={goToEntity} />
       )}
-      <header className={`flex flex-col md:flex-row border-b-[6px] ${themeConfig.border} bg-white`}>
-        <div className={`flex-1 p-4 md:p-6 ${bMedium} border-b-0 md:border-b-0 md:border-r-[6px] flex items-center justify-between`}>
-          <div onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} className="cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-4" title="Ir para o Kanban">
-            <img src="https://raw.githubusercontent.com/killuixo/tabulum-sig/refs/heads/main/icon-192.png" alt="TABULUM Icon" className="w-14 h-14 md:w-20 md:h-20 object-contain" style={{ mixBlendMode: 'multiply' }} />
-            <div className="flex flex-col w-max">
-              <h1 className="font-black uppercase tracking-widest text-4xl md:text-5xl leading-none">TABULUM</h1>
-              <div className="flex justify-between w-full font-bold opacity-60 uppercase text-[9px] md:text-[12px] mt-1">
-                <span>Gestão</span><span>de</span><span>Utilidade</span><span>Pública</span>
-              </div>
-            </div>
-          </div>
-          <div className="hidden md:flex gap-2 items-center">
-            <button onClick={() => isUnlocked ? setIsUnlocked(false) : requireAuth()} className={`flex items-center justify-center p-2 transition-all duration-300 hover:scale-110 opacity-50 hover:opacity-100 ${isUnlocked ? 'text-cyan' : 'text-current'}`} title={isUnlocked ? "Sessão Desbloqueada" : "Sessão Bloqueada"}>
-              {isUnlocked ? <Unlock size={20} /> : <Lock size={20} />}
-            </button>
-            <div className="w-8 h-8 ml-2" style={{ backgroundColor: COLORS.cyan, border: `3px solid #000` }}></div>
-            <div className="w-8 h-8" style={{ backgroundColor: COLORS.mustard, border: `3px solid #000` }}></div>
-            <div className="w-8 h-8" style={{ backgroundColor: COLORS.crimson, border: `3px solid #000` }}></div>
-          </div>
-        </div>
 
-        <nav className={`flex flex-wrap md:flex-nowrap p-3 md:p-4 gap-3 overflow-x-auto bg-white items-center md:justify-center`}>
-          <NavButton active={view === 'kanban' && !isFormOpen} onClick={() => {setView('kanban'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<Kanban />} label="Kanban" accentColor={accentColor} />
-          <NavButton active={view === 'dashboard' && !isFormOpen} onClick={() => {setView('dashboard'); setActiveFicha(null); setActiveArticulador(null); setIsFormOpen(false); cycleAccent();}} icon={<LayoutDashboard />} label="Dashboard" accentColor={accentColor} />
-          <button onClick={() => requireAuth(() => { setIsFormOpen(true); cycleAccent(); })} className={`flex items-center justify-center font-black text-2xl w-12 h-12 border-[4px] transition-all duration-300 hover:-translate-y-1 flex-shrink-0 bg-white text-black hover:bg-black hover:text-white`} style={isFormOpen ? { borderColor: accentColor, boxShadow: `4px 4px 0px ${accentColor}`, backgroundColor: 'black', color: 'white', transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'currentColor' }} title="Adicionar Novo Pedido">
-            +
-          </button>
-        </nav>
-      </header>
-
-      <main className="p-4 md:p-6 flex-1 flex flex-col relative">
+      <main className="p-3 md:p-4 flex-1 min-h-0 flex flex-col relative overflow-y-auto">
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center">
             <MondrianSpinner size={48} />
@@ -462,20 +462,20 @@ export default function App() {
 
       {authModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
-           <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.5)] border-[3px]`} style={{ borderColor: accentColor }}>
-              <div className="flex items-center gap-3 border-b-[4px] border-current pb-2">
+           <div className={`w-full max-w-sm p-6 flex flex-col gap-4 ${bThick} bg-white shadow-lg border-[1.5px]`} style={{ borderColor: accentColor }}>
+              <div className="flex items-center gap-3 border-b border-black/25 pb-2">
                  <Lock size={24} className="text-crimson" />
                  <h2 className="text-xl font-black uppercase tracking-widest text-crimson">Acesso Restrito</h2>
               </div>
               <p className="text-sm font-bold opacity-80 leading-relaxed text-black">
                  Insira a senha mestra para habilitar edições.
               </p>
-              <input type="password" autoFocus placeholder="Senha..." className={`w-full p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-gray-100 text-black`} style={{ borderColor: 'currentcolor' }}
+              <input type="password" autoFocus placeholder="Senha..." className={`w-full p-3 border-[1.5px] outline-none font-bold transition-colors duration-300 bg-gray-100 text-black`} style={{ borderColor: 'rgba(0,0,0,.25)' }}
                  onKeyDown={(e) => { if (e.key === 'Enter') { const val = e.target.value; if (val === masterPassword || val.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) { setIsUnlocked(true); setAuthModalOpen(false); if (pendingAction) pendingAction(); } else { showAlert('Senha Incorreta.'); } } }} id="auth_pwd_input"
               />
               <div className="flex gap-2 mt-2">
-                 <button onClick={() => { const val = document.getElementById('auth_pwd_input').value; if (val === masterPassword || val.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) { setIsUnlocked(true); setAuthModalOpen(false); if (pendingAction) pendingAction(); } else { showAlert('Senha Incorreta.'); } }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform">Desbloquear</button>
-                 <button onClick={() => { setAuthModalOpen(false); setPendingAction(null); }} className="flex-1 p-3 bg-transparent text-black font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform hover-crimson">Cancelar</button>
+                 <button onClick={() => { const val = document.getElementById('auth_pwd_input').value; if (val === masterPassword || val.trim().toLowerCase() === EMERGENCY_PHRASE.toLowerCase()) { setIsUnlocked(true); setAuthModalOpen(false); if (pendingAction) pendingAction(); } else { showAlert('Senha Incorreta.'); } }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[1.5px] border-black/25 hover:-translate-y-1 transition-transform">Desbloquear</button>
+                 <button onClick={() => { setAuthModalOpen(false); setPendingAction(null); }} className="flex-1 p-3 bg-transparent text-black font-black uppercase tracking-widest text-[0.8em] border-[1.5px] border-black/25 hover:-translate-y-1 transition-transform hover-crimson">Cancelar</button>
               </div>
            </div>
         </div>
@@ -483,15 +483,15 @@ export default function App() {
 
       {dialog.isOpen && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in zoom-in duration-200">
-          <div className={`w-full max-w-sm p-6 flex flex-col gap-4 border-[4px] bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.5)]`} style={{ borderColor: dialog.type === 'confirm' ? COLORS.mustard : COLORS.crimson }}>
-            <div className="flex items-center gap-3 border-b-[4px] border-black pb-2">
+          <div className={`w-full max-w-sm p-6 flex flex-col gap-4 border-2 bg-white shadow-lg`} style={{ borderColor: dialog.type === 'confirm' ? COLORS.mustard : COLORS.crimson }}>
+            <div className="flex items-center gap-3 border-b border-black/25 pb-2">
               <AlertCircle size={24} className={dialog.type === 'confirm' ? "text-mustard" : "text-crimson"} />
               <h2 className={`text-xl font-black uppercase tracking-widest ${dialog.type === 'confirm' ? 'text-mustard' : 'text-crimson'}`}>{dialog.type === 'confirm' ? 'Atenção' : 'Aviso'}</h2>
             </div>
             <p className="text-sm font-bold opacity-90 leading-relaxed whitespace-pre-wrap text-black">{dialog.message}</p>
             <div className="flex gap-2 mt-2">
-              {dialog.type === 'confirm' && <button onClick={() => { setDialog({ isOpen: false }); dialog.onConfirm(); }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform">Confirmar</button>}
-              <button onClick={() => setDialog({ isOpen: false })} className="flex-1 p-3 bg-transparent text-black font-black uppercase tracking-widest text-[0.8em] border-[3px] border-black hover:-translate-y-1 transition-transform hover-crimson">{dialog.type === 'confirm' ? 'Cancelar' : 'OK'}</button>
+              {dialog.type === 'confirm' && <button onClick={() => { setDialog({ isOpen: false }); dialog.onConfirm(); }} className="flex-1 p-3 bg-black text-white font-black uppercase tracking-widest text-[0.8em] border-[1.5px] border-black/25 hover:-translate-y-1 transition-transform">Confirmar</button>}
+              <button onClick={() => setDialog({ isOpen: false })} className="flex-1 p-3 bg-transparent text-black font-black uppercase tracking-widest text-[0.8em] border-[1.5px] border-black/25 hover:-translate-y-1 transition-transform hover-crimson">{dialog.type === 'confirm' ? 'Cancelar' : 'OK'}</button>
             </div>
           </div>
         </div>
@@ -516,8 +516,8 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
 
   const renderConcluidoCard = (item, i) => {
     return (
-      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer bg-white text-black border-[3px] border-black flex flex-col gap-2`}>
-        <div className="flex justify-between items-start gap-2 border-b-[2px] border-black pb-2">
+      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer bg-white text-black border-[1.5px] border-black/25 flex flex-col gap-2`}>
+        <div className="flex justify-between items-start gap-2 border-b border-black/25 pb-2">
           <h3 className="font-black uppercase leading-tight text-sm">{item.ENTIDADE || 'Sem Nome'}</h3>
         </div>
         <div className="flex justify-between items-center mt-1">
@@ -551,13 +551,13 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
     const itemProgressBoxes = DOCS_KEYS.map(key => { const hasDoc = (String(item[key] || '').toUpperCase() === 'TRUE'); if (hasDoc) hasCount++; return { key, has: hasDoc }; });
 
     return (
-      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 md:p-4 ${med} hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all cursor-pointer bg-[#f4f4f0] text-black`} style={cardContato && cardContato.level === 3 ? { borderColor: COLORS.crimson, borderWidth: '4px' } : (cardDilig ? { borderColor: COLORS.crimson } : {})}>
-        {cardDilig && <div className="-mx-3 -mt-3 md:-mx-4 md:-mt-4 mb-3 px-3 py-1 theme-crimson font-black uppercase tracking-widest text-[0.65em] flex items-center gap-2"><AlertCircle size={13} /> Diligência em aberto</div>}
-        <h3 className="font-black mb-3 uppercase leading-tight" style={{ fontSize: '1.1em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
+      <div key={i} onClick={() => onEntityClick(item)} className={`p-3 ${med} hover:shadow-md transition-all cursor-pointer bg-white text-black overflow-hidden flex-shrink-0`} style={{ borderLeft: `5px solid ${colColor || '#111'}`, ...((cardContato && cardContato.level === 3) ? { boxShadow: `0 0 0 2px ${COLORS.crimson}` } : {}) }}>
+        {cardDilig && <div className="-mx-3 -mt-3 mb-2 px-3 py-1 theme-crimson font-black uppercase tracking-widest text-[0.65em] flex items-center gap-2"><AlertCircle size={13} /> Diligência em aberto</div>}
+        <h3 className="font-bold mb-2 leading-snug" style={{ fontSize: '1.02em' }}>{item.ENTIDADE || 'Sem Nome'}</h3>
         <div className="flex justify-between items-end gap-2">
           <div className="flex flex-col">
             <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest">Articulador</span>
-            <span onClick={(e) => { e.stopPropagation(); onArticulatorClick(item.ARTICULADOR); }} className={`font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer`} style={{ textDecorationColor: colColor || 'currentcolor' }}>{item.ARTICULADOR || '-'}</span>
+            <span onClick={(e) => { e.stopPropagation(); onArticulatorClick(item.ARTICULADOR); }} className={`font-bold hover:underline decoration-2 underline-offset-4 cursor-pointer`} style={{ textDecorationColor: colColor || 'rgba(0,0,0,.25)' }}>{item.ARTICULADOR || '-'}</span>
           </div>
           <div className="text-right">
             <span className="text-[0.65em] uppercase font-black opacity-60 tracking-widest block">Data</span>
@@ -566,7 +566,7 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
         </div>
 
         {(item['LINK']) && (
-          <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: colColor || 'currentcolor' }} onClick={e => e.stopPropagation()}>
+          <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-max items-center gap-1 text-[0.7em] font-black uppercase tracking-widest opacity-80 hover:opacity-100 hover:underline transition-all" style={{ color: colColor || 'rgba(0,0,0,.25)' }} onClick={e => e.stopPropagation()}>
             <ExternalLink size={14} /> Acompanhar tramitação
           </a>
         )}
@@ -574,41 +574,41 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
         {cardContato ? (
           <div className="mt-3"><ContatoTag contato={cardContato} /></div>
         ) : (cardDilig || norm(item['STATUS DA ANÁLISE']).includes('aguardando')) && (
-          <div className="mt-3 inline-block px-2 py-1 border-[2px] border-dashed border-black font-black uppercase tracking-wider text-[0.6em] opacity-60">Sem contato registrado</div>
+          <div className="mt-3 inline-block px-2 py-1 border border-dashed border-black/25 font-black uppercase tracking-wider text-[0.6em] opacity-60">Sem contato registrado</div>
         )}
 
         <div className="mt-4 flex gap-1 h-3">
-          {itemProgressBoxes.map((box, bIdx) => <div key={bIdx} title={box.key} className={`flex-1 transition-colors duration-500 ${box.has ? 'border-[2px] border-current' : 'bg-transparent border-[1px] border-current opacity-20'}`} style={box.has ? { backgroundColor: getProgressColor(hasCount) } : {}} /> )}
+          {itemProgressBoxes.map((box, bIdx) => <div key={bIdx} title={box.key} className={`flex-1 transition-colors duration-500 ${box.has ? 'border border-black/25' : 'bg-transparent border-[1px] border-black/25 opacity-20'}`} style={box.has ? { backgroundColor: getProgressColor(hasCount) } : {}} /> )}
         </div>
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col gap-4 flex-1 min-h-[500px]">
-      <div className={`border-[4px] transition-colors duration-300 ${isConcluidoOpen ? 'bg-white' : 'bg-transparent'} ${theme.border}`}>
-        <button onClick={() => setIsConcluidoOpen(!isConcluidoOpen)} className={`w-full p-3 font-black uppercase tracking-widest flex items-center justify-between transition-colors ${isConcluidoOpen ? 'bg-black text-white' : 'opacity-60 hover:opacity-100 hover:bg-black/5'}`}>
+    <div className="flex flex-col gap-3 flex-1 min-h-0">
+      <div className={`flex-shrink-0 rounded-lg border transition-colors duration-300 overflow-hidden ${isConcluidoOpen ? 'bg-white' : 'bg-transparent'} ${theme.border}`}>
+        <button onClick={() => setIsConcluidoOpen(!isConcluidoOpen)} className={`w-full px-3 py-2 font-bold uppercase tracking-wider flex items-center justify-between transition-colors ${isConcluidoOpen ? 'bg-black text-white' : 'opacity-60 hover:opacity-100 hover:bg-black/5'}`}>
           <div className="flex items-center gap-3"><CheckCircle2 size={18} /><span className="text-sm md:text-base">Processos Concluídos ({concluidoData.length})</span></div>
           <span className="text-2xl leading-none font-mono">{isConcluidoOpen ? '−' : '+'}</span>
         </button>
         {isConcluidoOpen && (
-          <div className="p-4 bg-black/5 border-t-[4px] border-current">
+          <div className="p-4 bg-black/5 border-t border-black/25">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[50vh] overflow-y-auto pr-2">
                {concluidoData.map((item, i) => renderConcluidoCard(item, i))}
-               {concluidoData.length === 0 && <div className="col-span-full text-center opacity-40 p-6 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.8em]">Nenhum processo concluído</div>}
+               {concluidoData.length === 0 && <div className="col-span-full text-center opacity-40 p-6 border-[1.5px] border-dashed border-black/25 font-black uppercase tracking-widest text-[0.8em]">Nenhum processo concluído</div>}
             </div>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 flex-1 items-stretch">
+      <div className="flex flex-col md:flex-row gap-3 flex-1 min-h-0 items-stretch">
         {activeColumns.map((col) => {
           const isCollapsed = collapsedCols[col.id];
           const colData = getColData(col.id);
           const headerTextColor = getTextColorForStatus(col.color) || 'black';
           return (
-            <div key={col.id} className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16 md:w-20' : 'flex-1'} ${thick} bg-white`}>
-              <div onClick={() => toggleCol(col.id)} className={`p-3 font-black flex items-center gap-2 uppercase tracking-wider border-b-[4px] cursor-pointer transition-colors ${theme.border}`} style={{ backgroundColor: col.color, color: headerTextColor }}>
+            <div key={col.id} className={`flex flex-col min-h-[280px] md:min-h-0 overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-16 md:w-20' : 'flex-1 min-w-0'} ${thick} bg-white`}>
+              <div onClick={() => toggleCol(col.id)} className={`px-3 py-2 font-bold flex items-center gap-2 uppercase tracking-wider cursor-pointer flex-shrink-0 transition-colors ${theme.border}`} style={{ backgroundColor: col.color, color: headerTextColor }}>
                 {isCollapsed ? (
                   <div className="flex flex-col items-center w-full gap-4 py-4">
                     {col.icon}<span className="writing-vertical-lr rotate-180 tracking-widest">{col.label}</span><span className="bg-black text-white px-2 py-0.5 rounded-full mt-auto text-[0.8em]">{colData.length}</span>
@@ -618,9 +618,9 @@ function KanbanView({ data, theme, thick, med, onEntityClick, onArticulatorClick
                 )}
               </div>
               {!isCollapsed && (
-                <div className="p-3 flex flex-col gap-3 overflow-y-auto flex-1 min-h-[300px]">
+                <div className="p-2.5 flex flex-col gap-2.5 overflow-y-auto flex-1 min-h-0 bg-[#f4f4f0]">
                   {colData.map((item, i) => renderCard(item, i, col.color))}
-                  {colData.length === 0 && <div className="text-center opacity-40 p-6 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.8em]">Vazio</div>}
+                  {colData.length === 0 && <div className="text-center opacity-40 p-6 border-[1.5px] border-dashed border-black/25 font-black uppercase tracking-widest text-[0.8em]">Vazio</div>}
                 </div>
               )}
             </div>
@@ -639,23 +639,23 @@ function DashboardView({ data, theme, thick, onEntityClick, onArticulatorClick }
   const concluidos = data.filter(d => String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('concluído') || String(d['STATUS DA ANÁLISE'] || '').trim().toLowerCase().includes('concluido')).length;
   
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 content-start">
       <div className={`lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4`}>
         <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: 'currentcolor', borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Total</span><span className="text-5xl font-black mt-2">{total}</span>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Total</span><span className="text-3xl font-bold mt-1">{total}</span>
         </div>
         <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: COLORS.mustard, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Análise</span><span className="text-5xl font-black mt-2">{emAnalise}</span>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Análise</span><span className="text-3xl font-bold mt-1">{emAnalise}</span>
         </div>
         <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: COLORS.cyan, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span><span className="text-5xl font-black mt-2">{protocolados}</span>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">ALESC</span><span className="text-3xl font-bold mt-1">{protocolados}</span>
         </div>
         <div className={`p-4 ${thick} bg-white flex flex-col justify-between`} style={{ borderTopColor: COLORS.black, borderTopWidth: '8px' }}>
-          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Concluído</span><span className="text-5xl font-black mt-2">{concluidos}</span>
+          <span className="font-black uppercase tracking-widest opacity-70 text-[0.8em]">Concluído</span><span className="text-3xl font-bold mt-1">{concluidos}</span>
         </div>
       </div>
       <div className={`lg:col-span-1 p-4 ${thick} bg-white flex flex-col`}>
-        <h2 className="font-black uppercase tracking-widest border-b-[4px] border-current pb-2 mb-4 text-[0.9em]">Visão Geral</h2>
+        <h2 className="font-black uppercase tracking-widest border-b border-black/25 pb-2 mb-4 text-[0.9em]">Visão Geral</h2>
         <div className="flex-1 flex flex-col justify-end gap-2 h-40">
           <div className="flex items-end gap-1 h-full">
             <div className="w-1/4 flex flex-col items-center gap-1 h-full justify-end"><div className="w-full transition-all duration-500" style={{ height: `${(aguardando/total)*100 || 0}%`, backgroundColor: COLORS.crimson, border: '3px solid currentcolor' }}></div><span className="text-[9px] uppercase font-black tracking-widest text-center mt-1">Doc</span></div>
@@ -665,21 +665,21 @@ function DashboardView({ data, theme, thick, onEntityClick, onArticulatorClick }
           </div>
         </div>
       </div>
-      <div className={`lg:col-span-4 mt-4 ${thick} bg-white overflow-x-auto max-h-[500px]`}>
+      <div className={`lg:col-span-4 mt-4 ${thick} bg-white overflow-x-auto max-h-[48vh]`}>
         <table className="w-full text-left border-collapse min-w-[760px]">
           <thead className="sticky top-0 z-10 bg-white">
-            <tr className={`border-b-[6px] ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
-              <th className="p-4 border-r-[4px] border-current">Entidade</th><th className="p-4 border-r-[4px] border-current">Articulador</th><th className="p-4 border-r-[4px] border-current">Status</th><th className="p-4 border-r-[4px] border-current">Último contato</th><th className="p-4">Solicitação</th>
+            <tr className={`border-b-2 ${theme.border} uppercase font-black tracking-widest text-[0.8em]`}>
+              <th className="px-3 py-2 border-r border-black/25">Entidade</th><th className="px-3 py-2 border-r border-black/25">Articulador</th><th className="px-3 py-2 border-r border-black/25">Status</th><th className="px-3 py-2 border-r border-black/25">Último contato</th><th className="px-3 py-2">Solicitação</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row, i) => (
-              <tr key={i} className={`border-b-[3px] ${theme.border} hover:bg-gray-200 transition-colors`}>
-                <td className="p-4 border-r-[4px] border-current font-bold cursor-pointer hover:underline decoration-2" onClick={() => onEntityClick(row)}>{row.ENTIDADE}</td>
-                <td className="p-4 border-r-[4px] border-current font-bold opacity-80 cursor-pointer hover:underline decoration-2" onClick={() => onArticulatorClick(row.ARTICULADOR)}>{row.ARTICULADOR}</td>
-                <td className="p-4 border-r-[4px] border-current"><span className="px-2 py-1 font-black uppercase text-[0.75em] tracking-widest" style={{ backgroundColor: getStatusColor(row['STATUS DA ANÁLISE']) || 'black', color: getTextColorForStatus(getStatusColor(row['STATUS DA ANÁLISE'])) || 'black' }}>{row['STATUS DA ANÁLISE'] || '-'}</span></td>
-                <td className="p-4 border-r-[4px] border-current">{isConcluido(row) ? <span className="opacity-40 font-bold">-</span> : (parseContato(row) ? <ContatoTag contato={parseContato(row)} compact /> : <span className="opacity-40 font-bold">-</span>)}</td>
-                <td className="p-4 font-bold opacity-80">{row['DATA DA SOLICITAÇÃO'] || '-'}</td>
+              <tr key={i} className={`border-b ${theme.border} hover:bg-gray-200 transition-colors`}>
+                <td className="px-3 py-2 border-r border-black/25 font-bold cursor-pointer hover:underline decoration-2" onClick={() => onEntityClick(row)}>{row.ENTIDADE}</td>
+                <td className="px-3 py-2 border-r border-black/25 font-bold opacity-80 cursor-pointer hover:underline decoration-2" onClick={() => onArticulatorClick(row.ARTICULADOR)}>{row.ARTICULADOR}</td>
+                <td className="px-3 py-2 border-r border-black/25"><span className="px-2 py-1 font-black uppercase text-[0.75em] tracking-widest" style={{ backgroundColor: getStatusColor(row['STATUS DA ANÁLISE']) || 'black', color: getTextColorForStatus(getStatusColor(row['STATUS DA ANÁLISE'])) || 'black' }}>{row['STATUS DA ANÁLISE'] || '-'}</span></td>
+                <td className="px-3 py-2 border-r border-black/25">{isConcluido(row) ? <span className="opacity-40 font-bold">-</span> : (parseContato(row) ? <ContatoTag contato={parseContato(row)} compact /> : <span className="opacity-40 font-bold">-</span>)}</td>
+                <td className="px-3 py-2 font-bold opacity-80">{row['DATA DA SOLICITAÇÃO'] || '-'}</td>
               </tr>
             ))}
           </tbody>
@@ -721,119 +721,81 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
   const docsCount = DOCS_KEYS.filter(k => String(item[k] || '').toUpperCase() === 'TRUE').length;
   const checkGlobalColor = getProgressColor(docsCount);
 
+  const ef = { accentColor, cycleAccent, isUnlocked, requireAuth };
+  const t = (v) => v || '-';
   return (
-    <div className={`p-6 md:p-8 ${thick} bg-white flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200`}>
-      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform z-10">X</button>
-      
-      <div className="pr-10 border-b-[6px] border-current pb-4">
-        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 break-words">
-          <EditableField value={item.ENTIDADE} onSave={(val) => onUpdate({ ENTIDADE: val })} accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
-        </h2>
-        <div className="flex flex-wrap gap-4 mt-3">
-          <span className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] transition-colors duration-500 cursor-not-allowed" style={{ backgroundColor: statusColor || 'transparent', color: getTextColorForStatus(statusColor) || 'black', borderColor: statusColor || 'currentcolor' }}>
-            {item['STATUS DA ANÁLISE'] || 'Aguardando Documentos'}
-          </span>
-          <span className="font-bold uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current opacity-70 cursor-not-allowed">
-            {item['DATA DA SOLICITAÇÃO'] || 'Sem data'}
-          </span>
-          {(item['LINK']) && (
-             <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 font-black uppercase tracking-widest text-[0.8em] px-3 py-1 border-[2px] border-current transition-colors opacity-70 hover:opacity-100`} title="Acompanhar Tramitação">
-               <ExternalLink size={14}/> Processo ALESC
-             </a>
-          )}
+    <div className="flex-1 min-h-0 flex flex-col bg-white rounded-xl border border-black/15 shadow-sm overflow-hidden animate-in fade-in duration-200">
+      {/* TOPO FIXO: título, status e botão SALVAR sempre visíveis */}
+      <div className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 border-b border-black/10 bg-white" style={{ boxShadow: `inset 0 -3px 0 ${statusColor || '#ddd'}` }}>
+        <button onClick={onClose} className="px-2.5 py-1.5 border border-black/20 font-bold text-[0.8em] hover:bg-black hover:text-white transition-colors flex-shrink-0" title="Voltar ao Kanban">← Voltar</button>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg md:text-xl font-bold leading-tight break-words">
+            <EditableField value={item.ENTIDADE} onSave={(val) => onUpdate({ ENTIDADE: val })} {...ef} />
+          </h2>
+          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+            <span className="px-2 py-0.5 rounded-full font-bold uppercase tracking-wider text-[0.65em]" style={{ backgroundColor: statusColor || '#eee', color: getTextColorForStatus(statusColor) || 'black' }}>{item['STATUS DA ANÁLISE'] || 'Aguardando Documentos'}</span>
+            <span className="px-2 py-0.5 rounded-full bg-[#f4f4f0] font-bold text-[0.65em] opacity-80">Solicitado em {item['DATA DA SOLICITAÇÃO'] || '-'}</span>
+            {item['LINK'] && <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="px-2 py-0.5 rounded-full bg-[#f4f4f0] font-bold text-[0.65em] hover:underline flex items-center gap-1"><ExternalLink size={11}/> Processo ALESC</a>}
+          </div>
         </div>
+        <button onClick={() => requireAuth(onDelete)} className="p-2 border border-black/20 opacity-60 hover:opacity-100 hover-crimson transition-all flex-shrink-0" title="Apagar registro">{isUnlocked ? <Trash2 size={16} /> : <Lock size={16} />}</button>
+        <button onClick={() => requireAuth(handleManualSave)} className="flex items-center gap-2 px-5 py-2 font-bold uppercase tracking-wider text-[0.8em] bg-black text-white hover:bg-gray-800 shadow-md transition-all flex-shrink-0" style={saveLabel !== 'SALVAR' ? { backgroundColor: COLORS.cyan, color: '#000' } : {}}>
+          {isUnlocked ? <Save size={15} /> : <Lock size={15} />} {saveLabel === 'SALVAR' ? 'Salvar' : 'Salvo ✓'}
+        </button>
+        <button onClick={onClose} className="text-xl font-bold px-1 hover:scale-110 transition-transform flex-shrink-0" title="Fechar">✕</button>
       </div>
 
-      <ContatoBloco item={item} onUpdate={onUpdate} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+      {/* CORPO: 3 colunas, rola por dentro */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 items-start content-start bg-[#fafaf8]">
+        <div className="flex flex-col gap-3">
+          <ContatoBloco item={item} onUpdate={onUpdate} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="flex flex-col gap-4">
-          <div className="p-4 border-[4px] border-current flex flex-col items-start w-full">
-            <span className="block text-[0.7em] uppercase font-black opacity-60 tracking-widest mb-1">Articulador</span>
-            <EditableSelect value={item.ARTICULADOR} options={equipeOptions} onSave={(val) => onUpdate({ ARTICULADOR: val })} textClass="text-xl font-black hover:underline decoration-4 underline-offset-4 cursor-pointer truncate max-w-[200px]" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+        <div className="flex flex-col gap-3">
+          <FieldBox label="Articulador">
+            <EditableSelect value={item.ARTICULADOR} options={equipeOptions} onSave={(val) => onUpdate({ ARTICULADOR: val })} textClass="text-base font-bold hover:underline cursor-pointer" {...ef} />
+          </FieldBox>
+          <div className="grid grid-cols-2 gap-3">
+            <FieldBox label="Liderança"><EditableField value={item.LIDERANÇA} onSave={(val) => onUpdate({ LIDERANÇA: val })} textClass="font-bold break-words max-w-full" {...ef} /></FieldBox>
+            <FieldBox label="Telefone"><EditableField value={item.TELEFONE} onSave={(val) => onUpdate({ TELEFONE: val })} textClass="font-bold break-words max-w-full" {...ef} /></FieldBox>
+            <FieldBox label="E-mail" span><EditableField value={item.EMAIL} onSave={(val) => onUpdate({ EMAIL: val })} textClass="font-bold break-all max-w-full" {...ef} /></FieldBox>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] flex flex-col items-start w-full`}>
-              <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Liderança</span>
-              <EditableField value={item.LIDERANÇA} onSave={(val) => onUpdate({ LIDERANÇA: val })} textClass="font-bold break-words max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
+          <FieldBox label="Observações"><EditableField value={item.OBSERVAÇÕES} onSave={(val) => onUpdate({ OBSERVAÇÕES: val })} multiline textClass="font-medium whitespace-pre-wrap leading-relaxed max-w-full" {...ef} /></FieldBox>
+          <div className="rounded-xl bg-white border border-black/10 overflow-hidden">
+            <div className="px-3 py-1.5 font-bold uppercase tracking-wider text-[0.65em]" style={{ backgroundColor: statusColor || '#eee', color: getTextColorForStatus(statusColor) || 'black' }}>Trâmite ALESC (sincronizado)</div>
+            <div className="p-3 grid grid-cols-2 gap-x-3 gap-y-2">
+              <div><span className="block text-[10px] uppercase font-bold opacity-50 tracking-wider">Data de envio</span><span className="font-bold">{t(item['DATA DO ENVIO ALESC'])}</span></div>
+              <div><span className="block text-[10px] uppercase font-bold opacity-50 tracking-wider">Processo</span><span className="font-bold">{t(item['Nº DO PROCESSO ALESC'])}</span></div>
+              <div className="col-span-2"><span className="block text-[10px] uppercase font-bold opacity-50 tracking-wider">Estágio</span><span className="font-bold">{t(item['ESTÁGIO ATUAL'])}</span></div>
+              <div className="col-span-2"><span className="block text-[10px] uppercase font-bold opacity-50 tracking-wider">Última atualização</span><span className="italic opacity-80">{t(item['ÚLTIMA ATUALIZAÇÃO'])}</span></div>
             </div>
-            <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] flex flex-col items-start w-full`}>
-              <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Telefone</span>
-              <EditableField value={item.TELEFONE} onSave={(val) => onUpdate({ TELEFONE: val })} textClass="font-bold break-words max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
-            </div>
-            <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] col-span-2 flex flex-col items-start w-full`}>
-              <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">E-mail</span>
-              <EditableField value={item.EMAIL} onSave={(val) => onUpdate({ EMAIL: val })} textClass="font-bold break-all max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
-            </div>
-          </div>
-          <div className={`p-4 border-[2px] border-current bg-[#f4f4f0] flex flex-col items-start w-full`}>
-            <span className="block text-[0.6em] uppercase font-black opacity-60 tracking-widest mb-1">Observações</span>
-            <EditableField value={item.OBSERVAÇÕES} onSave={(val) => onUpdate({ OBSERVAÇÕES: val })} multiline textClass="font-bold whitespace-pre-wrap leading-relaxed max-w-full" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <div className={`p-4 border-[4px] transition-colors duration-500`} style={{ borderColor: statusColor || 'currentcolor' }}>
-            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1" style={{ borderColor: statusColor || 'currentcolor', color: statusColor || 'inherit' }}>Trâmite ALESC (Sincronizado)</span>
-            <div className="grid grid-cols-2 gap-3 font-bold w-full cursor-not-allowed text-black">
-              <div className="flex flex-col items-start">
-                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Data Envio:</span> 
-                <span className="mt-1 text-sm">{item['DATA DO ENVIO ALESC'] || '-'}</span>
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Processo:</span> 
-                <span className="mt-1 text-sm">{item['Nº DO PROCESSO ALESC'] || '-'}</span>
-              </div>
-              <div className="col-span-2 mt-1 flex flex-col items-start">
-                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Estágio:</span> 
-                <span className="mt-1 text-sm">{item['ESTÁGIO ATUAL'] || '-'}</span>
-              </div>
-              <div className="col-span-2 mt-1 flex flex-col items-start">
-                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Acompanhar (Link):</span>
-                {item['LINK'] ? (
-                   <a href={item['LINK']} target="_blank" rel="noopener noreferrer" className="text-[0.8em] font-black uppercase mt-1 flex items-center gap-1 hover:underline opacity-70 hover:opacity-100 transition-opacity break-all">
-                     <ExternalLink size={12}/> Abrir Link ALESC
-                   </a>
-                ) : <span className="text-sm mt-1">-</span>}
-              </div>
-              <div className="col-span-2 mt-1 flex flex-col items-start">
-                <span className="opacity-70 text-[0.7em] uppercase font-black tracking-widest">Última Atualização:</span> 
-                <span className="mt-1 text-[0.85em] opacity-80 italic font-medium">{item['ÚLTIMA ATUALIZAÇÃO'] || '-'}</span>
-              </div>
-            </div>
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-2 gap-3">
+            <a href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${item.ENTIDADE}`)}`} className="px-3 py-2.5 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-[0.7em] bg-black text-white hover-cyan transition-colors"><Mail size={14} /> Enviar docs</a>
+            {item['DOCUMENTOS NO DRIVE'] ? <a href={item['DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="px-3 py-2.5 flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-[0.7em] border border-black/30 hover:bg-black hover:text-white transition-colors"><ExternalLink size={14} /> Pasta no Drive</a> : <div className="px-3 py-2.5 flex items-center justify-center font-bold uppercase tracking-wider text-[0.7em] border border-dashed border-black/30 opacity-50">Sem pasta</div>}
           </div>
-          
-          <div className={`p-4 border-[4px] transition-colors duration-500 mt-4 border-current`}>
-            <span className="block text-[0.7em] uppercase font-black opacity-80 tracking-widest mb-2 border-b-2 pb-1 border-current">Documentos no Drive</span>
-            <div className="flex flex-col items-start">
-              <EditableField value={item['DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'DOCUMENTOS NO DRIVE': val })} textClass="font-bold break-all max-w-full underline decoration-current/50 hover:decoration-current transition-colors" accentColor={accentColor} cycleAccent={cycleAccent} isUnlocked={isUnlocked} requireAuth={requireAuth} />
-              {(item['DOCUMENTOS NO DRIVE']) && (
-                 <a href={item['DOCUMENTOS NO DRIVE']} target="_blank" rel="noopener noreferrer" className="text-[0.7em] font-black uppercase mt-1 flex items-center gap-1 hover:underline opacity-70 hover:opacity-100 transition-opacity">
-                   <ExternalLink size={12}/> Abrir Pasta no Drive
-                 </a>
-              )}
+          <FieldBox label="Link da pasta no Drive"><EditableField value={item['DOCUMENTOS NO DRIVE']} onSave={(val) => onUpdate({ 'DOCUMENTOS NO DRIVE': val })} textClass="text-[0.8em] break-all max-w-full opacity-80" {...ef} /></FieldBox>
+          <div className="rounded-xl bg-white border border-black/10 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold uppercase tracking-wider text-[0.7em]">Checklist de documentos</span>
+              <span className="px-2 py-0.5 rounded-full font-bold text-[0.7em]" style={{ backgroundColor: checkGlobalColor || '#eee', color: getTextColorForStatus(checkGlobalColor) || '#000' }}>{docsCount}/8</span>
             </div>
-          </div>
-          
-          <div className="flex flex-col mt-4">
-            <a href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${item.ENTIDADE}`)}`} className={`mb-6 p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 bg-black text-white hover-cyan`}>
-              <Mail size={18} /> Enviar Documentos por E-mail
-            </a>
-
-            <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1">Checklist de Documentos (Passe o mouse ou Segure)</span>
             {DOCS_KEYS.map((key, idx) => {
               const hasDoc = String(item[key] || '').toUpperCase() === 'TRUE';
-              const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO/NÃO REMUNERADA' : key;
+              const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
               return (
-                <div key={idx} className="group relative flex items-center gap-3 py-2 border-b-[2px] border-current opacity-90 cursor-pointer hover:bg-black/5 transition-colors" title={isUnlocked ? "" : "Desbloqueie para marcar os documentos"} onMouseEnter={() => setActiveTooltip(key)} onMouseLeave={() => setActiveTooltip(null)} onTouchStart={() => handleTouchStart(key)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd}>
-                  <div onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleDoc(key)); }} className={`w-5 h-5 flex-shrink-0 border-[2px] border-current flex items-center justify-center transition-colors hover:scale-110`} style={{ backgroundColor: hasDoc ? checkGlobalColor : 'transparent' }}>
-                    {hasDoc && <CheckCircle2 size={14} className="text-white mix-blend-difference" />}
+                <div key={idx} className="group relative flex items-center gap-2.5 py-1.5 border-b border-black/10 last:border-0 cursor-pointer hover:bg-black/5 transition-colors" title={isUnlocked ? "" : "Desbloqueie para marcar os documentos"} onMouseEnter={() => setActiveTooltip(key)} onMouseLeave={() => setActiveTooltip(null)} onTouchStart={() => handleTouchStart(key)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd}>
+                  <div onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleDoc(key)); }} className="w-5 h-5 flex-shrink-0 rounded border-[1.5px] border-black/50 flex items-center justify-center" style={{ backgroundColor: hasDoc ? (checkGlobalColor || COLORS.cyan) : 'transparent' }}>
+                    {hasDoc && <CheckCircle2 size={13} className="text-white mix-blend-difference" />}
                   </div>
-                  <span onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleDoc(key)); }} className={`font-bold text-[0.85em] flex-1 transition-opacity ${hasDoc ? 'opacity-100' : 'opacity-50 group-hover:opacity-80'}`}>{displayLabel}</span>
-                  {!isUnlocked && <Lock size={12} className="ml-auto opacity-30 group-hover:opacity-100 text-crimson" />}
+                  <span onClick={(e) => { e.stopPropagation(); requireAuth(() => toggleDoc(key)); }} className={`font-semibold text-[0.82em] flex-1 ${hasDoc ? '' : 'opacity-50 group-hover:opacity-80'}`}>{displayLabel}</span>
+                  {!isUnlocked && <Lock size={11} className="opacity-30 group-hover:opacity-100 text-crimson" />}
                   {activeTooltip === key && (
-                    <div className={`absolute bottom-full mb-1 right-0 sm:left-6 z-50 w-[260px] p-3 text-xs leading-relaxed border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.5)] bg-white text-black border-black animate-in fade-in zoom-in-95 duration-200 pointer-events-none`}>
-                      <span className="font-black uppercase block mb-1 opacity-60 text-[9px] border-b-[2px] border-current pb-1">Exigências</span>{DOCS_REQUIREMENTS[key]}<div className={`absolute top-full left-4 border-[6px] border-transparent border-t-black`}></div>
+                    <div className="absolute bottom-full mb-1 right-0 z-50 w-[260px] p-3 text-xs leading-relaxed rounded-lg border border-black/20 shadow-xl bg-white text-black pointer-events-none">
+                      <span className="font-bold uppercase block mb-1 opacity-60 text-[9px] border-b border-black/20 pb-1">Exigências</span>{DOCS_REQUIREMENTS[key]}
                     </div>
                   )}
                 </div>
@@ -842,16 +804,16 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
           </div>
         </div>
       </div>
-
-      <div className="flex flex-col sm:flex-row justify-between items-center mt-4 border-t-[4px] border-current pt-4 gap-4">
-        <button onClick={() => requireAuth(onDelete)} className={`flex items-center gap-2 px-4 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current opacity-50 hover:opacity-100 transition-all w-full sm:w-auto justify-center hover-crimson`}>
-          {isUnlocked ? <Trash2 size={16} /> : <Lock size={16} />} Apagar Registro
-        </button>
-        <button onClick={() => requireAuth(handleManualSave)} className={`flex items-center justify-center gap-2 px-8 py-3 font-black uppercase tracking-widest text-[0.8em] border-[3px] border-current transition-all w-full sm:w-auto hover:-translate-y-1 bg-black text-white hover:bg-gray-800 shadow-[4px_4px_0px_black]`}>
-          {isUnlocked ? <Save size={16} /> : <Lock size={16} />} {saveLabel}
-        </button>
-      </div>
       {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} />}
+    </div>
+  );
+}
+
+function FieldBox({ label, children, span = false }) {
+  return (
+    <div className={`px-3 py-2 rounded-xl bg-white border border-black/10 flex flex-col items-start ${span ? 'col-span-2' : ''}`}>
+      <span className="block text-[10px] uppercase font-bold opacity-50 tracking-wider mb-0.5">{label}</span>
+      {children}
     </div>
   );
 }
@@ -859,10 +821,10 @@ function FichaEntidade({ item, onClose, onArticuladorClick, onDelete, onUpdate, 
 function ManualModal({ onClose, theme, thick }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className={`w-full max-w-4xl p-6 md:p-8 flex flex-col gap-6 ${thick} bg-white shadow-[8px_8px_0px_currentColor] relative max-h-[95vh] overflow-hidden`}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-xl font-black hover:scale-110 transition-transform border-[3px] border-current w-10 h-10 flex items-center justify-center">X</button>
+      <div className={`w-full max-w-4xl p-6 md:p-8 flex flex-col gap-6 ${thick} bg-white shadow-lg relative max-h-[95vh] overflow-hidden`}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-xl font-black hover:scale-110 transition-transform border-[1.5px] border-black/25 w-10 h-10 flex items-center justify-center">X</button>
         
-        <div className="border-b-[4px] border-current pb-4 pr-12 flex-shrink-0">
+        <div className="border-b border-black/25 pb-4 pr-12 flex-shrink-0">
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest flex items-center gap-3"><BookOpen size={28} /> Diretrizes e Requisitos</h2>
           <p className="font-bold opacity-60 uppercase tracking-widest text-[0.7em] mt-2">Reconhecimento de Utilidade Pública Estadual</p>
         </div>
@@ -874,7 +836,7 @@ function ManualModal({ onClose, theme, thick }) {
             <p><b>Admissibilidade:</b> Autoriza-se o protocolo de processos que apresentem vícios sanáveis em Declarações ou Relatórios. Contudo, é expressamente obrigatório que a Ata de Fundação, Ata de Posse e o Estatuto Social estejam sem incorreções e devidamente registrados em cartório no ato do protocolo.</p>
           </section>
           <div>
-            <h3 className="text-base font-black uppercase border-b-[2px] border-current pb-2 mb-4">Checklist Documental Exigido</h3>
+            <h3 className="text-base font-black uppercase border-b border-black/25 pb-2 mb-4">Checklist Documental Exigido</h3>
             <div className="space-y-4">
               <div className="pb-3 border-b border-current/20"><h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">001 e 002 - Atas de Fundação, Eleição e Posse</h4><p className="opacity-80">Apresentar atas de fundação e da diretoria executiva em exercício. <b>Requisito obrigatório:</b> Registro em Cartório.</p></div>
               <div className="pb-3 border-b border-current/20"><h4 className="font-bold uppercase tracking-wide mb-1 text-[0.9em]">003 - Cadastro Nacional da Pessoa Jurídica (CNPJ)</h4><p className="opacity-80">Documento sem prazo de validade. Exige-se situação cadastral <b>ATIVA</b>, emissão datada e constituição da instituição no Estado de Santa Catarina.</p></div>
@@ -886,8 +848,8 @@ function ManualModal({ onClose, theme, thick }) {
             </div>
           </div>
         </div>
-        <div className="border-t-[4px] border-current pt-4 mt-2 flex-shrink-0">
-          <button onClick={onClose} className="w-full p-4 bg-transparent font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-[4px] border-current hover:bg-black hover:text-white">Fechar Manual</button>
+        <div className="border-t border-black/25 pt-4 mt-2 flex-shrink-0">
+          <button onClick={onClose} className="w-full p-4 bg-transparent font-black uppercase tracking-widest hover:-translate-y-1 transition-transform border-2 border-black/25 hover:bg-black hover:text-white">Fechar Manual</button>
         </div>
       </div>
     </div>
@@ -905,8 +867,8 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
     <div className={`p-6 md:p-8 ${thick} bg-white flex flex-col gap-6 relative animate-in fade-in zoom-in-95 duration-200 min-h-[60vh]`}>
       <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-2xl font-black hover:scale-110 transition-transform">X</button>
       
-      <div className="pr-10 border-b-[6px] border-current pb-4 flex items-center gap-4">
-        <div className="w-16 h-16 border-[4px] border-current bg-black text-white flex items-center justify-center font-black text-3xl uppercase">{nome.charAt(0)}</div>
+      <div className="pr-10 border-b-2 border-black/25 pb-4 flex items-center gap-4">
+        <div className="w-16 h-16 border-2 border-black/25 bg-black text-white flex items-center justify-center font-black text-3xl uppercase">{nome.charAt(0)}</div>
         <div><span className="block text-[0.8em] uppercase font-black opacity-60 tracking-widest">Dossiê Articulador</span><h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none">{nome}</h2></div>
       </div>
 
@@ -920,9 +882,9 @@ function PainelArticulador({ nome, data, onClose, onEntidadeClick, theme, thick 
       </div>
 
       <div className="mt-4 flex flex-col gap-3">
-        <span className="block text-[0.9em] uppercase font-black tracking-widest border-b-[4px] border-current pb-2 mb-2">Entidades Sob Guarda</span>
+        <span className="block text-[0.9em] uppercase font-black tracking-widest border-b border-black/25 pb-2 mb-2">Entidades Sob Guarda</span>
         {procesos.map((p, i) => (
-          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[3px] border-current flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[4px_4px_0px_currentColor] transition-all bg-[#f4f4f0] text-black`}>
+          <div key={i} onClick={() => onEntidadeClick(p)} className={`p-4 border-[1.5px] border-black/25 flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-lg transition-all bg-[#f4f4f0] text-black`}>
             <div>
               <h3 className="font-black uppercase text-lg leading-tight">{p.ENTIDADE}</h3>
               <span className="font-bold opacity-70 text-[0.8em]">{p['DATA DA SOLICITAÇÃO']}</span>
@@ -1001,79 +963,79 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
     <>
     {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} theme={theme} thick={thick} />}
     <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.3)] relative overflow-y-auto max-h-[90vh]`}>
+      <div className={`w-full max-w-3xl p-6 md:p-8 flex flex-col gap-6 ${thick} bg-white shadow-lg relative overflow-y-auto max-h-[90vh]`}>
         <button onClick={onClose} className="absolute top-4 right-4 text-2xl font-black hover:scale-110 transition-transform z-10" title="Pressione ESC para fechar">X</button>
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b-[4px] border-current pb-2 pr-8 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-black/25 pb-2 pr-8 gap-4">
           <h2 className="text-2xl font-black uppercase tracking-widest">Abertura de Processo</h2>
-          <button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="flex items-center gap-2 px-3 py-2 bg-black text-white font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-[2px_2px_0px_currentColor]">
+          <button type="button" onClick={() => {setIsManualOpen(true); cycleAccent();}} className="flex items-center gap-2 px-3 py-2 bg-black text-white font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 transition-transform shadow-lg">
             <BookOpen size={16} /> Consultar Manual de Requisitos
           </button>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <div className={`p-4 border-[3px] border-current bg-[#f4f4f0] flex flex-col gap-4`}>
-            <h3 className="font-black uppercase tracking-widest text-[12px] opacity-70 mb-2 border-b-[2px] border-current pb-1">1. Metadados Essenciais</h3>
+          <div className={`p-4 border-[1.5px] border-black/25 bg-[#f4f4f0] flex flex-col gap-4`}>
+            <h3 className="font-black uppercase tracking-widest text-[12px] opacity-70 mb-2 border-b border-black/25 pb-1">1. Metadados Essenciais</h3>
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Nome da Entidade *</label>
-              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} onFocus={() => handleFocus('ENTIDADE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'ENTIDADE' ? accentColor : 'currentcolor' }} placeholder="Ex: Associação de Moradores..." />
+              <input type="text" required value={formData.ENTIDADE} onChange={e => setFormData({...formData, ENTIDADE: e.target.value})} onFocus={() => handleFocus('ENTIDADE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[1.5px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'ENTIDADE' ? accentColor : 'rgba(0,0,0,.25)' }} placeholder="Ex: Associação de Moradores..." />
             </div>
             <div className="flex flex-col gap-1 relative">
               <label className="font-black uppercase tracking-widest text-[10px]">Articulador Responsável</label>
               <div className="relative">
-                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => {setShowDropdown(true); handleFocus('ARTICULADOR');}} onBlur={() => setTimeout(()=>setFocusedField(null), 200)} className={`w-full p-3 border-[3px] outline-none font-bold pr-10 transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'ARTICULADOR' ? accentColor : 'currentcolor' }} placeholder="Busque ou digite o nome..." />
+                <input type="text" value={busca} onChange={e => { setBusca(e.target.value); setFormData({...formData, ARTICULADOR: e.target.value}); setShowDropdown(true); }} onFocus={() => {setShowDropdown(true); handleFocus('ARTICULADOR');}} onBlur={() => setTimeout(()=>setFocusedField(null), 200)} className={`w-full p-3 border-[1.5px] outline-none font-bold pr-10 transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'ARTICULADOR' ? accentColor : 'rgba(0,0,0,.25)' }} placeholder="Busque ou digite o nome..." />
                 <SearchIcon className="absolute right-3 top-3 opacity-50" />
               </div>
               {showDropdown && (
-                <div className={`absolute top-full left-0 right-0 mt-1 border-[3px] z-10 max-h-40 overflow-y-auto bg-white`} style={{ borderColor: accentColor }}>
-                  {filteredEquipe.map((nome, idx) => <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: nome}); setBusca(nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-black/10 transition-colors border-b border-current opacity-60 hover:opacity-100`}>{nome}</div>)}
+                <div className={`absolute top-full left-0 right-0 mt-1 border-[1.5px] z-10 max-h-40 overflow-y-auto bg-white`} style={{ borderColor: accentColor }}>
+                  {filteredEquipe.map((nome, idx) => <div key={idx} onClick={() => { setFormData({...formData, ARTICULADOR: nome}); setBusca(nome); setShowDropdown(false); }} className={`p-2 font-bold cursor-pointer hover:bg-black/10 transition-colors border-b border-black/25 opacity-60 hover:opacity-100`}>{nome}</div>)}
                 </div>
               )}
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Liderança / Presidente</label>
-              <input type="text" value={formData.LIDERANÇA} onChange={e => setFormData({...formData, LIDERANÇA: e.target.value})} onFocus={() => handleFocus('LIDERANÇA')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'LIDERANÇA' ? accentColor : 'currentcolor' }} placeholder="Nome do líder..." />
+              <input type="text" value={formData.LIDERANÇA} onChange={e => setFormData({...formData, LIDERANÇA: e.target.value})} onFocus={() => handleFocus('LIDERANÇA')} onBlur={() => setFocusedField(null)} className={`p-3 border-[1.5px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'LIDERANÇA' ? accentColor : 'rgba(0,0,0,.25)' }} placeholder="Nome do líder..." />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <label className="font-black uppercase tracking-widest text-[10px]">E-mail de Contato</label>
-                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'currentcolor' }} />
+                <input type="email" value={formData.EMAIL} onChange={e => setFormData({...formData, EMAIL: e.target.value})} onFocus={() => handleFocus('EMAIL')} onBlur={() => setFocusedField(null)} className={`p-3 border-[1.5px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'EMAIL' ? accentColor : 'rgba(0,0,0,.25)' }} />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="font-black uppercase tracking-widest text-[10px]">Telefone</label>
-                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} onFocus={() => handleFocus('TELEFONE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'currentcolor' }} />
+                <input type="text" value={formData.TELEFONE} onChange={e => setFormData({...formData, TELEFONE: e.target.value})} onFocus={() => handleFocus('TELEFONE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[1.5px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'TELEFONE' ? accentColor : 'rgba(0,0,0,.25)' }} />
               </div>
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Documentos no Drive (Link da Pasta)</label>
-              <input type="url" value={formData['DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'currentcolor' }} placeholder="https://drive.google.com/..." />
+              <input type="url" value={formData['DOCUMENTOS NO DRIVE']} onChange={e => setFormData({...formData, 'DOCUMENTOS NO DRIVE': e.target.value})} onFocus={() => handleFocus('DRIVE')} onBlur={() => setFocusedField(null)} className={`p-3 border-[1.5px] outline-none font-bold transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'DRIVE' ? accentColor : 'rgba(0,0,0,.25)' }} placeholder="https://drive.google.com/..." />
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-black uppercase tracking-widest text-[10px]">Observações</label>
-              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} onFocus={() => handleFocus('OBSERVAÇÕES')} onBlur={() => setFocusedField(null)} className={`p-3 border-[3px] outline-none font-bold resize-none transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'currentcolor' }} />
+              <textarea rows="2" value={formData.OBSERVAÇÕES} onChange={e => setFormData({...formData, OBSERVAÇÕES: e.target.value})} onFocus={() => handleFocus('OBSERVAÇÕES')} onBlur={() => setFocusedField(null)} className={`p-3 border-[1.5px] outline-none font-bold resize-none transition-colors duration-300 bg-white text-black`} style={{ borderColor: focusedField === 'OBSERVAÇÕES' ? accentColor : 'rgba(0,0,0,.25)' }} />
             </div>
             
-            <div className="p-3 border-[3px] border-current bg-white flex flex-col gap-3">
+            <div className="p-3 border-[1.5px] border-black/25 bg-white flex flex-col gap-3">
               <label className="flex items-center gap-3 cursor-pointer font-black uppercase tracking-widest text-[10px]">
                 <input type="checkbox" checked={contatoFeito} onChange={e => setContatoFeito(e.target.checked)} className="w-5 h-5" style={{ accentColor: accentColor }} />
                 Já entrei em contato com a entidade
               </label>
               {contatoFeito && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <input type="date" value={contatoData} onChange={e => setContatoData(e.target.value)} className="p-3 border-[3px] border-current outline-none font-bold bg-white text-black" />
-                  <input type="text" value={contatoTexto} onChange={e => setContatoTexto(e.target.value)} placeholder="O que pedi? Ex: ata de eleição e CNPJ" className="md:col-span-2 p-3 border-[3px] border-current outline-none font-bold bg-white text-black" />
+                  <input type="date" value={contatoData} onChange={e => setContatoData(e.target.value)} className="p-3 border-[1.5px] border-black/25 outline-none font-bold bg-white text-black" />
+                  <input type="text" value={contatoTexto} onChange={e => setContatoTexto(e.target.value)} placeholder="O que pedi? Ex: ata de eleição e CNPJ" className="md:col-span-2 p-3 border-[1.5px] border-black/25 outline-none font-bold bg-white text-black" />
                 </div>
               )}
             </div>
 
             <div className="flex flex-col gap-2 mt-2">
-              <a href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${formData.ENTIDADE || '[NOME DA ENTIDADE]'}`)}`} className={`p-4 border-[3px] border-current flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 bg-black text-white hover-cyan`}>
+              <a href={`mailto:${EMAIL_CENTRAL}?subject=${encodeURIComponent(`Pedido de Utilidade Pública de ${formData.ENTIDADE || '[NOME DA ENTIDADE]'}`)}`} className={`p-4 border-[1.5px] border-black/25 flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[0.8em] transition-transform hover:-translate-y-1 bg-black text-white hover-cyan`}>
                 <Mail size={18} /> Enviar Documentos por E-mail
               </a>
-              <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b-[4px] border-current pb-1 mt-4">Checklist de Documentos</span>
+              <span className="block text-[0.8em] uppercase font-black tracking-widest mb-2 border-b border-black/25 pb-1 mt-4">Checklist de Documentos</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {DOCS_KEYS.map((key, idx) => {
                   const displayLabel = key === '6 - 7 DECLARAÇÃO REMUNERAÇÃO' ? '6 OU 7 DEC. REMUNERAÇÃO' : key;
                   return (
-                    <div key={idx} className={`p-2 border-[2px] border-current flex items-center gap-3 transition-colors ${docs[key] ? 'bg-black/5' : 'bg-transparent'}`}>
+                    <div key={idx} className={`p-2 border border-black/25 flex items-center gap-3 transition-colors ${docs[key] ? 'bg-black/5' : 'bg-transparent'}`}>
                       <input type="checkbox" id={`doc-${idx}`} checked={!!docs[key]} onChange={() => toggleDoc(key)} className="w-5 h-5 cursor-pointer accent-current" style={{ accentColor: accentColor }} />
                       <label htmlFor={`doc-${idx}`} className="font-black uppercase tracking-widest text-[9px] cursor-pointer flex-1 truncate">{displayLabel}</label>
                     </div>
@@ -1082,7 +1044,7 @@ function FormNovoPedido({ onClose, theme, thick, fetchFromWebhooks, equipeOption
               </div>
             </div>
           </div>
-          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-[4px] border-current transition-all shadow-[6px_6px_0px_currentColor] flex items-center justify-center gap-3 ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
+          <button type="submit" disabled={sending} className={`p-5 font-black uppercase tracking-widest text-lg border-2 border-black/25 transition-all shadow-lg flex items-center justify-center gap-3 ${sending ? 'opacity-50 shadow-none translate-y-1 translate-x-1' : 'active:shadow-none active:translate-y-1 active:translate-x-1'}`} style={{ backgroundColor: accentColor, color: getTextColorForStatus(accentColor) }}>
             <Lock size={20}/> {sending ? 'SALVANDO...' : 'SALVAR'}
           </button>
         </form>
@@ -1098,7 +1060,7 @@ function ContatoTag({ contato, compact = false }) {
   if (!contato) return null;
   const info = LEVEL_INFO[contato.level];
   return (
-    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 px-2 py-1 border-[2px] font-black uppercase tracking-wider text-[0.65em] leading-tight"
+    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 px-2 py-1 border font-black uppercase tracking-wider text-[0.65em] leading-tight"
       style={{ backgroundColor: info.bg, color: info.fg, borderColor: info.border }}>
       <Mail size={11} />
       <span>{contato.days === null ? 'Contato' : `Contato ${daysLabel(contato.days)}`}</span>
@@ -1120,7 +1082,7 @@ function AlertBar({ alerts, urgentes, openAlert, setOpenAlert, onItemClick }) {
   ];
 
   const Row = ({ item, children, right }) => (
-    <button onClick={() => onItemClick(item)} className="w-full text-left p-3 border-b-[2px] border-black hover:bg-black/5 transition-colors flex flex-col gap-1.5">
+    <button onClick={() => onItemClick(item)} className="w-full text-left p-3 border-b border-black/25 hover:bg-black/5 transition-colors flex flex-col gap-1.5">
       <div className="flex items-start justify-between gap-3">
         <span className="font-black uppercase leading-tight text-[0.9em] break-words">{item.ENTIDADE}</span>
         {right}
@@ -1132,7 +1094,7 @@ function AlertBar({ alerts, urgentes, openAlert, setOpenAlert, onItemClick }) {
   const Empty = ({ txt }) => <div className="p-6 text-center font-black uppercase tracking-widest opacity-40 text-[0.8em]">{txt}</div>;
   const Group = ({ title, color, fg = 'black', children }) => (
     <div>
-      <div className="px-3 py-1.5 font-black uppercase tracking-widest text-[0.7em] border-b-[2px] border-black" style={{ backgroundColor: color, color: fg }}>{title}</div>
+      <div className="px-3 py-1.5 font-black uppercase tracking-widest text-[0.7em] border-b border-black/25" style={{ backgroundColor: color, color: fg }}>{title}</div>
       {children}
     </div>
   );
@@ -1146,7 +1108,7 @@ function AlertBar({ alerts, urgentes, openAlert, setOpenAlert, onItemClick }) {
         <Row key={item.ENTIDADE} item={item} right={who(item)}>
           <div className="flex flex-wrap gap-1.5 items-center">
             <Chip bg={COLORS.crimson}>Diligência</Chip>
-            {contato ? <ContatoTag contato={contato} /> : <span className="px-2 py-1 border-[2px] border-dashed border-black font-black uppercase tracking-wider text-[0.65em] text-crimson">Nenhum contato registrado — cobrar entidade</span>}
+            {contato ? <ContatoTag contato={contato} /> : <span className="px-2 py-1 border border-dashed border-black/25 font-black uppercase tracking-wider text-[0.65em] text-crimson">Nenhum contato registrado — cobrar entidade</span>}
           </div>
         </Row>
       ));
@@ -1191,24 +1153,24 @@ function AlertBar({ alerts, urgentes, openAlert, setOpenAlert, onItemClick }) {
   const panelTitle = { diligencias: 'Pedidos de diligência em aberto', contatos: 'Cobranças às entidades por prazo', documentos: 'Documentos faltantes', lacunas: 'Outras lacunas e pendências' };
 
   return (
-    <div className="sticky top-0 z-[120]">
+    <div className="relative z-[120] flex-shrink-0">
       {openAlert && <div className="fixed inset-0 z-[-1]" onClick={() => setOpenAlert(null)} />}
-      <div className="bg-black text-white border-b-[4px] border-black flex flex-wrap items-stretch gap-2 px-3 py-2">
+      <div className="bg-[#f4f4f0] border-b border-black/10 flex flex-wrap items-center gap-2 px-3 md:px-4 py-1.5">
         <div className="hidden sm:flex items-center gap-2 pr-2 font-black uppercase tracking-widest text-[0.7em] opacity-70"><Bell size={16} /> Avisos</div>
         {tabs.map(t => (
           <button key={t.id} onClick={() => toggle(t.id)}
-            className={`flex items-center gap-2 px-3 ${t.big ? 'py-2' : 'py-1.5'} font-black uppercase tracking-widest text-[0.7em] md:text-[0.75em] border-[3px] transition-transform hover:-translate-y-0.5 ${t.hot ? 'tab-pulse' : ''}`}
-            style={{ backgroundColor: t.bg, color: t.fg, borderColor: openAlert === t.id ? '#fff' : t.bg }}>
+            className={`flex items-center gap-2 rounded-full px-3 ${t.big ? 'py-1.5' : 'py-1'} font-bold uppercase tracking-wider text-[0.7em] md:text-[0.75em] border-2 transition-all hover:shadow-md ${t.hot ? 'tab-pulse' : ''}`}
+            style={{ backgroundColor: t.bg, color: t.fg, borderColor: openAlert === t.id ? '#111' : t.bg }}>
             <span>{t.label}</span>
-            <span className="px-1.5 min-w-[1.6em] text-center" style={{ backgroundColor: t.fg, color: t.bg }}>{t.count}</span>
+            <span className="px-1.5 min-w-[1.6em] text-center rounded-full" style={{ backgroundColor: t.fg, color: t.bg }}>{t.count}</span>
             {t.extra && <span className="hidden md:inline px-1.5 bg-white text-black">{t.extra}</span>}
             <ChevronDown size={12} className={`transition-transform ${openAlert === t.id ? 'rotate-180' : ''}`} />
           </button>
         ))}
       </div>
       {openAlert && (
-        <div className="absolute left-0 right-0 md:left-3 md:right-auto md:w-[min(560px,calc(100vw-24px))] bg-white text-black border-[4px] border-black shadow-[8px_8px_0px_rgba(0,0,0,0.4)] max-h-[70vh] overflow-y-auto">
-          <div className="sticky top-0 z-10 bg-black text-white px-3 py-2 flex items-center justify-between font-black uppercase tracking-widest text-[0.7em]">
+        <div className="absolute left-2 right-2 md:left-4 md:right-auto md:w-[min(560px,calc(100vw-32px))] mt-1 bg-white text-black border border-black/20 rounded-xl shadow-2xl max-h-[70vh] overflow-y-auto">
+          <div className="sticky top-0 z-10 bg-[#111] text-white px-3 py-2 flex items-center justify-between font-black uppercase tracking-widest text-[0.7em]">
             <span>{panelTitle[openAlert]}</span>
             <button onClick={() => setOpenAlert(null)} className="text-base leading-none hover:scale-110 transition-transform">X</button>
           </div>
@@ -1225,7 +1187,7 @@ function ContatoBloco({ item, onUpdate, isUnlocked, requireAuth }) {
   const contato = parseContato(item);
   const diligencia = isDiligencia(item);
   const info = contato ? LEVEL_INFO[contato.level] : null;
-  const accent = contato && contato.level > 0 ? info.bg : (diligencia ? COLORS.crimson : 'currentcolor');
+  const accent = contato && contato.level > 0 ? info.bg : (diligencia ? COLORS.crimson : '#111');
 
   const registrar = () => {
     const [y, m, d] = data.split('-');
@@ -1237,12 +1199,12 @@ function ContatoBloco({ item, onUpdate, isUnlocked, requireAuth }) {
   const limpar = () => onUpdate({ [COL_CONTATO]: '' });
 
   return (
-    <div className="border-[4px] flex flex-col" style={{ borderColor: accent }}>
-      <div className="px-4 py-2 flex flex-wrap items-center justify-between gap-2 font-black uppercase tracking-widest text-[0.75em]" style={{ backgroundColor: accent === 'currentcolor' ? '#000' : accent, color: contato && contato.level > 0 ? info.fg : (accent === COLORS.crimson ? '#fff' : '#fff') }}>
+    <div className="border-2 rounded-xl overflow-hidden flex flex-col bg-white" style={{ borderColor: accent }}>
+      <div className="px-4 py-2 flex flex-wrap items-center justify-between gap-2 font-black uppercase tracking-widest text-[0.75em]" style={{ backgroundColor: accent, color: contato && contato.level > 0 ? info.fg : '#fff' }}>
         <span className="flex items-center gap-2"><Mail size={16} /> Último contato com a entidade</span>
         {contato && contato.level > 0 && <span className="px-2 bg-black text-white">{info.label}</span>}
       </div>
-      <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-3 grid grid-cols-1 gap-3">
         <div className="flex flex-col gap-2">
           {diligencia && <div className="px-3 py-2 theme-crimson font-black uppercase tracking-widest text-[0.7em] flex items-center gap-2"><AlertCircle size={16} /> Requerimento de diligência em aberto</div>}
           {contato ? (
@@ -1252,24 +1214,24 @@ function ContatoBloco({ item, onUpdate, isUnlocked, requireAuth }) {
                 <span className="font-black uppercase tracking-widest text-[0.7em] opacity-70">{contato.days === null ? 'data não reconhecida' : contato.days === 1 ? 'dia sem retorno' : 'dias sem retorno'}</span>
               </div>
               <div className="text-[0.85em] font-bold">{contato.date ? formatBR(contato.date) : ''}</div>
-              <div className="p-2 bg-[#f4f4f0] border-[2px] border-current text-[0.85em] font-bold leading-snug"><span className="block text-[0.7em] uppercase font-black opacity-60 tracking-widest">Pedido feito</span>{contato.texto || '—'}</div>
-              <button onClick={() => requireAuth(limpar)} className="self-start flex items-center gap-2 px-3 py-1.5 border-[2px] border-current font-black uppercase tracking-widest text-[0.65em] opacity-60 hover:opacity-100 hover-cyan transition-all">
+              <div className="p-2 bg-[#f4f4f0] border border-black/25 text-[0.85em] font-bold leading-snug"><span className="block text-[0.7em] uppercase font-black opacity-60 tracking-widest">Pedido feito</span>{contato.texto || '—'}</div>
+              <button onClick={() => requireAuth(limpar)} className="self-start flex items-center gap-2 px-3 py-1.5 border border-black/25 font-black uppercase tracking-widest text-[0.65em] opacity-60 hover:opacity-100 hover-cyan transition-all">
                 {!isUnlocked && <Lock size={11} />} Entidade respondeu — limpar alerta
               </button>
             </>
           ) : (
-            <div className="p-3 border-[3px] border-dashed border-current font-black uppercase tracking-widest text-[0.7em] opacity-60">Nenhum contato registrado ainda</div>
+            <div className="p-3 border-[1.5px] border-dashed border-black/25 font-black uppercase tracking-widest text-[0.7em] opacity-60">Nenhum contato registrado ainda</div>
           )}
         </div>
         <div className="flex flex-col gap-2">
           <span className="font-black uppercase tracking-widest text-[0.65em] opacity-70">Registrar novo contato</span>
-          <input type="date" value={data} onChange={e => setData(e.target.value)} className="p-2 border-[3px] border-current font-bold bg-white text-black outline-none" />
-          <input type="text" value={texto} onChange={e => setTexto(e.target.value)} placeholder="O que foi pedido? Ex: relatório de atividades" className="p-2 border-[3px] border-current font-bold bg-white text-black outline-none"
+          <input type="date" value={data} onChange={e => setData(e.target.value)} className="p-2 border-[1.5px] border-black/25 font-bold bg-white text-black outline-none" />
+          <input type="text" value={texto} onChange={e => setTexto(e.target.value)} placeholder="O que foi pedido? Ex: relatório de atividades" className="p-2 border-[1.5px] border-black/25 font-bold bg-white text-black outline-none"
             onKeyDown={e => { if (e.key === 'Enter') requireAuth(registrar); }} />
           <div className="flex flex-wrap gap-1">
-            {CONTATO_SUGESTOES.map(sug => <button key={sug} type="button" onClick={() => setTexto(sug)} className="px-2 py-1 border-[2px] border-current font-black uppercase tracking-wider text-[0.6em] hover:bg-black hover:text-white transition-colors">{sug}</button>)}
+            {CONTATO_SUGESTOES.map(sug => <button key={sug} type="button" onClick={() => setTexto(sug)} className="px-2 py-1 border border-black/25 font-black uppercase tracking-wider text-[0.6em] hover:bg-black hover:text-white transition-colors">{sug}</button>)}
           </div>
-          <button onClick={() => requireAuth(registrar)} className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white font-black uppercase tracking-widest text-[0.75em] border-[3px] border-black hover:-translate-y-1 transition-transform shadow-[3px_3px_0px_currentColor]">
+          <button onClick={() => requireAuth(registrar)} className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white font-black uppercase tracking-widest text-[0.75em] border-[1.5px] border-black/25 hover:-translate-y-1 transition-transform shadow-lg">
             {isUnlocked ? <Save size={14} /> : <Lock size={14} />} Registrar contato
           </button>
         </div>
@@ -1279,11 +1241,9 @@ function ContatoBloco({ item, onUpdate, isUnlocked, requireAuth }) {
 }
 
 function NavButton({ active, onClick, icon, label, accentColor }) {
-  const activeStyle = active ? { borderColor: accentColor, boxShadow: `0 4px 0 ${accentColor}`, backgroundColor: 'black', color: 'white', transform: 'scale(1.05)', zIndex: 10 } : { borderColor: 'rgba(0,0,0,0.3)' };
-  const activeClass = active ? '' : 'hover:border-current opacity-80 hover:opacity-100 hover:scale-[1.02]';
   return (
-    <button onClick={onClick} className={`flex-1 md:flex-none flex items-center justify-center gap-3 px-6 py-4 font-bold uppercase tracking-wider border-[4px] transition-all duration-200 cursor-pointer ${activeClass}`} style={{ fontSize: '1.05em', minWidth: '150px', ...activeStyle }}>
-      {icon} <span>{label}</span>
+    <button onClick={onClick} className={`flex items-center justify-center gap-2 px-4 py-1.5 font-bold uppercase tracking-wider text-[0.8em] border-2 transition-all cursor-pointer ${active ? 'bg-black text-white' : 'bg-white text-black hover:bg-black/5 border-black/20'}`} style={active ? { borderColor: '#000', boxShadow: `inset 0 -3px 0 ${accentColor}` } : {}}>
+      {React.cloneElement(icon, { size: 16 })} <span>{label}</span>
     </button>
   );
 }
